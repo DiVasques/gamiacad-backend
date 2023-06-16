@@ -1,7 +1,15 @@
-import app from "./app"
+import app from "@/app"
+import makeDb from "@/config/dbConnect"
 
 const PORT = process.env.SERVER_PORT
 
-app.listen(PORT, () => {
-    console.log(`[server]: Server up and running on http://localhost:${PORT}`)
+app.listen(PORT, async () => {
+    try {
+      await makeDb()
+  
+      console.info(`⚡️[server]: Server is running at http://localhost:${PORT}`)
+    } catch (error) {
+      console.error(`Failed to start server! ${error}`)
+      process.exit(500)
+    }
 })
