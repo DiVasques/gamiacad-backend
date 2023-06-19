@@ -8,6 +8,10 @@ export class MissionService {
     @Inject(ServiceToken.missionRepository)
     private missionRepository: IMissionRepository
 
+    async getMissions(filter: Partial<Mission>): Promise<Mission[]> {
+        return await this.missionRepository.find(filter)
+    }
+
     async addMission(mission: Partial<Mission>) {
         await this.missionRepository.create(mission)
     }

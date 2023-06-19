@@ -1,5 +1,6 @@
 import { MissionService } from '@/services/MissionService'
 import { Mission } from '@/models/Mission'
+import { missionList } from '../mocks/Mission'
 
 describe('MissionService', () => {
     let missionService: MissionService
@@ -7,6 +8,7 @@ describe('MissionService', () => {
 
     beforeEach(() => {
         missionRepositoryMock = {
+            find: jest.fn().mockResolvedValue(missionList),
             create: jest.fn()
         }
         missionService = new MissionService()
@@ -16,6 +18,20 @@ describe('MissionService', () => {
     afterEach(() =>
         jest.clearAllMocks()
     )
+
+    describe('getMissions', () => {
+        it('should return missions from the repository', async () => {
+            // Arrange
+            const filter = { name: 'name' }
+
+            // Act
+            const result = await missionService.getMissions(filter)
+
+            // Assert
+            expect(missionRepositoryMock.find).toHaveBeenCalledWith(filter)
+            expect(result).toEqual(missionList)
+        })
+    })
 
     describe('addMission', () => {
         it('should add the mission', async () => {
