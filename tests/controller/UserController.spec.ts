@@ -1,11 +1,14 @@
 import app from '@/app'
 import request from 'supertest'
-import { userList } from '../mocks/User'
+import { user, userList } from '../mocks/User'
 import { Container } from "typedi"
+import AppError from '@/models/error/AppError'
+import ExceptionStatus from '@/utils/enum/ExceptionStatus'
 
 describe('UserController', () => {
     const userServiceMock = {
         getUsers: jest.fn().mockResolvedValue(userList),
+        getUserById: jest.fn().mockResolvedValue(user),
         addUser: jest.fn(),
     }
 
@@ -38,6 +41,41 @@ describe('UserController', () => {
             expect(userServiceMock.getUsers).toHaveBeenCalled()
             expect(status).toBe(200)
             expect(body).toEqual({ users: expectedUsers })
+        })
+    })
+
+    describe('getUserById', () => {
+        it('should return the corresponding user', async () => {
+            // Arrange
+            const id = "f94fbe96-373e-49b1-81c0-0df716e9b2ee"
+
+            // Act
+            const { status, body } = await request(app)
+                .get(`/api/user/${id}`)
+
+            // Assert
+            const expectedUser = {
+                ...user,
+                createdAt: user.createdAt.toISOString(),
+                updatedAt: user.updatedAt.toISOString(),
+            }
+            expect(status).toBe(200)
+            expect(body).toEqual(expectedUser)
+            expect(userServiceMock.getUserById).toHaveBeenCalledWith(id)
+        })
+
+        it('should return 404 if no user was found', async () => {
+            // Arrange
+            const id = "f94fbe96-373e-49b1-81c0-0df716e9b2ee"
+            userServiceMock.getUserById.mockRejectedValueOnce(new AppError(ExceptionStatus.notFound, 404))
+
+            // Act
+            const { status } = await request(app)
+                .get(`/api/user/${id}`)
+
+            // Assert
+            expect(status).toBe(404)
+            expect(userServiceMock.getUserById).toHaveBeenCalledWith(id)
         })
     })
 

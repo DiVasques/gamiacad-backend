@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node --tls-min-v1.0 dist/server.js",
-    "dev": "nodemon -r tsconfig-paths/register src/server.ts"
+    "dev": "nodemon -r tsconfig-paths/register src/server.ts",
+    "coverage": "jest --coverage"
   },
   "keywords": [],
   "author": "",

@@ -4,20 +4,20 @@ import dotenv from 'dotenv'
 import routes from '@/routes'
 import winston from 'winston'
 import expressWinston from 'express-winston'
-import 'reflect-metadata';
+import 'reflect-metadata'
 import { Exception } from '@/middlewares/Exception'
 import { configureContainer } from '@/config/di'
 
 dotenv.config()
 
-configureContainer();
+configureContainer()
 
 const app: Express = express()
 app.use(express.json())
 app.use(cors())
 
-expressWinston.requestWhitelist.push('body');
-expressWinston.responseWhitelist.push('body');
+expressWinston.requestWhitelist.push('body')
+expressWinston.responseWhitelist.push('body')
 
 app.use(expressWinston.logger({
     transports: [

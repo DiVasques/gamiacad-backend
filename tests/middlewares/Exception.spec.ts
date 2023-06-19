@@ -4,7 +4,12 @@ import ExceptionStatus from '@/utils/enum/ExceptionStatus'
 import { Exception } from '@/middlewares/Exception'
 import { CelebrateError, isCelebrateError } from 'celebrate'
 
-jest.mock('celebrate')
+jest.mock('celebrate', () => (
+    {
+        CelebrateError: jest.fn(),
+        isCelebrateError: jest.fn()
+    }
+))
 
 describe('Exception', () => {
     let request: Request
