@@ -25,4 +25,8 @@ export class UserService {
     async addUser(user: Partial<User>) {
         await this.userRepository.create(user)
     }
+
+    async deleteUser(id: string) {
+        await this.userRepository.delete(id)
+    }
 }

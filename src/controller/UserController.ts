@@ -21,4 +21,10 @@ export class UserController {
         await userService.addUser(request.body)
         return new HttpResponse(201)
     }
+
+    static async deleteUser(request: HttpRequest): Promise<HttpResponse> {
+        const userService = Container.get(UserService)
+        await userService.deleteUser(request.params.id)
+        return new HttpResponse(202)
+    }
 }

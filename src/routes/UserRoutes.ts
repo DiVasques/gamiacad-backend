@@ -32,4 +32,10 @@ routes.post('/user', celebrate({
     [Segments.BODY]: addUserSchema
 }), makeExpressCallback(UserController.addUser))
 
+routes.delete('/user/:id', celebrate({
+    [Segments.PARAMS]: {
+        id: StandardOptionsJoi.string().uuid().required()
+    }
+}), makeExpressCallback(UserController.deleteUser))
+
 export default routes
