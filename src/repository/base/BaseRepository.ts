@@ -1,7 +1,7 @@
 import mongoose, { FilterQuery } from 'mongoose'
 
 export abstract class BaseRepository<T> {
-  protected model: mongoose.Model<T & mongoose.Document>;
+  protected model: mongoose.Model<T & mongoose.Document>
 
   constructor(schemaModel: mongoose.Model<T & mongoose.Document>) {
     this.model = schemaModel

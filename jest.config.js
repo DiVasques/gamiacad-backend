@@ -11,12 +11,17 @@ module.exports = {
   collectCoverageFrom: [
     '!<rootDir>/tests/*',
     '!<rootDir>/src/server.ts',
+    '!<rootDir>/dist/**/*.js',
     '<rootDir>/src/**/*.ts'
   ],
+  testPathIgnorePatterns: [
+    '<rootDir>/node_modules/',
+    '<rootDir>/dist/'
+  ],
   coveragePathIgnorePatterns: [
-    "<rootDir>/src/config",
-    "<rootDir>/src/models",
-    "<rootDir>/src/repository",
+    '<rootDir>/src/config',
+    '<rootDir>/src/models',
+    '<rootDir>/src/repository',
     '<rootDir>/src/server.ts'
   ]
 }
