@@ -1,6 +1,7 @@
 import { Request, Response, Router } from 'express'
 
 import UserRoutes from '@/routes/UserRoutes'
+import MissionRoutes from '@/routes/MissionRoutes'
 
 const routes = Router()
 
@@ -9,5 +10,6 @@ routes.get('/', (_: Request, res: Response) => {
 })
 
 routes.use(UserRoutes)
+routes.use(MissionRoutes)
 
 export default routes

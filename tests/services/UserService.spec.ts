@@ -40,7 +40,7 @@ describe('UserService', () => {
     describe('getUserById', () => {
         it('should return the corresponding user from the repository', async () => {
             // Arrange
-            const id = "f94fbe96-373e-49b1-81c0-0df716e9b2ee"
+            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
 
             // Act
             const result = await userService.getUserById(id)
@@ -86,7 +86,7 @@ describe('UserService', () => {
     describe('deleteUser', () => {
         it('should delete the user', async () => {
             // Arrange
-            const id = "f94fbe96-373e-49b1-81c0-0df716e9b2ee"
+            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
 
             // Act
             await userService.deleteUser(id)

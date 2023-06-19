@@ -1,7 +1,7 @@
 import app from '@/app'
 import request from 'supertest'
 import { user, userList } from '../mocks/User'
-import { Container } from "typedi"
+import { Container } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
 
@@ -48,7 +48,7 @@ describe('UserController', () => {
     describe('getUserById', () => {
         it('should return the corresponding user', async () => {
             // Arrange
-            const id = "f94fbe96-373e-49b1-81c0-0df716e9b2ee"
+            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
 
             // Act
             const { status, body } = await request(app)
@@ -67,7 +67,7 @@ describe('UserController', () => {
 
         it('should return 404 if no user was found', async () => {
             // Arrange
-            const id = "f94fbe96-373e-49b1-81c0-0df716e9b2ee"
+            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
             userServiceMock.getUserById.mockRejectedValueOnce(new AppError(ExceptionStatus.notFound, 404))
 
             // Act
@@ -98,7 +98,7 @@ describe('UserController', () => {
     describe('deleteUser', () => {
         it('should return a response with status code 202', async () => {
             // Arrange
-            const id = "f94fbe96-373e-49b1-81c0-0df716e9b2ee"
+            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
 
             // Act
             const { status } = await request(app)
