@@ -7,8 +7,12 @@ import { MissionController } from '@/controller/MissionController'
 
 const routes = Router()
 
-const MISSION_NAME_REGEX = /^[ a-z\dA-ZàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ'`'\-]+$/
+const MISSION_NAME_REGEX = /^[ a-z\dA-ZàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ`'-]+$/
 const DESCRIPTION_REGEX = /^[\w.\s]+$/
+
+const getMissionsSchema = StandardOptionsJoi.object().keys({
+    name: StandardOptionsJoi.string().regex(MISSION_NAME_REGEX)
+})
 
 const addMissionSchema = StandardOptionsJoi.object().keys({
     name: StandardOptionsJoi.string().regex(MISSION_NAME_REGEX).required(),
@@ -17,6 +21,10 @@ const addMissionSchema = StandardOptionsJoi.object().keys({
     expirationDate: StandardOptionsJoi.date().min(new Date()).required(),
     createdBy: StandardOptionsJoi.string().uuid().required()
 })
+
+routes.get('/mission', celebrate({
+    [Segments.QUERY]: getMissionsSchema
+}), makeExpressCallback(MissionController.getMissions))
 
 routes.post('/mission', celebrate({
     [Segments.BODY]: addMissionSchema

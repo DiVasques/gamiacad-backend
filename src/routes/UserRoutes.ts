@@ -7,7 +7,7 @@ import { UserController } from '@/controller/UserController'
 
 const routes = Router()
 
-const USER_NAME_REGEX = /^[ a-zA-ZàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ'`'\-]+$/
+const USER_NAME_REGEX = /^[ a-zA-ZàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ'`-]+$/
 
 const getUsersSchema = StandardOptionsJoi.object().keys({
     name: StandardOptionsJoi.string().regex(USER_NAME_REGEX)

@@ -1,9 +1,11 @@
 import app from '@/app'
 import request from 'supertest'
+import { missionList } from '../mocks/Mission'
 import { Container } from 'typedi'
 
 describe('MissionController', () => {
     const missionServiceMock = {
+        getMissions: jest.fn().mockResolvedValue(missionList),
         addMission: jest.fn()
     }
 
@@ -17,6 +19,28 @@ describe('MissionController', () => {
     afterEach(() =>
         jest.clearAllMocks()
     )
+
+    describe('getMissions', () => {
+        it('should return a list of missions', async () => {
+            // Arrange
+
+            // Act
+            const { status, body } = await request(app)
+                .get(`/api/mission`)
+
+            // Assert
+            const expectedMissions = missionList.map((mission) => ({
+                ...mission,
+                expirationDate: mission.expirationDate.toISOString(),
+                createdAt: mission.createdAt.toISOString(),
+                updatedAt: mission.updatedAt.toISOString(),
+            }))
+
+            expect(missionServiceMock.getMissions).toHaveBeenCalled()
+            expect(status).toBe(200)
+            expect(body).toEqual({ missions: expectedMissions })
+        })
+    })
 
     describe('addMission', () => {
         it('should return a response with status code 201', async () => {
