@@ -1,7 +1,7 @@
-import { User } from '@/models/User';
-import { BaseRepository } from '@/repository/base/BaseRepository';
-import { IUserRepository } from '@/repository/user/IUserRepository';
-import mongoose, { Document, Schema } from 'mongoose';
+import { User } from '@/models/User'
+import { BaseRepository } from '@/repository/base/BaseRepository'
+import { IUserRepository } from '@/repository/user/IUserRepository'
+import mongoose, { Document, Schema } from 'mongoose'
 import { v4 as uuid } from 'uuid'
 
 export class UserRepository extends BaseRepository<User> implements IUserRepository {
