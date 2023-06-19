@@ -1,6 +1,6 @@
-import HttpRequest from "@/utils/http/HttpRequest";
-import HttpResponse from "@/utils/http/HttpResponse";
-import { Request, Response, NextFunction } from "express";
+import HttpRequest from '@/models/http/HttpRequest';
+import HttpResponse from '@/models/http/HttpResponse';
+import { Request, Response, NextFunction } from 'express';
 
 export default function makeExpressCallback(controller: (request: HttpRequest) => Promise<HttpResponse>) {
   return async (req: Request, res: Response, next: NextFunction) => {

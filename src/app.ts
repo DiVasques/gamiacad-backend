@@ -1,10 +1,10 @@
 import express, { Express } from 'express'
-import cors from "cors"
-import dotenv from "dotenv"
+import cors from 'cors'
+import dotenv from 'dotenv'
 import routes from '@/routes'
-import winston from "winston"
-import expressWinston from "express-winston"
-import "reflect-metadata";
+import winston from 'winston'
+import expressWinston from 'express-winston'
+import 'reflect-metadata';
 import { Exception } from '@/middlewares/Exception'
 import { configureContainer } from '@/config/di'
 
