@@ -13,6 +13,7 @@ describe('UserService', () => {
             find: jest.fn().mockResolvedValue(userList),
             findById: jest.fn().mockResolvedValue(user),
             create: jest.fn(),
+            delete: jest.fn()
         }
         userService = new UserService()
         userService['userRepository'] = userRepositoryMock
@@ -79,6 +80,19 @@ describe('UserService', () => {
 
             // Assert
             expect(userRepositoryMock.create).toHaveBeenCalledWith(user)
+        })
+    })
+
+    describe('deleteUser', () => {
+        it('should delete the user', async () => {
+            // Arrange
+            const id = "f94fbe96-373e-49b1-81c0-0df716e9b2ee"
+
+            // Act
+            await userService.deleteUser(id)
+
+            // Assert
+            expect(userRepositoryMock.delete).toHaveBeenCalledWith(id)
         })
     })
 })

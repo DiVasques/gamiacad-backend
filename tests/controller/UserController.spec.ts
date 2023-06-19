@@ -10,6 +10,7 @@ describe('UserController', () => {
         getUsers: jest.fn().mockResolvedValue(userList),
         getUserById: jest.fn().mockResolvedValue(user),
         addUser: jest.fn(),
+        deleteUser: jest.fn()
     }
 
     beforeEach(() => {
@@ -91,6 +92,21 @@ describe('UserController', () => {
             // Assert
             expect(userServiceMock.addUser).toHaveBeenCalledWith(newUser)
             expect(status).toBe(201)
+        })
+    })
+
+    describe('deleteUser', () => {
+        it('should return a response with status code 202', async () => {
+            // Arrange
+            const id = "f94fbe96-373e-49b1-81c0-0df716e9b2ee"
+
+            // Act
+            const { status } = await request(app)
+                .delete(`/api/user/${id}`)
+
+            // Assert
+            expect(userServiceMock.deleteUser).toHaveBeenCalledWith(id)
+            expect(status).toBe(202)
         })
     })
 })
