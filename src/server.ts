@@ -1,5 +1,5 @@
-import app from "@/app"
-import makeDb from "@/config/dbConnect"
+import app from '@/app'
+import makeDb from '@/config/dbConnect'
 
 const PORT = process.env.SERVER_PORT
 

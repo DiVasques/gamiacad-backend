@@ -1,15 +1,15 @@
 import { Request, Response, NextFunction } from 'express'
-import { isCelebrateError } from 'celebrate'
+import { CelebrateError, isCelebrateError } from 'celebrate'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
 
-import AppError from '@/utils/error/AppError'
+import AppError from '@/models/error/AppError'
 
-const Exception = (err: Error | any, request: Request, response: Response, _: NextFunction) => {
+const Exception = (err: AppError | CelebrateError | Error | any, request: Request, response: Response, _: NextFunction) => {
   if (err instanceof AppError) return response.status(err.status).json(err)
 
   if (isCelebrateError(err)) return response.status(400).json(
     process.env.DEBUG ?
-      { message: err.message, details: Object.fromEntries(err.details) } :
+      { message: err.message, details: Object.fromEntries(err.details ?? new Map()) } :
       undefined
   )
 
