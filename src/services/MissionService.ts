@@ -22,7 +22,7 @@ export class MissionService {
     }
 
     async deleteMission(id: string) {
-        let mission = await this.missionRepository.findById(id)
+        const mission = await this.missionRepository.findById(id)
         if (!mission) {
             throw new AppError(ExceptionStatus.notFound, 404)
         }
@@ -33,28 +33,28 @@ export class MissionService {
     }
 
     async subscribeUser(id: string, userId: string) {
-        let [user, mission] = await Promise.all([this.userRepository.findById(userId), this.missionRepository.findById(id)])
+        const [user, mission] = await Promise.all([this.userRepository.findById(userId), this.missionRepository.findById(id)])
         if (!user) {
             throw new AppError(ExceptionStatus.notFound, 404)
         }
         if (!mission) {
             throw new AppError(ExceptionStatus.notFound, 404)
         }
-        let modifiedCount = await this.missionRepository.subscribeUser(id, userId)
+        const modifiedCount = await this.missionRepository.subscribeUser(id, userId)
         if (modifiedCount === 0) {
             throw new AppError(ExceptionStatus.alreadySubscribed, 400)
         }
     }
 
     async completeMission(id: string, userId: string) {
-        let [user, mission] = await Promise.all([this.userRepository.findById(userId), this.missionRepository.findById(id)])
+        const [user, mission] = await Promise.all([this.userRepository.findById(userId), this.missionRepository.findById(id)])
         if (!user) {
             throw new AppError(ExceptionStatus.notFound, 404)
         }
         if (!mission) {
             throw new AppError(ExceptionStatus.notFound, 404)
         }
-        let modifiedCount = await this.missionRepository.completeMission(id, userId)
+        const modifiedCount = await this.missionRepository.completeMission(id, userId)
         if (modifiedCount === 0) {
             throw new AppError(ExceptionStatus.cantCompleteMission, 400)
         }

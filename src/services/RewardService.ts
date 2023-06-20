@@ -19,7 +19,7 @@ export class RewardService {
     }
 
     async deleteReward(id: string) {
-        let reward = await this.rewardRepository.findById(id)
+        const reward = await this.rewardRepository.findById(id)
         if (!reward) {
             throw new AppError(ExceptionStatus.notFound, 404)
         }

@@ -6,7 +6,7 @@ export interface IMissionRepository {
     find: (obj?: any) => Promise<Mission[]>
 
     create: (Mission: Partial<Mission>) => Promise<void>
-    update(_id: string, data: Partial<Mission>, options?: Object): Promise<void>
+    update(_id: string, data: Partial<Mission>, options?: object): Promise<void>
     delete: (_id: string) => Promise<void>
     findOneAndUpdate: (filter: Partial<Mission>, item: Partial<Mission>) => Promise<(Mission) | null>
     

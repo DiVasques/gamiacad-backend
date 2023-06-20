@@ -6,7 +6,7 @@ import { Container } from 'typedi'
 export class RewardController {
     static async getRewards(request: HttpRequest): Promise<HttpResponse> {
         const rewardService = Container.get(RewardService)
-        let rewards = await rewardService.getRewards(request.query)
+        const rewards = await rewardService.getRewards(request.query)
         return new HttpResponse(200, { rewards })
     }
 

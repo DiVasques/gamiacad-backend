@@ -8,7 +8,7 @@ import { v4 as uuid } from 'uuid'
 export class RewardRepository extends BaseRepository<Reward> implements IRewardRepository {
     constructor() {
         autoIncrement.initialize(mongoose.connection);
-        let rewardSchema = new Schema<Reward>(
+        const rewardSchema = new Schema<Reward>(
             {
                 _id: { type: String, default: uuid },
                 name: { type: String, required: true },
@@ -23,7 +23,7 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
             }
         )
         rewardSchema.plugin(autoIncrement.plugin, { model: 'Reward', field: 'number' });
-        let rewardModel = mongoose.model<Reward & Document>('Reward', rewardSchema, 'Reward')
+        const rewardModel = mongoose.model<Reward & Document>('Reward', rewardSchema, 'Reward')
         super(rewardModel)
     }
 }

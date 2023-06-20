@@ -23,11 +23,11 @@ export abstract class BaseRepository<T> {
     await this.model.create(item)
   }
 
-  async update(_id: string, item: Partial<T>, options?: Object) {
+  async update(_id: string, item: Partial<T>, options?: object) {
     await this.model.findByIdAndUpdate(_id, item, { useFindAndModify: false, ...options }).exec()
   }
 
-  async findOneAndUpdate(filter: Partial<T>, item: Partial<T>, options?: Object) {
+  async findOneAndUpdate(filter: Partial<T>, item: Partial<T>, options?: object) {
     return await this.model.findOneAndUpdate(filter as FilterQuery<T>, item, { useFindAndModify: false, ...options }).exec()
   }
 
