@@ -30,4 +30,10 @@ routes.post('/mission', celebrate({
     [Segments.BODY]: addMissionSchema
 }), makeExpressCallback(MissionController.addMission))
 
+routes.delete('/mission/:id', celebrate({
+    [Segments.PARAMS]: {
+        id: StandardOptionsJoi.string().uuid().required()
+    }
+}), makeExpressCallback(MissionController.deleteMission))
+
 export default routes

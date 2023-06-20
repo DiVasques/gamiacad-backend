@@ -2,11 +2,14 @@ import app from '@/app'
 import request from 'supertest'
 import { missionList } from '../mocks/Mission'
 import { Container } from 'typedi'
+import AppError from '@/models/error/AppError'
+import ExceptionStatus from '@/utils/enum/ExceptionStatus'
 
 describe('MissionController', () => {
     const missionServiceMock = {
         getMissions: jest.fn().mockResolvedValue(missionList),
-        addMission: jest.fn()
+        addMission: jest.fn(),
+        deleteMission: jest.fn()
     }
 
     beforeEach(() => {
@@ -60,6 +63,49 @@ describe('MissionController', () => {
             // Assert
             expect(missionServiceMock.addMission).toHaveBeenCalledWith(newMission)
             expect(status).toBe(201)
+        })
+    })
+
+    describe('deleteMission', () => {
+        it('should return a response with status code 202', async () => {
+            // Arrange
+            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
+
+            // Act
+            const { status } = await request(app)
+                .delete(`/api/mission/${id}`)
+
+            // Assert
+            expect(status).toBe(202)
+            expect(missionServiceMock.deleteMission).toHaveBeenCalledWith(id)
+        })
+        
+        it('should return 404 if no mission was found', async () => {
+            // Arrange
+            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
+            missionServiceMock.deleteMission.mockRejectedValueOnce(new AppError(ExceptionStatus.notFound, 404))
+
+            // Act
+            const { status } = await request(app)
+                .delete(`/api/mission/${id}`)
+
+            // Assert
+            expect(status).toBe(404)
+            expect(missionServiceMock.deleteMission).toHaveBeenCalledWith(id)
+        })
+        
+        it('should return 400 if mission has completers', async () => {
+            // Arrange
+            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
+            missionServiceMock.deleteMission.mockRejectedValueOnce(new AppError(ExceptionStatus.invalidRequest, 400))
+
+            // Act
+            const { status } = await request(app)
+                .delete(`/api/mission/${id}`)
+
+            // Assert
+            expect(status).toBe(400)
+            expect(missionServiceMock.deleteMission).toHaveBeenCalledWith(id)
         })
     })
 })
