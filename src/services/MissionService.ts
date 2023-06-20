@@ -45,4 +45,19 @@ export class MissionService {
             throw new AppError(ExceptionStatus.alreadySubscribed, 400)
         }
     }
+
+    async completeMission(id: string, userId: string) {
+        let [user, mission] = await Promise.all([this.userRepository.findById(userId), this.missionRepository.findById(id)])
+        if (!user) {
+            throw new AppError(ExceptionStatus.notFound, 404)
+        }
+        if (!mission) {
+            throw new AppError(ExceptionStatus.notFound, 404)
+        }
+        let modifiedCount = await this.missionRepository.completeMission(id, userId)
+        if (modifiedCount === 0) {
+            throw new AppError(ExceptionStatus.cantCompleteMission, 400)
+        }
+        await this.userRepository.givePoints(userId, mission.points)
+    }
 }

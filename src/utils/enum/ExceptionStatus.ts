@@ -9,6 +9,7 @@ enum ExceptionStatus {
   invalidToken = 'Invalid Token',
   invalidHeaders = 'Request without necessary headers',
   invalidAuthorization = 'Authorization token needs to be a Bearer token',
-  alreadySubscribed = 'User is already subscribed to the mission'
+  alreadySubscribed = 'User is already subscribed to the mission',
+  cantCompleteMission = 'User not participating or already completed this mission'
 }
 export default ExceptionStatus

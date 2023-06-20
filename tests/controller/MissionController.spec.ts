@@ -10,7 +10,8 @@ describe('MissionController', () => {
         getMissions: jest.fn().mockResolvedValue(missionList),
         addMission: jest.fn(),
         deleteMission: jest.fn(),
-        subscribeUser: jest.fn()
+        subscribeUser: jest.fn(),
+        completeMission: jest.fn()
     }
 
     beforeEach(() => {
@@ -154,6 +155,53 @@ describe('MissionController', () => {
             // Assert
             expect(status).toBe(400)
             expect(missionServiceMock.subscribeUser).toHaveBeenCalledWith(id, userId)
+        })
+    })
+
+    describe('completeMission', () => {
+        it('should return a response with status code 204', async () => {
+            // Arrange
+            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
+            const userId = '9c4276a4-0d1d-4a93-90ba-41394d8b4972'
+
+            // Act
+            const { status } = await request(app)
+                .patch(`/api/mission/${id}/${userId}`)
+
+            // Assert
+            expect(status).toBe(204)
+            expect(missionServiceMock.completeMission).toHaveBeenCalledWith(id, userId)
+        })
+
+        it('should return 404 if no mission or user was found', async () => {
+            // Arrange
+            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
+            const userId = '9c4276a4-0d1d-4a93-90ba-41394d8b4972'
+
+            missionServiceMock.completeMission.mockRejectedValueOnce(new AppError(ExceptionStatus.notFound, 404))
+
+            // Act
+            const { status } = await request(app)
+                .patch(`/api/mission/${id}/${userId}`)
+
+            // Assert
+            expect(status).toBe(404)
+            expect(missionServiceMock.completeMission).toHaveBeenCalledWith(id, userId)
+        })
+
+        it('should return 400 if user not participating or already completed the mission', async () => {
+            // Arrange
+            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
+            const userId = '9c4276a4-0d1d-4a93-90ba-41394d8b4972'
+            missionServiceMock.completeMission.mockRejectedValueOnce(new AppError(ExceptionStatus.invalidRequest, 400))
+
+            // Act
+            const { status } = await request(app)
+                .patch(`/api/mission/${id}/${userId}`)
+
+            // Assert
+            expect(status).toBe(400)
+            expect(missionServiceMock.completeMission).toHaveBeenCalledWith(id, userId)
         })
     })
 })

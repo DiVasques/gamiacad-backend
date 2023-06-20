@@ -23,4 +23,11 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
             'User')
         )
     }
+
+    async givePoints(_id: string, points: number): Promise<void> {
+        await this.model.updateOne(
+            { _id },
+            { $inc: { balance: points, totalPoints: points } }
+        ).exec()
+    }
 }

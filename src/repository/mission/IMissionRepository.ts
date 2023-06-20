@@ -11,4 +11,5 @@ export interface IMissionRepository {
     findOneAndUpdate: (filter: Partial<Mission>, item: Partial<Mission>) => Promise<(Mission) | null>
     
     subscribeUser: (_id: string, userId: string) => Promise<number>
+    completeMission: (_id: string, userId: string) => Promise<number>
 }

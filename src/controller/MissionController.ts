@@ -28,4 +28,11 @@ export class MissionController {
         await missionService.subscribeUser(id, userId)
         return new HttpResponse(204)
     }
+
+    static async completeMission(request: HttpRequest): Promise<HttpResponse> {
+        const missionService = Container.get(MissionService)
+        let {id, userId} = request.params
+        await missionService.completeMission(id, userId)
+        return new HttpResponse(204)
+    }
 }
