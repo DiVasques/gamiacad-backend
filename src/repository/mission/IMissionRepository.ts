@@ -9,5 +9,6 @@ export interface IMissionRepository {
     update(_id: string, data: Partial<Mission>, options?: Object): Promise<void>
     delete: (_id: string) => Promise<void>
     findOneAndUpdate: (filter: Partial<Mission>, item: Partial<Mission>) => Promise<(Mission) | null>
-
+    
+    subscribeUser: (_id: string, userId: string) => Promise<number>
 }

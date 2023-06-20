@@ -25,6 +25,6 @@ export class UserController {
     static async deleteUser(request: HttpRequest): Promise<HttpResponse> {
         const userService = Container.get(UserService)
         await userService.deleteUser(request.params.id)
-        return new HttpResponse(202)
+        return new HttpResponse(204)
     }
 }

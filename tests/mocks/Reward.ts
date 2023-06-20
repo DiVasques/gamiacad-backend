@@ -9,8 +9,8 @@ export const reward: Reward = {
     availability: 10,
     claimers: [],
     handed: [],
-    createdAt: new Date('2023-06-19T20:24:21.417Z'),
-    updatedAt: new Date('2023-06-19T20:24:21.417Z')
+    createdAt: new Date('2043-06-19T20:24:21.417Z'),
+    updatedAt: new Date('2043-06-19T20:24:21.417Z')
 }
 
 export const rewardList: Reward[] = [

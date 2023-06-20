@@ -9,5 +9,4 @@ export interface IUserRepository {
     update(_id: string, data: Partial<User>, options?: Object): Promise<void>
     delete: (_id: string) => Promise<void>
     findOneAndUpdate: (filter: Partial<User>, item: Partial<User>) => Promise<(User) | null>
-
 }
