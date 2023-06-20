@@ -48,11 +48,10 @@ describe('RewardController', () => {
         it('should return a response with status code 201', async () => {
             // Arrange
             const newReward = {
-                name: 'Reward 1',
+                name: 'Reward 2',
                 description: 'this is a description',
-                points: 150,
-                expirationDate: new Date(9999999999999),
-                createdBy: '1b6ec50e-9be1-459f-bd69-11bfa325d03b'
+                price: 150,
+                availability: 10
             }
 
             // Act
@@ -60,13 +59,13 @@ describe('RewardController', () => {
                 .post(`/api/reward`).send(newReward)
 
             // Assert
-            expect(rewardServiceMock.addReward).toHaveBeenCalledWith(newReward)
             expect(status).toBe(201)
+            expect(rewardServiceMock.addReward).toHaveBeenCalledWith(newReward)
         })
     })
 
     describe('deleteReward', () => {
-        it('should return a response with status code 202', async () => {
+        it('should return a response with status code 204', async () => {
             // Arrange
             const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
 
@@ -75,10 +74,10 @@ describe('RewardController', () => {
                 .delete(`/api/reward/${id}`)
 
             // Assert
-            expect(status).toBe(202)
+            expect(status).toBe(204)
             expect(rewardServiceMock.deleteReward).toHaveBeenCalledWith(id)
         })
-        
+
         it('should return 404 if no reward was found', async () => {
             // Arrange
             const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
@@ -92,7 +91,7 @@ describe('RewardController', () => {
             expect(status).toBe(404)
             expect(rewardServiceMock.deleteReward).toHaveBeenCalledWith(id)
         })
-        
+
         it('should return 400 if reward was handed', async () => {
             // Arrange
             const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'

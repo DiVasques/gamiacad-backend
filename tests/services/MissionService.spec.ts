@@ -1,21 +1,28 @@
 import { MissionService } from '@/services/MissionService'
 import { Mission } from '@/models/Mission'
 import { mission, missionList } from '../mocks/Mission'
+import { user } from '../mocks/User'
 import AppError from '@/models/error/AppError'
 
 describe('MissionService', () => {
     let missionService: MissionService
     let missionRepositoryMock: any
+    let userRepositoryMock: any
 
     beforeEach(() => {
         missionRepositoryMock = {
             find: jest.fn().mockResolvedValue(missionList),
             create: jest.fn(),
             findById: jest.fn().mockResolvedValue(mission),
-            delete: jest.fn()
+            delete: jest.fn(),
+            subscribeUser: jest.fn().mockResolvedValue(1)
+        }
+        userRepositoryMock = {
+            findById: jest.fn().mockResolvedValue(user)
         }
         missionService = new MissionService()
         missionService['missionRepository'] = missionRepositoryMock
+        missionService['userRepository'] = userRepositoryMock
     })
 
     afterEach(() =>
@@ -108,6 +115,83 @@ describe('MissionService', () => {
             // Assert
             expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
             expect(missionRepositoryMock.delete).toHaveBeenCalledWith(id)
+        })
+    })
+
+    describe('subscribeUser', () => {
+        it('should throw an error if the mission was not found', async () => {
+            // Arrange
+            const id = '123'
+            const userId = '456'
+            missionRepositoryMock.findById.mockResolvedValue(null)
+            let error
+
+            // Act
+            try {
+                await missionService.subscribeUser(id, userId)
+            } catch (e) {
+                error = e
+            }
+            
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).status).toBe(404)
+            expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
+        })
+        it('should throw an error if the user was not found', async () => {
+            // Arrange
+            const id = '123'
+            const userId = '456'
+            userRepositoryMock.findById.mockResolvedValue(null)
+            let error
+
+            // Act
+            try {
+                await missionService.subscribeUser(id, userId)
+            } catch (e) {
+                error = e
+            }
+            
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).status).toBe(404)
+            expect(userRepositoryMock.findById).toHaveBeenCalledWith(userId)
+        })
+
+        it('should throw an error if the user already participates on the mission', async () => {
+            // Arrange
+            const id = '123'
+            const userId = '456'
+            missionRepositoryMock.subscribeUser.mockResolvedValue(0)
+            let error
+
+            // Act
+            try {
+                await missionService.subscribeUser(id, userId)
+            } catch (e) {
+                error = e
+            }
+            
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).status).toBe(400)
+            expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
+            expect(userRepositoryMock.findById).toHaveBeenCalledWith(userId)
+            expect(missionRepositoryMock.subscribeUser).toHaveBeenCalledWith(id, userId)
+        })
+
+        it('should subscribe the user', async () => {
+            // Arrange
+            const id = '123'
+            const userId = '456'
+
+            // Act
+            await missionService.subscribeUser(id, userId)
+
+            // Assert
+            expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
+            expect(userRepositoryMock.findById).toHaveBeenCalledWith(userId)
+            expect(missionRepositoryMock.subscribeUser).toHaveBeenCalledWith(id, userId)
         })
     })
 })

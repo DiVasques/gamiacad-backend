@@ -19,6 +19,6 @@ export class RewardController {
     static async deleteReward(request: HttpRequest): Promise<HttpResponse> {
         const rewardService = Container.get(RewardService)
         await rewardService.deleteReward(request.params.id)
-        return new HttpResponse(202)
+        return new HttpResponse(204)
     }
 }

@@ -19,6 +19,13 @@ export class MissionController {
     static async deleteMission(request: HttpRequest): Promise<HttpResponse> {
         const missionService = Container.get(MissionService)
         await missionService.deleteMission(request.params.id)
-        return new HttpResponse(202)
+        return new HttpResponse(204)
+    }
+
+    static async subscribeUser(request: HttpRequest): Promise<HttpResponse> {
+        const missionService = Container.get(MissionService)
+        let {id, userId} = request.params
+        await missionService.subscribeUser(id, userId)
+        return new HttpResponse(204)
     }
 }

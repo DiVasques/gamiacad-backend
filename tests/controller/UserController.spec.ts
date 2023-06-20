@@ -96,7 +96,7 @@ describe('UserController', () => {
     })
 
     describe('deleteUser', () => {
-        it('should return a response with status code 202', async () => {
+        it('should return a response with status code 204', async () => {
             // Arrange
             const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
 
@@ -106,7 +106,7 @@ describe('UserController', () => {
 
             // Assert
             expect(userServiceMock.deleteUser).toHaveBeenCalledWith(id)
-            expect(status).toBe(202)
+            expect(status).toBe(204)
         })
     })
 })

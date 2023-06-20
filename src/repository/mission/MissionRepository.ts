@@ -27,4 +27,12 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
         let missionModel = mongoose.model<Mission & Document>('Mission', missionSchema, 'Mission')
         super(missionModel)
     }
+
+    async subscribeUser(_id: string, userId: string): Promise<number> {
+        let { modifiedCount } = await this.model.updateOne(
+            { _id, participants: { $ne: userId } },
+            { $push: { participants: userId } }
+        ).exec()
+        return modifiedCount
+    }
 }

@@ -10,8 +10,8 @@ export const user: User = {
     pendingRewards: [],
     completedMissions: [],
     claimedRewards: [],
-    createdAt: new Date('2023-06-19T02:52:14.474Z'),
-    updatedAt: new Date('2023-06-19T02:52:14.474Z')
+    createdAt: new Date('2043-06-19T02:52:14.474Z'),
+    updatedAt: new Date('2043-06-19T02:52:14.474Z')
 }
 
 export const userList: User[] = [

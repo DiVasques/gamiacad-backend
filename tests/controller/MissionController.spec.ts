@@ -9,7 +9,8 @@ describe('MissionController', () => {
     const missionServiceMock = {
         getMissions: jest.fn().mockResolvedValue(missionList),
         addMission: jest.fn(),
-        deleteMission: jest.fn()
+        deleteMission: jest.fn(),
+        subscribeUser: jest.fn()
     }
 
     beforeEach(() => {
@@ -67,7 +68,7 @@ describe('MissionController', () => {
     })
 
     describe('deleteMission', () => {
-        it('should return a response with status code 202', async () => {
+        it('should return a response with status code 204', async () => {
             // Arrange
             const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
 
@@ -76,10 +77,10 @@ describe('MissionController', () => {
                 .delete(`/api/mission/${id}`)
 
             // Assert
-            expect(status).toBe(202)
+            expect(status).toBe(204)
             expect(missionServiceMock.deleteMission).toHaveBeenCalledWith(id)
         })
-        
+
         it('should return 404 if no mission was found', async () => {
             // Arrange
             const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
@@ -93,7 +94,7 @@ describe('MissionController', () => {
             expect(status).toBe(404)
             expect(missionServiceMock.deleteMission).toHaveBeenCalledWith(id)
         })
-        
+
         it('should return 400 if mission has completers', async () => {
             // Arrange
             const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
@@ -106,6 +107,53 @@ describe('MissionController', () => {
             // Assert
             expect(status).toBe(400)
             expect(missionServiceMock.deleteMission).toHaveBeenCalledWith(id)
+        })
+    })
+
+    describe('subscribeUser', () => {
+        it('should return a response with status code 204', async () => {
+            // Arrange
+            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
+            const userId = '9c4276a4-0d1d-4a93-90ba-41394d8b4972'
+
+            // Act
+            const { status } = await request(app)
+                .put(`/api/mission/${id}/${userId}`)
+
+            // Assert
+            expect(status).toBe(204)
+            expect(missionServiceMock.subscribeUser).toHaveBeenCalledWith(id, userId)
+        })
+
+        it('should return 404 if no mission or user was found', async () => {
+            // Arrange
+            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
+            const userId = '9c4276a4-0d1d-4a93-90ba-41394d8b4972'
+
+            missionServiceMock.subscribeUser.mockRejectedValueOnce(new AppError(ExceptionStatus.notFound, 404))
+
+            // Act
+            const { status } = await request(app)
+                .put(`/api/mission/${id}/${userId}`)
+
+            // Assert
+            expect(status).toBe(404)
+            expect(missionServiceMock.subscribeUser).toHaveBeenCalledWith(id, userId)
+        })
+
+        it('should return 400 if user already participating on the mission', async () => {
+            // Arrange
+            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
+            const userId = '9c4276a4-0d1d-4a93-90ba-41394d8b4972'
+            missionServiceMock.subscribeUser.mockRejectedValueOnce(new AppError(ExceptionStatus.invalidRequest, 400))
+
+            // Act
+            const { status } = await request(app)
+                .put(`/api/mission/${id}/${userId}`)
+
+            // Assert
+            expect(status).toBe(400)
+            expect(missionServiceMock.subscribeUser).toHaveBeenCalledWith(id, userId)
         })
     })
 })
