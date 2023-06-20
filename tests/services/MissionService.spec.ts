@@ -1,6 +1,7 @@
 import { MissionService } from '@/services/MissionService'
 import { Mission } from '@/models/Mission'
-import { missionList } from '../mocks/Mission'
+import { mission, missionList } from '../mocks/Mission'
+import AppError from '@/models/error/AppError'
 
 describe('MissionService', () => {
     let missionService: MissionService
@@ -9,7 +10,9 @@ describe('MissionService', () => {
     beforeEach(() => {
         missionRepositoryMock = {
             find: jest.fn().mockResolvedValue(missionList),
-            create: jest.fn()
+            create: jest.fn(),
+            findById: jest.fn().mockResolvedValue(mission),
+            delete: jest.fn()
         }
         missionService = new MissionService()
         missionService['missionRepository'] = missionRepositoryMock
@@ -49,6 +52,62 @@ describe('MissionService', () => {
 
             // Assert
             expect(missionRepositoryMock.create).toHaveBeenCalledWith(mission)
+        })
+    })
+
+    describe('deleteMission', () => {
+        it('should throw an error if the mission is not found', async () => {
+            // Arrange
+            const id = '123'
+            missionRepositoryMock.findById.mockResolvedValue(null)
+            let error
+
+            // Act
+            try {
+                await missionService.deleteMission(id)
+            } catch (e) {
+                error = e
+            }
+            
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).status).toBe(404)
+            expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
+        })
+
+        it('should throw an error if the mission has completers', async () => {
+            // Arrange
+            const id = '123'
+            const missionWithCompleters = {
+                id: '123',
+                completers: ['user1', 'user2']
+            }
+            missionRepositoryMock.findById.mockResolvedValue(missionWithCompleters)
+            let error
+
+            // Act
+            try {
+                await missionService.deleteMission(id)
+            } catch (e) {
+                error = e
+            }
+            
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).status).toBe(400)
+            expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
+        })
+
+        it('should delete the mission if it exists and has no completers', async () => {
+            // Arrange
+            const id = '123'
+
+            // Act
+            await missionService.deleteMission(id)
+
+            // Assert
+            expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
+            expect(missionRepositoryMock.delete).toHaveBeenCalledWith(id)
         })
     })
 })
