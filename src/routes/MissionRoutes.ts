@@ -44,4 +44,11 @@ routes.put('/mission/:id/:userId', celebrate({
     }
 }), makeExpressCallback(MissionController.subscribeUser))
 
+routes.patch('/mission/:id/:userId', celebrate({
+    [Segments.PARAMS]: {
+        id: StandardOptionsJoi.string().uuid().required(),
+        userId: StandardOptionsJoi.string().uuid().required()
+    }
+}), makeExpressCallback(MissionController.completeMission))
+
 export default routes

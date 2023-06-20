@@ -35,4 +35,12 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
         ).exec()
         return modifiedCount
     }
+
+    async completeMission(_id: string, userId: string): Promise<number> {
+        let { modifiedCount } = await this.model.updateOne(
+            { _id, participants: userId, completers: { $ne: userId } },
+            { $push: { completers: userId }, $pull: { participants: userId } }
+        ).exec()
+        return modifiedCount
+    }
 }

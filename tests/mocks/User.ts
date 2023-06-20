@@ -6,10 +6,6 @@ export const user: User = {
     email: 'email@email.com',
     balance: 0,
     totalPoints: 0,
-    activeMissions: [],
-    pendingRewards: [],
-    completedMissions: [],
-    claimedRewards: [],
     createdAt: new Date('2043-06-19T02:52:14.474Z'),
     updatedAt: new Date('2043-06-19T02:52:14.474Z')
 }

@@ -6,7 +6,9 @@ export interface IUserRepository {
     find: (obj?: any) => Promise<User[]>
 
     create: (user: Partial<User>) => Promise<void>
-    update(_id: string, data: Partial<User>, options?: Object): Promise<void>
+    update: (_id: string, data: Partial<User>, options?: Object) => Promise<void>
     delete: (_id: string) => Promise<void>
     findOneAndUpdate: (filter: Partial<User>, item: Partial<User>) => Promise<(User) | null>
+
+    givePoints: (_id: string, points: number) => Promise<void>
 }
