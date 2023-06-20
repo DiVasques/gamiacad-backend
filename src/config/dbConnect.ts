@@ -2,9 +2,9 @@ import mongoose from 'mongoose'
 
 let db = mongoose.connection
 
-const MONGO_URL: string = process.env.MONGO_URL || 'ERROR'
-const MONGO_PORT: string = process.env.MONGO_PORT || 'ERROR'
-const MONGO_DATABASE: string = process.env.MONGO_DATABASE || 'ERROR'
+const MONGO_URL: string = process.env.MONGO_URL ?? 'ERROR'
+const MONGO_PORT: string = process.env.MONGO_PORT ?? 'ERROR'
+const MONGO_DATABASE: string = process.env.MONGO_DATABASE ?? 'ERROR'
 
 export default async function makeDb() {
     if (!db.db) {
@@ -20,15 +20,15 @@ export default async function makeDb() {
     async function connect() {
         try {
             const options = {
-                serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
+                serverSelectionTimeoutMS: 5000,
                 socketTimeoutMS: 45000
             }
-            console.log('Connecting to MongoDB')
+            console.log('⚡️[server]: Connecting to MongoDB')
             mongoose.set('strictQuery', false)
             await mongoose.connect(`mongodb://${MONGO_URL}:${MONGO_PORT}/${MONGO_DATABASE}`, options)
-            console.log('Connected to MongoDB')
+            console.log('⚡️[server]: Connected to MongoDB')
         } catch (error: any) {
-            throw Error(`Error connecting to MongoDB: ${error.message}`)
+            throw Error(`⚡️[server]: Error connecting to MongoDB: ${error.message}`)
         }
     }
 }

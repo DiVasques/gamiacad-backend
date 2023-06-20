@@ -9,7 +9,7 @@ app.listen(PORT, async () => {
   
       console.info(`⚡️[server]: Server is running at http://localhost:${PORT}`)
     } catch (error) {
-      console.error(`Failed to start server! ${error}`)
+      console.error(`⚡️[server]: Failed to start server! ${error}`)
       process.exit(500)
     }
 })
