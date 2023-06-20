@@ -4,10 +4,10 @@ export interface User {
     email: string
     balance: number
     totalPoints: number
-    activeMissions: Array<any>
-    pendingRewards: Array<any>
-    completedMissions: Array<any>
-    claimedRewards: Array<any>
+    activeMissions: Array<string>
+    pendingRewards: Array<string>
+    completedMissions: Array<string>
+    claimedRewards: Array<string>
     createdAt: Date
     updatedAt: Date
 }

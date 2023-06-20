@@ -15,10 +15,10 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
                     email: { type: String, required: true },
                     balance: { type: Number, default: 0 },
                     totalPoints: { type: Number, default: 0 },
-                    activeMissions: { type: [], default: [] },
-                    pendingRewards: { type: [], default: [] },
-                    completedMissions: { type: [], default: [] },
-                    claimedRewards: { type: [], default: [] }
+                    activeMissions: { type: [String], default: [] },
+                    pendingRewards: { type: [String], default: [] },
+                    completedMissions: { type: [String], default: [] },
+                    claimedRewards: { type: [String], default: [] }
                 },
                 {
                     timestamps: true
