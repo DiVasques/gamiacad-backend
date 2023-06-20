@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-let db = mongoose.connection
+const db = mongoose.connection
 
 const MONGO_URL: string = process.env.MONGO_URL ?? 'ERROR'
 const MONGO_PORT: string = process.env.MONGO_PORT ?? 'ERROR'

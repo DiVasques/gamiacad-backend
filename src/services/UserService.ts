@@ -15,7 +15,7 @@ export class UserService {
     }
 
     async getUserById(id: string): Promise<User> {
-        let user = await this.userRepository.findById(id)
+        const user = await this.userRepository.findById(id)
         if (!user) {
             throw new AppError(ExceptionStatus.notFound, 404)
         }

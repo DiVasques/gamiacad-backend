@@ -6,7 +6,7 @@ export interface IRewardRepository {
     find: (obj?: any) => Promise<Reward[]>
 
     create: (Reward: Partial<Reward>) => Promise<void>
-    update(_id: string, data: Partial<Reward>, options?: Object): Promise<void>
+    update(_id: string, data: Partial<Reward>, options?: object): Promise<void>
     delete: (_id: string) => Promise<void>
     findOneAndUpdate: (filter: Partial<Reward>, item: Partial<Reward>) => Promise<(Reward) | null>
 

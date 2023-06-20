@@ -81,7 +81,7 @@ describe('Exception', () => {
 
     it('should handle other errors and return the corresponding response', () => {
         // Arrange
-        let error = new Error('Test Error')
+        const error = new Error('Test Error')
 
         // Act
         Exception(error, request, response, next)
@@ -97,7 +97,7 @@ describe('Exception', () => {
 
     it('should handle other errors and return generic response without stack', () => {
         // Arrange
-        let error = new Error('Test Error')
+        const error = new Error('Test Error')
         delete process.env.DEBUG
 
         // Act
@@ -114,7 +114,7 @@ describe('Exception', () => {
 
     it('should handle unexpected errors and return the corresponding response', () => {
         // Arrange
-        let error = null
+        const error = null
 
         // Act
         Exception(error, request, response, next)

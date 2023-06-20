@@ -6,7 +6,7 @@ import { Container } from 'typedi'
 export class MissionController {
     static async getMissions(request: HttpRequest): Promise<HttpResponse> {
         const missionService = Container.get(MissionService)
-        let missions = await missionService.getMissions(request.query)
+        const missions = await missionService.getMissions(request.query)
         return new HttpResponse(200, { missions })
     }
 
@@ -24,14 +24,14 @@ export class MissionController {
 
     static async subscribeUser(request: HttpRequest): Promise<HttpResponse> {
         const missionService = Container.get(MissionService)
-        let {id, userId} = request.params
+        const {id, userId} = request.params
         await missionService.subscribeUser(id, userId)
         return new HttpResponse(204)
     }
 
     static async completeMission(request: HttpRequest): Promise<HttpResponse> {
         const missionService = Container.get(MissionService)
-        let {id, userId} = request.params
+        const {id, userId} = request.params
         await missionService.completeMission(id, userId)
         return new HttpResponse(204)
     }
