@@ -6,6 +6,7 @@ module.exports = {
   testEnvironment: 'node',
   coverageProvider: "v8",
   setupFiles: ['dotenv/config'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   globalSetup: './tests/setup.ts',
   moduleNameMapper: { '@/(.*)$': '<rootDir>/src/$1' },
   collectCoverageFrom: [
