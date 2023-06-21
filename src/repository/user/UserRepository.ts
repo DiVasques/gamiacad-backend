@@ -30,4 +30,12 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
             { $inc: { balance: points, totalPoints: points } }
         ).exec()
     }
+
+    async withdrawPoints(_id: string, points: number): Promise<number> {
+        const {modifiedCount} = await this.model.updateOne(
+            { _id, balance: { $gte: points } },
+            { $inc: { balance: -points } }
+        ).exec()
+        return modifiedCount
+    }
 }

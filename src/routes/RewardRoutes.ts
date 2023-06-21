@@ -36,4 +36,18 @@ routes.delete('/reward/:id', celebrate({
     }
 }), makeExpressCallback(RewardController.deleteReward))
 
+routes.put('/reward/:id/:userId', celebrate({
+    [Segments.PARAMS]: {
+        id: StandardOptionsJoi.string().uuid().required(),
+        userId: StandardOptionsJoi.string().uuid().required()
+    }
+}), makeExpressCallback(RewardController.claimReward))
+
+routes.patch('/reward/:id/:userId', celebrate({
+    [Segments.PARAMS]: {
+        id: StandardOptionsJoi.string().uuid().required(),
+        userId: StandardOptionsJoi.string().uuid().required()
+    }
+}), makeExpressCallback(RewardController.handReward))
+
 export default routes
