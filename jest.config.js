@@ -24,5 +24,13 @@ module.exports = {
     '<rootDir>/src/models',
     '<rootDir>/src/repository',
     '<rootDir>/src/server.ts'
-  ]
+  ],
+  coverageThreshold: {
+    global: {
+      statements: 80,
+      branches: 80,
+      functions: 80,
+      lines: 80,
+    }
+  }
 }

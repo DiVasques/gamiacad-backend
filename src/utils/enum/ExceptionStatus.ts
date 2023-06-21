@@ -9,7 +9,10 @@ enum ExceptionStatus {
   invalidToken = 'Invalid Token',
   invalidHeaders = 'Request without necessary headers',
   invalidAuthorization = 'Authorization token needs to be a Bearer token',
-  alreadySubscribed = 'User is already subscribed to the mission',
-  cantCompleteMission = 'User not participating or already completed this mission'
+  alreadySubscribed = 'User already subscribed or completed the mission',
+  cantCompleteMission = 'User not participating or already completed this mission',
+  alreadyClaimed = 'User already claimed this reward',
+  cantHandReward = 'User did not claim this reward',
+  insufficientBalance = 'User does not have sufficient balance to claim this reward'
 }
 export default ExceptionStatus

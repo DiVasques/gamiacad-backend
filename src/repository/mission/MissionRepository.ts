@@ -2,12 +2,12 @@ import { Mission } from '@/models/Mission'
 import { BaseRepository } from '@/repository/base/BaseRepository'
 import { IMissionRepository } from '@/repository/mission/IMissionRepository'
 import mongoose, { Document, Schema } from 'mongoose'
-import autoIncrement from 'mongoose-auto-increment';
+import autoIncrement from 'mongoose-auto-increment'
 import { v4 as uuid } from 'uuid'
 
 export class MissionRepository extends BaseRepository<Mission> implements IMissionRepository {
     constructor() {
-        autoIncrement.initialize(mongoose.connection);
+        autoIncrement.initialize(mongoose.connection)
         const missionSchema = new Schema<Mission>(
             {
                 _id: { type: String, default: uuid },
@@ -23,14 +23,14 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
                 timestamps: true
             }
         )
-        missionSchema.plugin(autoIncrement.plugin, { model: 'Mission', field: 'number' });
+        missionSchema.plugin(autoIncrement.plugin, { model: 'Mission', field: 'number' })
         const missionModel = mongoose.model<Mission & Document>('Mission', missionSchema, 'Mission')
         super(missionModel)
     }
 
     async subscribeUser(_id: string, userId: string): Promise<number> {
         const { modifiedCount } = await this.model.updateOne(
-            { _id, participants: { $ne: userId } },
+            { _id, participants: { $ne: userId }, completers: { $ne: userId } },
             { $push: { participants: userId } }
         ).exec()
         return modifiedCount

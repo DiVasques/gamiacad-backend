@@ -21,4 +21,18 @@ export class RewardController {
         await rewardService.deleteReward(request.params.id)
         return new HttpResponse(204)
     }
+
+    static async claimReward(request: HttpRequest): Promise<HttpResponse> {
+        const rewardService = Container.get(RewardService)
+        const {id, userId} = request.params
+        await rewardService.claimReward(id, userId)
+        return new HttpResponse(204)
+    }
+
+    static async handReward(request: HttpRequest): Promise<HttpResponse> {
+        const rewardService = Container.get(RewardService)
+        const {id, userId} = request.params
+        await rewardService.handReward(id, userId)
+        return new HttpResponse(204)
+    }
 }

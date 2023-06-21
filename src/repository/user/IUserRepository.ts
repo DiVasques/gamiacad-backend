@@ -11,4 +11,5 @@ export interface IUserRepository {
     findOneAndUpdate: (filter: Partial<User>, item: Partial<User>) => Promise<(User) | null>
 
     givePoints: (_id: string, points: number) => Promise<void>
+    withdrawPoints: (_id: string, points: number) => Promise<number>
 }

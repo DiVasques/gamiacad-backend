@@ -10,4 +10,7 @@ export interface IRewardRepository {
     delete: (_id: string) => Promise<void>
     findOneAndUpdate: (filter: Partial<Reward>, item: Partial<Reward>) => Promise<(Reward) | null>
 
+    claimReward: (_id: string, userId: string) => Promise<number>
+    rollbackClaim: (_id: string, userId: string) => Promise<void>
+    handReward: (_id: string, userId: string) => Promise<number>
 }
