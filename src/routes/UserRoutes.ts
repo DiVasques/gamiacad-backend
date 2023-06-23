@@ -28,6 +28,12 @@ routes.get('/user/:id', celebrate({
     }
 }), makeExpressCallback(UserController.getUserById))
 
+routes.get('/user/:id/mission', celebrate({
+    [Segments.PARAMS]: {
+        id: StandardOptionsJoi.string().uuid().required()
+    }
+}), makeExpressCallback(UserController.getUserMissions))
+
 routes.post('/user', celebrate({
     [Segments.BODY]: addUserSchema
 }), makeExpressCallback(UserController.addUser))
