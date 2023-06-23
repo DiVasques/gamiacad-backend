@@ -12,4 +12,7 @@ export interface IMissionRepository {
     
     subscribeUser: (_id: string, userId: string) => Promise<number>
     completeMission: (_id: string, userId: string) => Promise<number>
+    
+    findActiveMissions: (userId: string) => Promise<Mission[]>
+    findUserCompletedMissions: (userId: string) => Promise<Mission[]>
 }

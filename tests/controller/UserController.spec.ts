@@ -1,6 +1,7 @@
 import app from '@/app'
 import request from 'supertest'
 import { user, userList } from '../mocks/User'
+import { userMissions } from '../mocks/Mission'
 import { Container } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
@@ -10,7 +11,8 @@ describe('UserController', () => {
         getUsers: jest.fn().mockResolvedValue(userList),
         getUserById: jest.fn().mockResolvedValue(user),
         addUser: jest.fn(),
-        deleteUser: jest.fn()
+        deleteUser: jest.fn(),
+        getUserMissions: jest.fn().mockResolvedValue(userMissions)
     }
 
     beforeEach(() => {
@@ -77,6 +79,35 @@ describe('UserController', () => {
             // Assert
             expect(status).toBe(404)
             expect(userServiceMock.getUserById).toHaveBeenCalledWith(id)
+        })
+    })
+
+    describe('getUsers', () => {
+        it('should return the active and completed missions', async () => {
+            // Arrange
+            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
+
+            // Act
+            const { status, body } = await request(app)
+                .get(`/api/user/${id}/mission`)
+
+            // Assert
+            const expectedActive = userMissions.active.map((mission) => ({
+                ...mission,
+                expirationDate: mission.expirationDate.toISOString(),
+                createdAt: mission.createdAt.toISOString(),
+                updatedAt: mission.updatedAt.toISOString(),
+            }))
+            const expectedCompleted = userMissions.completed.map((mission) => ({
+                ...mission,
+                expirationDate: mission.expirationDate.toISOString(),
+                createdAt: mission.createdAt.toISOString(),
+                updatedAt: mission.updatedAt.toISOString(),
+            }))
+
+            expect(userServiceMock.getUserMissions).toHaveBeenCalled()
+            expect(status).toBe(200)
+            expect(body).toEqual({ active: expectedActive, completed: expectedCompleted })
         })
     })
 

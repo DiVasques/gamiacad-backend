@@ -16,6 +16,12 @@ export class UserController {
         return new HttpResponse(200, { ...user })
     }
 
+    static async getUserMissions(request: HttpRequest): Promise<HttpResponse> {
+        const userService = Container.get(UserService)
+        const missions = await userService.getUserMissions(request.params.id)
+        return new HttpResponse(200, { ...missions })
+    }
+
     static async addUser(request: HttpRequest): Promise<HttpResponse> {
         const userService = Container.get(UserService)
         await userService.addUser(request.body)
