@@ -21,7 +21,8 @@ describe('RewardService', () => {
         }
         userRepositoryMock = {
             findById: jest.fn().mockResolvedValue(user),
-            withdrawPoints: jest.fn().mockResolvedValue(1)
+            withdrawPoints: jest.fn().mockResolvedValue(1),
+            givePoints: jest.fn()
         }
         rewardService = new RewardService()
         rewardService['rewardRepository'] = rewardRepositoryMock
@@ -331,6 +332,89 @@ describe('RewardService', () => {
             expect(rewardRepositoryMock.findById).toHaveBeenCalledWith(id)
             expect(userRepositoryMock.findById).toHaveBeenCalledWith(userId)
             expect(rewardRepositoryMock.handReward).toHaveBeenCalledWith(id, userId)
+        })
+    })
+
+    describe('cancelClaim', () => {
+        it('should throw an error if the reward was not found', async () => {
+            // Arrange
+            const id = '123'
+            const userId = '456'
+            rewardRepositoryMock.findById.mockResolvedValue(null)
+            let error
+
+            // Act
+            try {
+                await rewardService.cancelClaim(id, userId)
+            } catch (e) {
+                error = e
+            }
+            
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).status).toBe(404)
+            expect(rewardRepositoryMock.findById).toHaveBeenCalledWith(id)
+            expect(rewardRepositoryMock.rollbackClaim).not.toHaveBeenCalled()
+            expect(userRepositoryMock.givePoints).not.toHaveBeenCalled()
+        })
+        it('should throw an error if the user was not found', async () => {
+            // Arrange
+            const id = '123'
+            const userId = '456'
+            userRepositoryMock.findById.mockResolvedValue(null)
+            let error
+
+            // Act
+            try {
+                await rewardService.cancelClaim(id, userId)
+            } catch (e) {
+                error = e
+            }
+            
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).status).toBe(404)
+            expect(userRepositoryMock.findById).toHaveBeenCalledWith(userId)
+            expect(rewardRepositoryMock.rollbackClaim).not.toHaveBeenCalled()
+            expect(userRepositoryMock.givePoints).not.toHaveBeenCalled()
+        })
+
+        it('should throw an error if the user did not claim the reward', async () => {
+            // Arrange
+            const id = '123'
+            const userId = '456'
+            rewardRepositoryMock.rollbackClaim.mockResolvedValue(0)
+            let error
+
+            // Act
+            try {
+                await rewardService.cancelClaim(id, userId)
+            } catch (e) {
+                error = e
+            }
+            
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).status).toBe(400)
+            expect(rewardRepositoryMock.findById).toHaveBeenCalledWith(id)
+            expect(userRepositoryMock.findById).toHaveBeenCalledWith(userId)
+            expect(rewardRepositoryMock.rollbackClaim).toHaveBeenCalledWith(id, userId)
+            expect(userRepositoryMock.givePoints).not.toHaveBeenCalled()
+        })
+
+        it('should hand the reward', async () => {
+            // Arrange
+            const id = '123'
+            const userId = '456'
+
+            // Act
+            await rewardService.cancelClaim(id, userId)
+
+            // Assert
+            expect(rewardRepositoryMock.findById).toHaveBeenCalledWith(id)
+            expect(userRepositoryMock.findById).toHaveBeenCalledWith(userId)
+            expect(rewardRepositoryMock.rollbackClaim).toHaveBeenCalledWith(id, userId)
+            expect(userRepositoryMock.givePoints).toHaveBeenCalledWith(userId, reward.price, true)
         })
     })
 })

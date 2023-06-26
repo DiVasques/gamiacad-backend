@@ -131,7 +131,7 @@ describe('UserService', () => {
             const result = await userService.getUserRewards(id)
 
             // Assert
-            expect(rewardRepositoryMock.findAvailableRewards).toHaveBeenCalled()
+            expect(rewardRepositoryMock.findAvailableRewards).toHaveBeenCalledWith(id)
             expect(rewardRepositoryMock.findClaimedRewards).toHaveBeenCalledWith(id)
             expect(rewardRepositoryMock.findHandedRewards).toHaveBeenCalledWith(id)
             expect(result).toEqual({

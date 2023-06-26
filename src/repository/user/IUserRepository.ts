@@ -10,6 +10,6 @@ export interface IUserRepository {
     delete: (_id: string) => Promise<void>
     findOneAndUpdate: (filter: Partial<User>, item: Partial<User>) => Promise<(User) | null>
 
-    givePoints: (_id: string, points: number) => Promise<void>
+    givePoints: (_id: string, points: number, rollingBack?: boolean) => Promise<void>
     withdrawPoints: (_id: string, points: number) => Promise<number>
 }

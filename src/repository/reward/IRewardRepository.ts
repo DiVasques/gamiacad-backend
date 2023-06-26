@@ -11,10 +11,10 @@ export interface IRewardRepository {
     findOneAndUpdate: (filter: Partial<Reward>, item: Partial<Reward>) => Promise<(Reward) | null>
 
     claimReward: (_id: string, userId: string) => Promise<number>
-    rollbackClaim: (_id: string, userId: string) => Promise<void>
+    rollbackClaim: (_id: string, userId: string) => Promise<number>
     handReward: (_id: string, userId: string) => Promise<number>
     
-    findAvailableRewards: () => Promise<Reward[]>
+    findAvailableRewards: (userId: string) => Promise<Reward[]>
     findClaimedRewards: (userId: string) => Promise<Reward[]>
     findHandedRewards: (userId: string) => Promise<Reward[]>
 }
