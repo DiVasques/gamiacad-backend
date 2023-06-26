@@ -1,12 +1,15 @@
 import { Mission } from '@/models/Mission'
+import { Reward } from '@/models/Reward'
 import { User } from '@/models/User'
 import { ServiceToken } from '@/config/di'
 import { IMissionRepository } from '@/repository/mission/IMissionRepository'
+import { IRewardRepository } from '@/repository/reward/IRewardRepository'
 import { IUserRepository } from '@/repository/user/IUserRepository'
 import { Inject, Service } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
 import { UserMission } from '@/models/UserMission'
+import { UserReward } from '@/models/UserReward'
 
 @Service()
 export class UserService {
@@ -14,6 +17,8 @@ export class UserService {
     private userRepository: IUserRepository
     @Inject(ServiceToken.missionRepository)
     private missionRepository: IMissionRepository
+    @Inject(ServiceToken.rewardRepository)
+    private rewardRepository: IRewardRepository
 
     async getUsers(filter: Partial<User>): Promise<User[]> {
         return await this.userRepository.find(filter)
@@ -45,6 +50,21 @@ export class UserService {
         }
     }
 
+    async getUserRewards(id: string): Promise<{ available: UserReward[], claimed: UserReward[], received: UserReward[] }> {
+        const [availableRewards, claimedRewards, receivedRewards] = await Promise.all(
+            [
+                this.rewardRepository.findAvailableRewards(),
+                this.rewardRepository.findClaimedRewards(id),
+                this.rewardRepository.findHandedRewards(id)
+            ]
+        )
+        return {
+            available: availableRewards.map(this.parseReward),
+            claimed: claimedRewards.map((reward) => this.parseRewardWithCount(id, reward, "claimers")),
+            received: receivedRewards.map((reward) => this.parseRewardWithCount(id, reward, "handed"))
+        }
+    }
+
     private parseMission(mission: Mission): UserMission {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { participants, completers, ...parsedMission } = mission;
@@ -55,6 +75,24 @@ export class UserService {
         return {
             ...this.parseMission(mission),
             participating: mission.participants.includes(id)
+        }
+    }
+
+    private parseReward(reward: Reward): UserReward {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { claimers, handed, ...parsedReward } = reward;
+        return parsedReward;
+    }
+
+    private parseRewardWithCount(id: string, reward: Reward, arrayToCount: "claimers" | "handed"): UserReward {
+        return {
+            ...this.parseReward(reward),
+            count: reward[arrayToCount].reduce((count, userId) => {
+                if (userId === id) {
+                    return count + 1
+                }
+                return count
+            }, 0)
         }
     }
 }

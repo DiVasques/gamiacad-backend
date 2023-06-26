@@ -1,5 +1,6 @@
 import { UserService } from '@/services/UserService'
 import { mission, missionList, userMission } from '../mocks/Mission'
+import { reward, rewardList, userReward } from '../mocks/Reward'
 import { user, userList } from '../mocks/User'
 import { User } from '@/models/User'
 import AppError from '@/models/error/AppError'
@@ -9,6 +10,7 @@ describe('UserService', () => {
     let userService: UserService
     let userRepositoryMock: any
     let missionRepositoryMock: any
+    let rewardRepositoryMock: any
 
     beforeEach(() => {
         userRepositoryMock = {
@@ -21,9 +23,15 @@ describe('UserService', () => {
             findActiveMissions: jest.fn().mockResolvedValue(missionList),
             findUserCompletedMissions: jest.fn().mockResolvedValue(missionList)
         }
+        rewardRepositoryMock = {
+            findAvailableRewards: jest.fn().mockResolvedValue(rewardList),
+            findClaimedRewards: jest.fn().mockResolvedValue(rewardList),
+            findHandedRewards: jest.fn().mockResolvedValue(rewardList)
+        }
         userService = new UserService()
         userService['userRepository'] = userRepositoryMock
         userService['missionRepository'] = missionRepositoryMock
+        userService['rewardRepository'] = rewardRepositoryMock
     })
 
     afterEach(() =>
@@ -98,6 +106,34 @@ describe('UserService', () => {
             expect(result).toEqual({
                 active: [{ ...userMission, participating: false }, { ...userMission, name: 'Foo', _id: '12345', participating: true }],
                 completed: [{ ...userMission, name: 'Bar', _id: '12346' }]
+            })
+        })
+    })
+
+    describe('getUserRewards', () => {
+        it('should return the user available, claimed and received rewards', async () => {
+            // Arrange
+            const id = '412312312'
+            rewardRepositoryMock.findAvailableRewards.mockResolvedValueOnce([reward])
+            rewardRepositoryMock.findClaimedRewards.mockResolvedValueOnce([
+                { ...reward, name: 'Foo', _id: '12345', claimers: [id] },
+                { ...reward, name: 'Beer', _id: '1234551451', claimers: [id, id, "not-id"] }
+            ])
+            rewardRepositoryMock.findHandedRewards.mockResolvedValueOnce([
+                { ...reward, name: 'Bar', _id: '12346', handed: [id, id] }
+            ])
+
+            // Act
+            const result = await userService.getUserRewards(id)
+
+            // Assert
+            expect(rewardRepositoryMock.findAvailableRewards).toHaveBeenCalled()
+            expect(rewardRepositoryMock.findClaimedRewards).toHaveBeenCalledWith(id)
+            expect(rewardRepositoryMock.findHandedRewards).toHaveBeenCalledWith(id)
+            expect(result).toEqual({
+                available: [userReward],
+                claimed: [{ ...userReward, name: 'Foo', _id: '12345', count: 1 }, { ...userReward, name: 'Beer', _id: '1234551451', count: 2 }],
+                received: [{ ...userReward, name: 'Bar', _id: '12346', count: 2 }]
             })
         })
     })

@@ -190,7 +190,7 @@ describe('RewardService', () => {
             expect(rewardRepositoryMock.rollbackClaim).not.toHaveBeenCalled()
         })
 
-        it('should throw an error if the user already claimed the reward', async () => {
+        it('should throw an error if the reward is not available anymore', async () => {
             // Arrange
             const id = '123'
             const userId = '456'

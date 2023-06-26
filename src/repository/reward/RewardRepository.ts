@@ -29,7 +29,7 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
 
     async claimReward(_id: string, userId: string): Promise<number> {
         const { modifiedCount } = await this.model.updateOne(
-            { _id, claimers: { $ne: userId }, availability: { $gt: 0 } },
+            { _id, availability: { $gt: 0 } },
             { $push: { claimers: userId }, $inc: { availability: -1 } }
         ).exec()
         return modifiedCount
@@ -48,5 +48,17 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
             { $push: { handed: userId }, $pull: { claimers: userId } }
         ).exec()
         return modifiedCount
+    }
+
+    async findAvailableRewards(): Promise<Reward[]> {
+        return await this.model.find({ availability: { $gt: 0 } }).lean().exec()
+    }
+
+    async findClaimedRewards(userId: string): Promise<Reward[]> {
+        return await this.model.find({ claimers: userId }).lean().exec()
+    }
+
+    async findHandedRewards(userId: string): Promise<Reward[]> {
+        return await this.model.find({ handed: userId }).lean().exec()
     }
 }
