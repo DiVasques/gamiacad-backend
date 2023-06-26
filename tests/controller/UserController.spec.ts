@@ -2,6 +2,7 @@ import app from '@/app'
 import request from 'supertest'
 import { user, userList } from '../mocks/User'
 import { userMissions } from '../mocks/Mission'
+import { userRewards } from '../mocks/Reward'
 import { Container } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
@@ -12,7 +13,8 @@ describe('UserController', () => {
         getUserById: jest.fn().mockResolvedValue(user),
         addUser: jest.fn(),
         deleteUser: jest.fn(),
-        getUserMissions: jest.fn().mockResolvedValue(userMissions)
+        getUserMissions: jest.fn().mockResolvedValue(userMissions),
+        getUserRewards: jest.fn().mockResolvedValue(userRewards)
     }
 
     beforeEach(() => {
@@ -82,7 +84,7 @@ describe('UserController', () => {
         })
     })
 
-    describe('getUsers', () => {
+    describe('getUserMissions', () => {
         it('should return the active and completed missions', async () => {
             // Arrange
             const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
@@ -108,6 +110,38 @@ describe('UserController', () => {
             expect(userServiceMock.getUserMissions).toHaveBeenCalled()
             expect(status).toBe(200)
             expect(body).toEqual({ active: expectedActive, completed: expectedCompleted })
+        })
+    })
+
+    describe('getUserRewards', () => {
+        it('should return the user available, claimed and received rewards', async () => {
+            // Arrange
+            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
+
+            // Act
+            const { status, body } = await request(app)
+                .get(`/api/user/${id}/reward`)
+
+            // Assert
+            const expectedAvailable = userRewards.available.map((reward) => ({
+                ...reward,
+                createdAt: reward.createdAt.toISOString(),
+                updatedAt: reward.updatedAt.toISOString(),
+            }))
+            const expectedClaimed = userRewards.claimed.map((reward) => ({
+                ...reward,
+                createdAt: reward.createdAt.toISOString(),
+                updatedAt: reward.updatedAt.toISOString(),
+            }))
+            const expectedReceived = userRewards.claimed.map((reward) => ({
+                ...reward,
+                createdAt: reward.createdAt.toISOString(),
+                updatedAt: reward.updatedAt.toISOString(),
+            }))
+
+            expect(userServiceMock.getUserRewards).toHaveBeenCalled()
+            expect(status).toBe(200)
+            expect(body).toEqual({ available: expectedAvailable, claimed: expectedClaimed, received: expectedReceived })
         })
     })
 

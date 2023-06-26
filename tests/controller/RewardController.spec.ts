@@ -140,7 +140,7 @@ describe('RewardController', () => {
             expect(rewardServiceMock.claimReward).toHaveBeenCalledWith(id, userId)
         })
 
-        it('should return 400 if user already claimed the reward or does not have sufficient balance', async () => {
+        it('should return 400 if user does not have sufficient balance', async () => {
             // Arrange
             const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
             const userId = '9c4276a4-0d1d-4a93-90ba-41394d8b4972'

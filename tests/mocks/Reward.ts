@@ -17,3 +17,13 @@ export const rewardList: Reward[] = [
     reward,
     { ...reward, name: 'Foo', _id: '12345' }
 ]
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { claimers, handed, ...userReward } = reward
+export { userReward }
+
+export const userRewards = {
+    available: [userReward],
+    claimed: [userReward],
+    received: [userReward]
+}

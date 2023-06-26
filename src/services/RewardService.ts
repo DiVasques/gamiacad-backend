@@ -45,7 +45,7 @@ export class RewardService {
         }
         let modifiedCount = await this.rewardRepository.claimReward(id, userId)
         if (modifiedCount === 0) {
-            throw new AppError(ExceptionStatus.alreadyClaimed, 400)
+            throw new AppError(ExceptionStatus.rewardUnavailable, 400)
         }
         modifiedCount = await this.userRepository.withdrawPoints(userId, reward.price)
         if (modifiedCount === 0) {

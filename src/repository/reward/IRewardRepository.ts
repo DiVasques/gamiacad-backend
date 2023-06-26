@@ -13,4 +13,8 @@ export interface IRewardRepository {
     claimReward: (_id: string, userId: string) => Promise<number>
     rollbackClaim: (_id: string, userId: string) => Promise<void>
     handReward: (_id: string, userId: string) => Promise<number>
+    
+    findAvailableRewards: () => Promise<Reward[]>
+    findClaimedRewards: (userId: string) => Promise<Reward[]>
+    findHandedRewards: (userId: string) => Promise<Reward[]>
 }
