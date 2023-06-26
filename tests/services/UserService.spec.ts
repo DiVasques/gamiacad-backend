@@ -20,7 +20,8 @@ describe('UserService', () => {
             delete: jest.fn()
         }
         missionRepositoryMock = {
-            findActiveMissions: jest.fn().mockResolvedValue(missionList),
+            findUserActiveMissions: jest.fn().mockResolvedValue(missionList),
+            findUserParticipatingMissions: jest.fn().mockResolvedValue(missionList),
             findUserCompletedMissions: jest.fn().mockResolvedValue(missionList)
         }
         rewardRepositoryMock = {
@@ -89,7 +90,8 @@ describe('UserService', () => {
         it('should return the active and completed missions', async () => {
             // Arrange
             const id = '412312312'
-            missionRepositoryMock.findActiveMissions.mockResolvedValueOnce([
+            missionRepositoryMock.findUserActiveMissions.mockResolvedValueOnce([mission])
+            missionRepositoryMock.findUserParticipatingMissions.mockResolvedValueOnce([
                 mission,
                 { ...mission, name: 'Foo', _id: '12345', participants: [id] }
             ])
@@ -101,10 +103,12 @@ describe('UserService', () => {
             const result = await userService.getUserMissions(id)
 
             // Assert
-            expect(missionRepositoryMock.findActiveMissions).toHaveBeenCalledWith(id)
+            expect(missionRepositoryMock.findUserActiveMissions).toHaveBeenCalledWith(id)
+            expect(missionRepositoryMock.findUserParticipatingMissions).toHaveBeenCalledWith(id)
             expect(missionRepositoryMock.findUserCompletedMissions).toHaveBeenCalledWith(id)
             expect(result).toEqual({
-                active: [{ ...userMission, participating: false }, { ...userMission, name: 'Foo', _id: '12345', participating: true }],
+                active: [userMission],
+                participating: [userMission, { ...userMission, name: 'Foo', _id: '12345' }],
                 completed: [{ ...userMission, name: 'Bar', _id: '12346' }]
             })
         })
