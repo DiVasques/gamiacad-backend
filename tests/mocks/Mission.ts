@@ -25,5 +25,6 @@ export { userMission }
 
 export const userMissions = {
     active: [userMission],
+    participating: [userMission],
     completed: [userMission]
 }

@@ -100,6 +100,12 @@ describe('UserController', () => {
                 createdAt: mission.createdAt.toISOString(),
                 updatedAt: mission.updatedAt.toISOString(),
             }))
+            const expectedParticipating = userMissions.completed.map((mission) => ({
+                ...mission,
+                expirationDate: mission.expirationDate.toISOString(),
+                createdAt: mission.createdAt.toISOString(),
+                updatedAt: mission.updatedAt.toISOString(),
+            }))
             const expectedCompleted = userMissions.completed.map((mission) => ({
                 ...mission,
                 expirationDate: mission.expirationDate.toISOString(),
@@ -109,7 +115,7 @@ describe('UserController', () => {
 
             expect(userServiceMock.getUserMissions).toHaveBeenCalled()
             expect(status).toBe(200)
-            expect(body).toEqual({ active: expectedActive, completed: expectedCompleted })
+            expect(body).toEqual({ active: expectedActive, participating: expectedParticipating, completed: expectedCompleted })
         })
     })
 

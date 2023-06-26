@@ -40,12 +40,17 @@ export class UserService {
         await this.userRepository.delete(id)
     }
 
-    async getUserMissions(id: string): Promise<{ active: UserMission[], completed: UserMission[] }> {
-        const [activeMissions, completedMissions] = await Promise.all(
-            [this.missionRepository.findActiveMissions(id), this.missionRepository.findUserCompletedMissions(id)]
+    async getUserMissions(id: string): Promise<{ active: UserMission[], participating: UserMission[], completed: UserMission[] }> {
+        const [activeMissions, participatingMissions, completedMissions] = await Promise.all(
+            [
+                this.missionRepository.findUserActiveMissions(id),
+                this.missionRepository.findUserParticipatingMissions(id),
+                this.missionRepository.findUserCompletedMissions(id)
+            ]
         )
         return {
-            active: activeMissions.map(mission => this.parseActiveMission(id, mission)),
+            active: activeMissions.map(this.parseMission),
+            participating: participatingMissions.map(this.parseMission),
             completed: completedMissions.map(this.parseMission)
         }
     }
@@ -69,13 +74,6 @@ export class UserService {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { participants, completers, ...parsedMission } = mission;
         return parsedMission;
-    }
-
-    private parseActiveMission(id: string, mission: Mission): UserMission {
-        return {
-            ...this.parseMission(mission),
-            participating: mission.participants.includes(id)
-        }
     }
 
     private parseReward(reward: Reward): UserReward {

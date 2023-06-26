@@ -1,5 +1,4 @@
 import { Mission } from "@/models/Mission";
 
-export interface UserMission extends Omit<Mission, "participants" | "completers"> {
-    participating?: boolean
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface UserMission extends Omit<Mission, "participants" | "completers"> {}
