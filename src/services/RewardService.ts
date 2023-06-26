@@ -64,7 +64,22 @@ export class RewardService {
         }
         const modifiedCount = await this.rewardRepository.handReward(id, userId)
         if (modifiedCount === 0) {
-            throw new AppError(ExceptionStatus.cantHandReward, 400)
+            throw new AppError(ExceptionStatus.cantHandOrCancelReward, 400)
         }
+    }
+
+    async cancelClaim(id: string, userId: string) {
+        const [user, reward] = await Promise.all([this.userRepository.findById(userId), this.rewardRepository.findById(id)])
+        if (!user) {
+            throw new AppError(ExceptionStatus.notFound, 404)
+        }
+        if (!reward) {
+            throw new AppError(ExceptionStatus.notFound, 404)
+        }
+        const modifiedCount = await this.rewardRepository.rollbackClaim(id, userId)
+        if (modifiedCount === 0) {
+            throw new AppError(ExceptionStatus.cantHandOrCancelReward, 400)
+        }
+        await this.userRepository.givePoints(userId, reward.price, true)
     }
 }

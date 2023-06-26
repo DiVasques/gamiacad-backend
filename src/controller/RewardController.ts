@@ -35,4 +35,11 @@ export class RewardController {
         await rewardService.handReward(id, userId)
         return new HttpResponse(204)
     }
+
+    static async cancelClaim(request: HttpRequest): Promise<HttpResponse> {
+        const rewardService = Container.get(RewardService)
+        const {id, userId} = request.params
+        await rewardService.cancelClaim(id, userId)
+        return new HttpResponse(204)
+    }
 }

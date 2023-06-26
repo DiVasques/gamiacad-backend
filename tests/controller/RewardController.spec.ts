@@ -11,7 +11,8 @@ describe('RewardController', () => {
         addReward: jest.fn(),
         deleteReward: jest.fn(),
         claimReward: jest.fn(),
-        handReward: jest.fn()
+        handReward: jest.fn(),
+        cancelClaim: jest.fn()
     }
 
     beforeEach(() => {
@@ -200,6 +201,53 @@ describe('RewardController', () => {
             // Assert
             expect(status).toBe(400)
             expect(rewardServiceMock.handReward).toHaveBeenCalledWith(id, userId)
+        })
+    })
+
+    describe('cancelClaim', () => {
+        it('should return a response with status code 204', async () => {
+            // Arrange
+            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
+            const userId = '9c4276a4-0d1d-4a93-90ba-41394d8b4972'
+
+            // Act
+            const { status } = await request(app)
+                .delete(`/api/reward/${id}/${userId}`)
+
+            // Assert
+            expect(status).toBe(204)
+            expect(rewardServiceMock.cancelClaim).toHaveBeenCalledWith(id, userId)
+        })
+
+        it('should return 404 if no reward or user was found', async () => {
+            // Arrange
+            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
+            const userId = '9c4276a4-0d1d-4a93-90ba-41394d8b4972'
+
+            rewardServiceMock.cancelClaim.mockRejectedValueOnce(new AppError(ExceptionStatus.notFound, 404))
+
+            // Act
+            const { status } = await request(app)
+                .delete(`/api/reward/${id}/${userId}`)
+
+            // Assert
+            expect(status).toBe(404)
+            expect(rewardServiceMock.cancelClaim).toHaveBeenCalledWith(id, userId)
+        })
+
+        it('should return 400 if user did not claim the reward', async () => {
+            // Arrange
+            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
+            const userId = '9c4276a4-0d1d-4a93-90ba-41394d8b4972'
+            rewardServiceMock.cancelClaim.mockRejectedValueOnce(new AppError(ExceptionStatus.invalidRequest, 400))
+
+            // Act
+            const { status } = await request(app)
+                .delete(`/api/reward/${id}/${userId}`)
+
+            // Assert
+            expect(status).toBe(400)
+            expect(rewardServiceMock.cancelClaim).toHaveBeenCalledWith(id, userId)
         })
     })
 })

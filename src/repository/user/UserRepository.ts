@@ -24,10 +24,10 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
         )
     }
 
-    async givePoints(_id: string, points: number): Promise<void> {
+    async givePoints(_id: string, points: number, rollingBack?: boolean): Promise<void> {
         await this.model.updateOne(
             { _id },
-            { $inc: { balance: points, totalPoints: points } }
+            { $inc: { balance: points, totalPoints: rollingBack ? 0 : points } }
         ).exec()
     }
 

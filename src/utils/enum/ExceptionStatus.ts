@@ -11,8 +11,8 @@ enum ExceptionStatus {
   invalidAuthorization = 'Authorization token needs to be a Bearer token',
   alreadySubscribed = 'User already subscribed or completed the mission',
   cantCompleteMission = 'User not participating or already completed this mission',
-  rewardUnavailable = 'This reward is not available anymore',
-  cantHandReward = 'User did not claim this reward',
+  rewardUnavailable = 'This reward is not available anymore or was already claimed by this user',
+  cantHandOrCancelReward = 'User did not claim this reward',
   insufficientBalance = 'User does not have sufficient balance to claim this reward'
 }
 export default ExceptionStatus
