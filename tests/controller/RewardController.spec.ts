@@ -32,7 +32,7 @@ describe('RewardController', () => {
 
             // Act
             const { status, body } = await request(app)
-                .get(`/api/reward`)
+                .get('/api/reward')
 
             // Assert
             const expectedRewards = rewardList.map((reward) => ({
@@ -59,7 +59,7 @@ describe('RewardController', () => {
 
             // Act
             const { status } = await request(app)
-                .post(`/api/reward`).send(newReward)
+                .post('/api/reward').send(newReward)
 
             // Assert
             expect(status).toBe(201)

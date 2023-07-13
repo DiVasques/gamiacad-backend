@@ -1,5 +1,5 @@
-import { Reward } from "@/models/Reward";
+import { Reward } from '@/models/Reward';
 
-export interface UserReward extends Omit<Reward, "claimers" | "handed"> {
+export interface UserReward extends Omit<Reward, 'claimers' | 'handed'> {
     count?: number
 }

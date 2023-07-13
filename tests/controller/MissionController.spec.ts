@@ -31,7 +31,7 @@ describe('MissionController', () => {
 
             // Act
             const { status, body } = await request(app)
-                .get(`/api/mission`)
+                .get('/api/mission')
 
             // Assert
             const expectedMissions = missionList.map((mission) => ({
@@ -60,7 +60,7 @@ describe('MissionController', () => {
 
             // Act
             const { status } = await request(app)
-                .post(`/api/mission`).send(newMission)
+                .post('/api/mission').send(newMission)
 
             // Assert
             expect(missionServiceMock.addMission).toHaveBeenCalledWith(newMission)

@@ -32,6 +32,13 @@
       {
         "argsIgnorePattern": "_"
       }
+    ],
+    "quotes": [
+      "error",
+      "single",
+      {
+        "avoidEscape": true
+      }
     ]
   }
 }
