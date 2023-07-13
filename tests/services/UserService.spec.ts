@@ -121,7 +121,7 @@ describe('UserService', () => {
             rewardRepositoryMock.findAvailableRewards.mockResolvedValueOnce([reward])
             rewardRepositoryMock.findClaimedRewards.mockResolvedValueOnce([
                 { ...reward, name: 'Foo', _id: '12345', claimers: [id] },
-                { ...reward, name: 'Beer', _id: '1234551451', claimers: [id, id, "not-id"] }
+                { ...reward, name: 'Beer', _id: '1234551451', claimers: [id, id, 'not-id'] }
             ])
             rewardRepositoryMock.findHandedRewards.mockResolvedValueOnce([
                 { ...reward, name: 'Bar', _id: '12346', handed: [id, id] }

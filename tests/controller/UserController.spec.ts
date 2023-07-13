@@ -34,7 +34,7 @@ describe('UserController', () => {
 
             // Act
             const { status, body } = await request(app)
-                .get(`/api/user`)
+                .get('/api/user')
 
             // Assert
             const expectedUsers = userList.map((user) => ({
@@ -158,7 +158,7 @@ describe('UserController', () => {
 
             // Act
             const { status } = await request(app)
-                .post(`/api/user`).send(newUser)
+                .post('/api/user').send(newUser)
 
             // Assert
             expect(userServiceMock.addUser).toHaveBeenCalledWith(newUser)

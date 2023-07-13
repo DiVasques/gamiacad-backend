@@ -4,7 +4,7 @@ module.exports = {
   coverageDirectory: 'coverage',
   preset: 'ts-jest',
   testEnvironment: 'node',
-  coverageProvider: "v8",
+  coverageProvider: 'v8',
   setupFiles: ['dotenv/config'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   globalSetup: './tests/setup.ts',

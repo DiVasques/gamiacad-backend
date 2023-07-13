@@ -65,8 +65,8 @@ export class UserService {
         )
         return {
             available: availableRewards.map(this.parseReward),
-            claimed: claimedRewards.map((reward) => this.parseRewardWithCount(id, reward, "claimers")),
-            received: receivedRewards.map((reward) => this.parseRewardWithCount(id, reward, "handed"))
+            claimed: claimedRewards.map((reward) => this.parseRewardWithCount(id, reward, 'claimers')),
+            received: receivedRewards.map((reward) => this.parseRewardWithCount(id, reward, 'handed'))
         }
     }
 
@@ -82,7 +82,7 @@ export class UserService {
         return parsedReward;
     }
 
-    private parseRewardWithCount(id: string, reward: Reward, arrayToCount: "claimers" | "handed"): UserReward {
+    private parseRewardWithCount(id: string, reward: Reward, arrayToCount: 'claimers' | 'handed'): UserReward {
         return {
             ...this.parseReward(reward),
             count: reward[arrayToCount].reduce((count, userId) => {
