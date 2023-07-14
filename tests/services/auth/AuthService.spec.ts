@@ -89,4 +89,82 @@ describe('AuthService', () => {
             expect(authRepositoryMock.registerUser).not.toBeCalled()
         })
     })
+
+    describe('loginUser', () => {
+        it('should return the user token', async () => {
+            // Arrange
+            authRepositoryMock.findById.mockResolvedValueOnce(userAuth)
+            jest.spyOn(bcrypt, 'compareSync').mockReturnValueOnce(true as never)
+            const signMock = jest.spyOn(jwt, 'sign').mockReturnValueOnce('jwt-token' as never)
+
+            // Act
+            const result = await authService.loginUser(newUser)
+
+            // Assert
+            expect(authRepositoryMock.findById).toHaveBeenCalledWith(newUser.registration)
+            expect(signMock).toHaveBeenCalledWith(
+                { sub: userAuth.uuid, roles: userAuth.roles } as TokenPayload,
+                'your-token-secret',
+                { expiresIn: '30s' }
+            )
+            expect(result).toBe('jwt-token')
+        })
+
+        it('should throw an error if TOKEN_SECRET env is not set', async () => {
+            // Arrange
+            delete process.env.TOKEN_SECRET
+            let error
+
+            // Act
+            try {
+                await authService.loginUser(newUser)
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).message).toBe(ExceptionStatus.serviceUnavailable)
+            expect((error as AppError).status).toBe(503)
+            expect(authRepositoryMock.findById).not.toBeCalled()
+        })
+
+        it('should throw 401 if user does not exists', async () => {
+            // Arrange
+            let error
+
+            // Act
+            try {
+                await authService.loginUser(newUser)
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).message).toBe(ExceptionStatus.invalidCredentials)
+            expect((error as AppError).status).toBe(401)
+            expect(authRepositoryMock.findById).toHaveBeenCalledWith(newUser.registration)
+        })
+
+        it('should throw 401 if password does not match', async () => {
+            // Arrange
+            authRepositoryMock.findById.mockResolvedValueOnce(userAuth)
+            jest.spyOn(bcrypt, 'compareSync').mockReturnValueOnce(false as never)
+            let error
+
+            // Act
+            try {
+                await authService.loginUser(newUser)
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).message).toBe(ExceptionStatus.invalidCredentials)
+            expect((error as AppError).status).toBe(401)
+            expect(authRepositoryMock.findById).toHaveBeenCalledWith(newUser.registration)
+        })
+    })
 })

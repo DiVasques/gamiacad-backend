@@ -39,4 +39,30 @@ export class AuthService {
         const token = jwt.sign(payload, TOKEN_SECRET, { expiresIn: '30s' })
         return token
     }
+
+    async loginUser(user: {
+        registration: string,
+        password: string
+    }): Promise<string> {
+        const { TOKEN_SECRET } = process.env
+        if (!TOKEN_SECRET) {
+            throw new AppError(ExceptionStatus.serviceUnavailable, 503)
+        }
+
+        const userAuth = await this.authRepository.findById(user.registration)
+        if (!userAuth) {
+            throw new AppError(ExceptionStatus.invalidCredentials, 401)
+        }
+
+        if (!bcrypt.compareSync(user.password, userAuth.password)) {
+            throw new AppError(ExceptionStatus.invalidCredentials, 401)
+        }
+            
+        const payload: TokenPayload = {
+            sub: userAuth.uuid,
+            roles: userAuth.roles
+        }
+        const token = jwt.sign(payload, TOKEN_SECRET, { expiresIn: '30s' })
+        return token
+    }
 }
