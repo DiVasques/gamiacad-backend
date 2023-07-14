@@ -6,6 +6,7 @@ import { userRewards } from '../mocks/Reward'
 import { Container } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
+import { defaultHeaders } from '../mocks/DefaultHeaders'
 
 describe('UserController', () => {
     const userServiceMock = {
@@ -35,6 +36,7 @@ describe('UserController', () => {
             // Act
             const { status, body } = await request(app)
                 .get('/api/user')
+                .set(defaultHeaders)
 
             // Assert
             const expectedUsers = userList.map((user) => ({
@@ -57,6 +59,7 @@ describe('UserController', () => {
             // Act
             const { status, body } = await request(app)
                 .get(`/api/user/${id}`)
+                .set(defaultHeaders)
 
             // Assert
             const expectedUser = {
@@ -77,6 +80,7 @@ describe('UserController', () => {
             // Act
             const { status } = await request(app)
                 .get(`/api/user/${id}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(404)
@@ -92,6 +96,7 @@ describe('UserController', () => {
             // Act
             const { status, body } = await request(app)
                 .get(`/api/user/${id}/mission`)
+                .set(defaultHeaders)
 
             // Assert
             const expectedActive = userMissions.active.map((mission) => ({
@@ -127,6 +132,7 @@ describe('UserController', () => {
             // Act
             const { status, body } = await request(app)
                 .get(`/api/user/${id}/reward`)
+                .set(defaultHeaders)
 
             // Assert
             const expectedAvailable = userRewards.available.map((reward) => ({
@@ -159,6 +165,7 @@ describe('UserController', () => {
             // Act
             const { status } = await request(app)
                 .post('/api/user').send(newUser)
+                .set(defaultHeaders)
 
             // Assert
             expect(userServiceMock.addUser).toHaveBeenCalledWith(newUser)
@@ -174,6 +181,7 @@ describe('UserController', () => {
             // Act
             const { status } = await request(app)
                 .delete(`/api/user/${id}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(userServiceMock.deleteUser).toHaveBeenCalledWith(id)

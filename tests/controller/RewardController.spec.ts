@@ -4,6 +4,7 @@ import { rewardList } from '../mocks/Reward'
 import { Container } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
+import { defaultHeaders } from '../mocks/DefaultHeaders'
 
 describe('RewardController', () => {
     const rewardServiceMock = {
@@ -33,6 +34,7 @@ describe('RewardController', () => {
             // Act
             const { status, body } = await request(app)
                 .get('/api/reward')
+                .set(defaultHeaders)
 
             // Assert
             const expectedRewards = rewardList.map((reward) => ({
@@ -60,6 +62,7 @@ describe('RewardController', () => {
             // Act
             const { status } = await request(app)
                 .post('/api/reward').send(newReward)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(201)
@@ -75,6 +78,7 @@ describe('RewardController', () => {
             // Act
             const { status } = await request(app)
                 .delete(`/api/reward/${id}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(204)
@@ -89,6 +93,7 @@ describe('RewardController', () => {
             // Act
             const { status } = await request(app)
                 .delete(`/api/reward/${id}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(404)
@@ -103,6 +108,7 @@ describe('RewardController', () => {
             // Act
             const { status } = await request(app)
                 .delete(`/api/reward/${id}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(400)
@@ -119,6 +125,7 @@ describe('RewardController', () => {
             // Act
             const { status } = await request(app)
                 .put(`/api/reward/${id}/${userId}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(204)
@@ -135,6 +142,7 @@ describe('RewardController', () => {
             // Act
             const { status } = await request(app)
                 .put(`/api/reward/${id}/${userId}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(404)
@@ -150,6 +158,7 @@ describe('RewardController', () => {
             // Act
             const { status } = await request(app)
                 .put(`/api/reward/${id}/${userId}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(400)
@@ -166,6 +175,7 @@ describe('RewardController', () => {
             // Act
             const { status } = await request(app)
                 .patch(`/api/reward/${id}/${userId}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(204)
@@ -182,6 +192,7 @@ describe('RewardController', () => {
             // Act
             const { status } = await request(app)
                 .patch(`/api/reward/${id}/${userId}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(404)
@@ -197,6 +208,7 @@ describe('RewardController', () => {
             // Act
             const { status } = await request(app)
                 .patch(`/api/reward/${id}/${userId}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(400)
@@ -213,6 +225,7 @@ describe('RewardController', () => {
             // Act
             const { status } = await request(app)
                 .delete(`/api/reward/${id}/${userId}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(204)
@@ -229,6 +242,7 @@ describe('RewardController', () => {
             // Act
             const { status } = await request(app)
                 .delete(`/api/reward/${id}/${userId}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(404)
@@ -244,6 +258,7 @@ describe('RewardController', () => {
             // Act
             const { status } = await request(app)
                 .delete(`/api/reward/${id}/${userId}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(400)
