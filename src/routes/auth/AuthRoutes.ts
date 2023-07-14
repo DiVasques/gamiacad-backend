@@ -10,13 +10,13 @@ const routes = Router()
 const REGISTRATION_REGEX = /^\d{11}$/
 const PASSWORD_REGEX = /^(?=.*\d)(?=.*[A-Z])(?=.*\W).{12,}$/
 
-const addUserSchema = StandardOptionsJoi.object().keys({
+const userSignUpSchema = StandardOptionsJoi.object().keys({
     registration: StandardOptionsJoi.string().regex(REGISTRATION_REGEX).required(),
     password: StandardOptionsJoi.string().regex(PASSWORD_REGEX).required()
 })
 
 routes.post('/signup', celebrate({
-    [Segments.BODY]: addUserSchema
+    [Segments.BODY]: userSignUpSchema
 }), makeExpressCallback(AuthController.registerUser))
 
 export default routes

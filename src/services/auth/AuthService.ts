@@ -1,11 +1,11 @@
 import { Inject, Service } from 'typedi'
 import jwt from 'jsonwebtoken'
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt'
 import { ServiceToken } from '@/config/di'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
 import { IAuthRepository } from '@/repository/auth/IAuthRepository'
-import { TokenPayload } from '@/models/auth/TokenPayload';
+import { TokenPayload } from '@/models/auth/TokenPayload'
 
 @Service()
 export class AuthService {
