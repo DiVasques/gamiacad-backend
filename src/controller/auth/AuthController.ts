@@ -9,4 +9,10 @@ export class AuthController {
         const token = await authService.registerUser(request.body)
         return new HttpResponse(201, { token })
     }
+
+    static async loginUser(request: HttpRequest): Promise<HttpResponse> {
+        const authService = Container.get(AuthService)
+        const token = await authService.loginUser(request.body)
+        return new HttpResponse(200, { token })
+    }
 }
