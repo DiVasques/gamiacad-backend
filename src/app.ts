@@ -2,10 +2,12 @@ import express, { Express } from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import routes from '@/routes'
+import authRoutes from '@/routes/auth/AuthRoutes'
 import winston from 'winston'
 import expressWinston from 'express-winston'
 import 'reflect-metadata'
 import { Exception } from '@/middlewares/Exception'
+import { Auth } from '@/middlewares/Auth'
 import { configureContainer } from '@/config/di'
 
 dotenv.config()
@@ -31,7 +33,10 @@ app.use(expressWinston.logger({
     colorize: true
 }))
 
-app.use('/api', routes)
+app.use('/api', authRoutes)
+
+app.use(Auth.validateClient)
+app.use('/api', Auth.authenticate, routes)
 
 app.use(Exception)
 

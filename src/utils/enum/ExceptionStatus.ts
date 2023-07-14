@@ -9,6 +9,8 @@ enum ExceptionStatus {
   invalidToken = 'Invalid Token',
   invalidHeaders = 'Request without necessary headers',
   invalidAuthorization = 'Authorization token needs to be a Bearer token',
+  unauthorizedClient = 'Unauthorized client',
+  accountExists = 'There\'s already an account with this registration',
   alreadySubscribed = 'User already subscribed or completed the mission',
   cantCompleteMission = 'User not participating or already completed this mission',
   rewardUnavailable = 'This reward is not available anymore or was already claimed by this user',

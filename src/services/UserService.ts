@@ -72,14 +72,14 @@ export class UserService {
 
     private parseMission(mission: Mission): UserMission {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { participants, completers, ...parsedMission } = mission;
-        return parsedMission;
+        const { participants, completers, ...parsedMission } = mission
+        return parsedMission
     }
 
     private parseReward(reward: Reward): UserReward {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { claimers, handed, ...parsedReward } = reward;
-        return parsedReward;
+        const { claimers, handed, ...parsedReward } = reward
+        return parsedReward
     }
 
     private parseRewardWithCount(id: string, reward: Reward, arrayToCount: 'claimers' | 'handed'): UserReward {

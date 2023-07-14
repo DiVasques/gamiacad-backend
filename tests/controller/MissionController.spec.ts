@@ -4,6 +4,7 @@ import { missionList } from '../mocks/Mission'
 import { Container } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
+import { defaultHeaders } from '../mocks/DefaultHeaders'
 
 describe('MissionController', () => {
     const missionServiceMock = {
@@ -32,6 +33,7 @@ describe('MissionController', () => {
             // Act
             const { status, body } = await request(app)
                 .get('/api/mission')
+                .set(defaultHeaders)
 
             // Assert
             const expectedMissions = missionList.map((mission) => ({
@@ -60,7 +62,9 @@ describe('MissionController', () => {
 
             // Act
             const { status } = await request(app)
-                .post('/api/mission').send(newMission)
+                .post('/api/mission')
+                .set(defaultHeaders)
+                .send(newMission)
 
             // Assert
             expect(missionServiceMock.addMission).toHaveBeenCalledWith(newMission)
@@ -76,6 +80,7 @@ describe('MissionController', () => {
             // Act
             const { status } = await request(app)
                 .delete(`/api/mission/${id}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(204)
@@ -90,6 +95,7 @@ describe('MissionController', () => {
             // Act
             const { status } = await request(app)
                 .delete(`/api/mission/${id}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(404)
@@ -104,6 +110,7 @@ describe('MissionController', () => {
             // Act
             const { status } = await request(app)
                 .delete(`/api/mission/${id}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(400)
@@ -120,6 +127,7 @@ describe('MissionController', () => {
             // Act
             const { status } = await request(app)
                 .put(`/api/mission/${id}/${userId}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(204)
@@ -136,6 +144,7 @@ describe('MissionController', () => {
             // Act
             const { status } = await request(app)
                 .put(`/api/mission/${id}/${userId}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(404)
@@ -151,6 +160,7 @@ describe('MissionController', () => {
             // Act
             const { status } = await request(app)
                 .put(`/api/mission/${id}/${userId}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(400)
@@ -167,6 +177,7 @@ describe('MissionController', () => {
             // Act
             const { status } = await request(app)
                 .patch(`/api/mission/${id}/${userId}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(204)
@@ -183,6 +194,7 @@ describe('MissionController', () => {
             // Act
             const { status } = await request(app)
                 .patch(`/api/mission/${id}/${userId}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(404)
@@ -198,6 +210,7 @@ describe('MissionController', () => {
             // Act
             const { status } = await request(app)
                 .patch(`/api/mission/${id}/${userId}`)
+                .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(400)
