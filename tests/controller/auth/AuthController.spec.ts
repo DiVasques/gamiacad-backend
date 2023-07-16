@@ -4,11 +4,16 @@ import { Container } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
 import { defaultHeaders } from '../../mocks/DefaultHeaders'
+import { AuthResult } from '@/ports/auth/AuthResult'
 
 describe('AuthController', () => {
+    const authResult: AuthResult = {
+        userId: 'a047efa6-d3b5-499d-8b47-5b59dc61ab32',
+        accessToken: 'token'
+    }
     const authServiceMock = {
-        registerUser: jest.fn().mockResolvedValue('token'),
-        loginUser: jest.fn().mockResolvedValue('token')
+        registerUser: jest.fn().mockResolvedValue(authResult),
+        loginUser: jest.fn().mockResolvedValue(authResult)
     }
 
     beforeEach(() => {
@@ -27,14 +32,15 @@ describe('AuthController', () => {
     describe('registerUser', () => {
         it('should register and return the user token', async () => {
             // Act
-            const { status, body } = await request(app)
+            const { status, body }: {status: number, body: AuthResult} = await request(app)
                 .post('/api/signup')
                 .send(userRequest)
                 .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(201)
-            expect(body.token).toEqual('token')
+            expect(body.accessToken).toEqual('token')
+            expect(body.userId).toEqual('a047efa6-d3b5-499d-8b47-5b59dc61ab32')
             expect(authServiceMock.registerUser).toHaveBeenCalledWith(userRequest)
         })
 
@@ -55,16 +61,17 @@ describe('AuthController', () => {
     })
 
     describe('loginUser', () => {
-        it('should register and return the user token', async () => {
+        it('should login and return the user token', async () => {
             // Act
-            const { status, body } = await request(app)
+            const { status, body }: {status: number, body: AuthResult} = await request(app)
                 .post('/api/login')
                 .send(userRequest)
                 .set(defaultHeaders)
 
             // Assert
             expect(status).toBe(200)
-            expect(body.token).toEqual('token')
+            expect(body.accessToken).toEqual('token')
+            expect(body.userId).toEqual('a047efa6-d3b5-499d-8b47-5b59dc61ab32')
             expect(authServiceMock.loginUser).toHaveBeenCalledWith(userRequest)
         })
 

@@ -18,9 +18,9 @@ app.use(express.json())
 app.use(cors())
 
 
-app.use('/api', logger, authRoutes)
 
 app.use(Auth.validateClient)
+app.use('/api', logger, authRoutes)
 app.use('/api', bodyLogger, Auth.authenticate, routes)
 
 app.use(Exception)
