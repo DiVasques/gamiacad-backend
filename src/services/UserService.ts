@@ -8,8 +8,10 @@ import { IUserRepository } from '@/repository/user/IUserRepository'
 import { Inject, Service } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
-import { UserMission } from '@/models/UserMission'
-import { UserReward } from '@/models/UserReward'
+import { UserMission } from '@/ports/user/UserMission'
+import { UserReward } from '@/ports/user/UserReward'
+import { UserMissionsResult } from '@/ports/user/UserMissionsResult'
+import { UserRewardsResult } from '@/ports/user/UserRewardsResult'
 
 @Service()
 export class UserService {
@@ -40,7 +42,7 @@ export class UserService {
         await this.userRepository.delete(id)
     }
 
-    async getUserMissions(id: string): Promise<{ active: UserMission[], participating: UserMission[], completed: UserMission[] }> {
+    async getUserMissions(id: string): Promise<UserMissionsResult> {
         const [activeMissions, participatingMissions, completedMissions] = await Promise.all(
             [
                 this.missionRepository.findUserActiveMissions(id),
@@ -55,7 +57,7 @@ export class UserService {
         }
     }
 
-    async getUserRewards(id: string): Promise<{ available: UserReward[], claimed: UserReward[], received: UserReward[] }> {
+    async getUserRewards(id: string): Promise<UserRewardsResult> {
         const [availableRewards, claimedRewards, receivedRewards] = await Promise.all(
             [
                 this.rewardRepository.findAvailableRewards(id),

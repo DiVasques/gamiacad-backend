@@ -1,6 +1,6 @@
 import { MissionService } from '@/services/MissionService'
-import HttpRequest from '@/models/http/HttpRequest'
-import HttpResponse from '@/models/http/HttpResponse'
+import HttpRequest from '@/ports/http/HttpRequest'
+import HttpResponse from '@/ports/http/HttpResponse'
 import { Container } from 'typedi'
 
 export class MissionController {

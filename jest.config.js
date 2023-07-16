@@ -22,6 +22,7 @@ module.exports = {
   coveragePathIgnorePatterns: [
     '<rootDir>/src/config',
     '<rootDir>/src/models',
+    '<rootDir>/src/ports',
     '<rootDir>/src/repository',
     '<rootDir>/src/server.ts'
   ],

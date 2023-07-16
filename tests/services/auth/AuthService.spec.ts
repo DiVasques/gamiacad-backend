@@ -46,7 +46,8 @@ describe('AuthService', () => {
                 'your-token-secret',
                 { expiresIn: '30s' }
             )
-            expect(result).toBe('jwt-token')
+            expect(result.accessToken).toBe('jwt-token')
+            expect(result.userId).toBe(userAuth.uuid)
         })
 
         it('should throw an error if TOKEN_SECRET env is not set', async () => {
@@ -107,7 +108,8 @@ describe('AuthService', () => {
                 'your-token-secret',
                 { expiresIn: '30s' }
             )
-            expect(result).toBe('jwt-token')
+            expect(result.accessToken).toBe('jwt-token')
+            expect(result.userId).toBe(userAuth.uuid)
         })
 
         it('should throw an error if TOKEN_SECRET env is not set', async () => {
