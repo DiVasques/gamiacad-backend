@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { AuthService } from '@/services/auth/AuthService'
 import { userAuth } from '../../mocks/UserAuth'
+import { refreshToken } from '../../mocks/RefreshToken'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
 import { TokenPayload } from '@/models/auth/TokenPayload'
@@ -9,15 +10,23 @@ import { TokenPayload } from '@/models/auth/TokenPayload'
 describe('AuthService', () => {
     let authService: AuthService
     let authRepositoryMock: any
+    let refreshTokenRepositoryMock: any
 
     beforeEach(() => {
         authRepositoryMock = {
             findById: jest.fn(),
             registerUser: jest.fn().mockResolvedValue(userAuth)
         }
+        refreshTokenRepositoryMock = {
+            findById: jest.fn(),
+            create: jest.fn(),
+            delete: jest.fn()
+        }
         authService = new AuthService()
         authService['authRepository'] = authRepositoryMock
-        process.env.TOKEN_SECRET = 'your-token-secret'
+        authService['refreshTokenRepository'] = refreshTokenRepositoryMock
+        process.env.ACCESS_TOKEN_SECRET = 'access-token-secret'
+        process.env.REFRESH_TOKEN_SECRET = 'refresh-token-secret'
     })
 
     afterEach(() =>
@@ -25,15 +34,16 @@ describe('AuthService', () => {
     )
 
     const newUser = { registration: '12345678901', password: 'Passw0rd!$!@#' }
+    const clientIp = '255.255.255.0'
 
     describe('registerUser', () => {
-        it('should register and return the user token', async () => {
+        it('should register and return the user tokens', async () => {
             // Arrange
             jest.spyOn(bcrypt, 'hash').mockResolvedValueOnce('hashed-password' as never)
-            const signMock = jest.spyOn(jwt, 'sign').mockReturnValueOnce('jwt-token' as never)
+            const signMock = jest.spyOn(jwt, 'sign').mockReturnValue('jwt-token' as never)
 
             // Act
-            const result = await authService.registerUser(newUser)
+            const result = await authService.registerUser(newUser, clientIp)
 
             // Assert
             expect(authRepositoryMock.findById).toHaveBeenCalledWith(newUser.registration)
@@ -43,21 +53,46 @@ describe('AuthService', () => {
             })
             expect(signMock).toHaveBeenCalledWith(
                 { sub: userAuth.uuid, roles: userAuth.roles } as TokenPayload,
-                'your-token-secret',
+                'access-token-secret',
                 { expiresIn: '30s' }
+            )
+            expect(signMock).toHaveBeenCalledWith(
+                { sub: userAuth.uuid, roles: userAuth.roles } as TokenPayload,
+                'refresh-token-secret',
+                { expiresIn: '7d' }
             )
             expect(result.accessToken).toBe('jwt-token')
             expect(result.userId).toBe(userAuth.uuid)
         })
 
-        it('should throw an error if TOKEN_SECRET env is not set', async () => {
+        it('should throw an error if ACCESS_TOKEN_SECRET env is not set', async () => {
             // Arrange
-            delete process.env.TOKEN_SECRET
+            delete process.env.ACCESS_TOKEN_SECRET
             let error
 
             // Act
             try {
-                await authService.registerUser(newUser)
+                await authService.registerUser(newUser, clientIp)
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).message).toBe(ExceptionStatus.serviceUnavailable)
+            expect((error as AppError).status).toBe(503)
+            expect(authRepositoryMock.findById).not.toBeCalled()
+            expect(authRepositoryMock.registerUser).not.toBeCalled()
+        })
+
+        it('should throw an error if REFRESH_TOKEN_SECRET env is not set', async () => {
+            // Arrange
+            delete process.env.REFRESH_TOKEN_SECRET
+            let error
+
+            // Act
+            try {
+                await authService.registerUser(newUser, clientIp)
             } catch (e) {
                 error = e
             }
@@ -77,7 +112,7 @@ describe('AuthService', () => {
 
             // Act
             try {
-                await authService.registerUser(newUser)
+                await authService.registerUser(newUser, clientIp)
             } catch (e) {
                 error = e
             }
@@ -92,34 +127,58 @@ describe('AuthService', () => {
     })
 
     describe('loginUser', () => {
-        it('should return the user token', async () => {
+        it('should return the user tokens', async () => {
             // Arrange
             authRepositoryMock.findById.mockResolvedValueOnce(userAuth)
             jest.spyOn(bcrypt, 'compareSync').mockReturnValueOnce(true as never)
-            const signMock = jest.spyOn(jwt, 'sign').mockReturnValueOnce('jwt-token' as never)
+            const signMock = jest.spyOn(jwt, 'sign').mockReturnValue('jwt-token' as never)
 
             // Act
-            const result = await authService.loginUser(newUser)
+            const result = await authService.loginUser(newUser, clientIp)
 
             // Assert
             expect(authRepositoryMock.findById).toHaveBeenCalledWith(newUser.registration)
             expect(signMock).toHaveBeenCalledWith(
                 { sub: userAuth.uuid, roles: userAuth.roles } as TokenPayload,
-                'your-token-secret',
+                'access-token-secret',
                 { expiresIn: '30s' }
+            )
+            expect(signMock).toHaveBeenCalledWith(
+                { sub: userAuth.uuid, roles: userAuth.roles } as TokenPayload,
+                'refresh-token-secret',
+                { expiresIn: '7d' }
             )
             expect(result.accessToken).toBe('jwt-token')
             expect(result.userId).toBe(userAuth.uuid)
         })
 
-        it('should throw an error if TOKEN_SECRET env is not set', async () => {
+        it('should throw an error if ACCESS_TOKEN_SECRET env is not set', async () => {
             // Arrange
-            delete process.env.TOKEN_SECRET
+            delete process.env.ACCESS_TOKEN_SECRET
             let error
 
             // Act
             try {
-                await authService.loginUser(newUser)
+                await authService.loginUser(newUser, clientIp)
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).message).toBe(ExceptionStatus.serviceUnavailable)
+            expect((error as AppError).status).toBe(503)
+            expect(authRepositoryMock.findById).not.toBeCalled()
+        })
+
+        it('should throw an error if REFRESH_TOKEN_SECRET env is not set', async () => {
+            // Arrange
+            delete process.env.REFRESH_TOKEN_SECRET
+            let error
+
+            // Act
+            try {
+                await authService.loginUser(newUser, clientIp)
             } catch (e) {
                 error = e
             }
@@ -137,7 +196,7 @@ describe('AuthService', () => {
 
             // Act
             try {
-                await authService.loginUser(newUser)
+                await authService.loginUser(newUser, clientIp)
             } catch (e) {
                 error = e
             }
@@ -157,7 +216,7 @@ describe('AuthService', () => {
 
             // Act
             try {
-                await authService.loginUser(newUser)
+                await authService.loginUser(newUser, clientIp)
             } catch (e) {
                 error = e
             }
@@ -167,6 +226,143 @@ describe('AuthService', () => {
             expect((error as AppError).message).toBe(ExceptionStatus.invalidCredentials)
             expect((error as AppError).status).toBe(401)
             expect(authRepositoryMock.findById).toHaveBeenCalledWith(newUser.registration)
+        })
+    })
+
+    describe('refreshToken', () => {
+        it('should refresh and return the user tokens', async () => {
+            // Arrange
+            refreshTokenRepositoryMock.findById.mockResolvedValueOnce(refreshToken)
+            const verifyMock = jest.spyOn(jwt, 'verify').mockReturnValue(undefined)
+            const decodeMock = jest.spyOn(jwt, 'decode').mockReturnValue({ sub: 'user-id', roles: ['user'] } as TokenPayload)
+            const signMock = jest.spyOn(jwt, 'sign').mockReturnValue('jwt-token' as never)
+
+            // Act
+            const result = await authService.refreshToken(refreshToken.token, clientIp)
+
+            // Assert
+            expect(refreshTokenRepositoryMock.findById).toHaveBeenCalledWith('user-id')
+            expect(signMock).toHaveBeenCalledWith(
+                { sub: 'user-id', roles: userAuth.roles } as TokenPayload,
+                'access-token-secret',
+                { expiresIn: '30s' }
+            )
+            expect(signMock).toHaveBeenCalledWith(
+                { sub: 'user-id', roles: userAuth.roles } as TokenPayload,
+                'refresh-token-secret',
+                { expiresIn: '2d' }
+            )
+            expect(verifyMock).toHaveBeenCalledWith(refreshToken.token, 'refresh-token-secret')
+            expect(decodeMock).toHaveBeenCalledWith(refreshToken.token)
+            expect(result.accessToken).toBe('jwt-token')
+            expect(result.refreshToken).toBe('jwt-token')
+            expect(result.userId).toBe('user-id')
+        })
+
+        it('should throw an error if ACCESS_TOKEN_SECRET env is not set', async () => {
+            // Arrange
+            delete process.env.ACCESS_TOKEN_SECRET
+            let error
+
+            // Act
+            try {
+                await authService.refreshToken(refreshToken.token, clientIp)
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).message).toBe(ExceptionStatus.serviceUnavailable)
+            expect((error as AppError).status).toBe(503)
+            expect(refreshTokenRepositoryMock.findById).not.toBeCalled()
+        })
+
+        it('should throw an error if REFRESH_TOKEN_SECRET env is not set', async () => {
+            // Arrange
+            delete process.env.REFRESH_TOKEN_SECRET
+            let error
+
+            // Act
+            try {
+                await authService.refreshToken(refreshToken.token, clientIp)
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).message).toBe(ExceptionStatus.serviceUnavailable)
+            expect((error as AppError).status).toBe(503)
+            expect(refreshTokenRepositoryMock.findById).not.toBeCalled()
+        })
+
+        it('should throw 401 if token is not on database', async () => {
+            // Arrange
+            const verifyMock = jest.spyOn(jwt, 'verify').mockReturnValue(undefined)
+            const decodeMock = jest.spyOn(jwt, 'decode').mockReturnValue({ sub: 'user-id', roles: ['user'] } as TokenPayload)
+            let error
+
+            // Act
+            try {
+                await authService.refreshToken(refreshToken.token, clientIp)
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).message).toBe(ExceptionStatus.invalidToken)
+            expect((error as AppError).status).toBe(401)
+            expect(verifyMock).toHaveBeenCalledWith(refreshToken.token, 'refresh-token-secret')
+            expect(decodeMock).toHaveBeenCalledWith(refreshToken.token)
+            expect(refreshTokenRepositoryMock.findById).toHaveBeenCalledWith('user-id')
+        })
+
+        it('should throw 401 if tokens does not match', async () => {
+            // Arrange
+            refreshTokenRepositoryMock.findById.mockResolvedValueOnce(refreshToken)
+            const verifyMock = jest.spyOn(jwt, 'verify').mockReturnValue(undefined)
+            const decodeMock = jest.spyOn(jwt, 'decode').mockReturnValue({ sub: 'user-id', roles: ['user'] } as TokenPayload)
+            let error
+
+            // Act
+            try {
+                await authService.refreshToken('invalid-token', clientIp)
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).message).toBe(ExceptionStatus.invalidToken)
+            expect((error as AppError).status).toBe(401)
+            expect(verifyMock).toHaveBeenCalledWith('invalid-token', 'refresh-token-secret')
+            expect(decodeMock).toHaveBeenCalledWith('invalid-token')
+            expect(refreshTokenRepositoryMock.findById).toHaveBeenCalledWith('user-id')
+        })
+
+        it('should throw 401 if clientIp does not match', async () => {
+            // Arrange
+            refreshTokenRepositoryMock.findById.mockResolvedValueOnce(refreshToken)
+            const verifyMock = jest.spyOn(jwt, 'verify').mockReturnValue(undefined)
+            const decodeMock = jest.spyOn(jwt, 'decode').mockReturnValue({ sub: 'user-id', roles: ['user'] } as TokenPayload)
+            let error
+
+            // Act
+            try {
+                await authService.refreshToken(refreshToken.token, 'invalid-clientIp')
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).message).toBe(ExceptionStatus.invalidToken)
+            expect((error as AppError).status).toBe(401)
+            expect(verifyMock).toHaveBeenCalledWith(refreshToken.token, 'refresh-token-secret')
+            expect(decodeMock).toHaveBeenCalledWith(refreshToken.token)
+            expect(refreshTokenRepositoryMock.findById).toHaveBeenCalledWith('user-id')
         })
     })
 })
