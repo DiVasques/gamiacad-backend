@@ -21,4 +21,10 @@ export class AuthController {
         const result = await authService.refreshToken(request.body.token, request.ip)
         return new HttpResponse(200, result)
     }
+
+    static async logoutUser(request: HttpRequest): Promise<HttpResponse> {
+        const authService = Container.get(AuthService)
+        await authService.logoutUser(request.body.token, request.ip)
+        return new HttpResponse(204)
+    }
 }

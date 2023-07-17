@@ -55,17 +55,17 @@ export class AuthService {
     async refreshToken(token: string, clientIp: string): Promise<AuthResult> {
         const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } = this.getSecrets()
 
-        const { userId, roles } = validateToken(token, REFRESH_TOKEN_SECRET)
-        const storedUserToken = await this.refreshTokenRepository.findById(userId)
-        if (!storedUserToken) {
-            throw new AppError(ExceptionStatus.invalidToken, 401)
-        }
-
-        if (storedUserToken.token !== token || storedUserToken.clientIp !== clientIp) {
-            throw new AppError(ExceptionStatus.invalidToken, 401)
-        }
+        const { userId, roles } = await this.validateRefreshToken(token, REFRESH_TOKEN_SECRET, clientIp)
 
         return await this.generateTokens(userId, roles, ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, clientIp, true)
+    }
+
+    async logoutUser(token: string, clientIp: string): Promise<void> {
+        const { REFRESH_TOKEN_SECRET } = this.getSecrets()
+
+        const { userId } = await this.validateRefreshToken(token, REFRESH_TOKEN_SECRET, clientIp)
+
+        await this.refreshTokenRepository.delete(userId)
     }
 
     private getSecrets() {
@@ -101,5 +101,19 @@ export class AuthService {
             token: refreshToken
         })
         return { userId, accessToken, refreshToken }
+    }
+
+    private async validateRefreshToken(token: string, refreshTokenSecret: string, clientIp: string) {
+        const { userId, roles } = validateToken(token, refreshTokenSecret)
+        const storedUserToken = await this.refreshTokenRepository.findById(userId)
+        if (!storedUserToken) {
+            throw new AppError(ExceptionStatus.invalidToken, 401)
+        }
+
+        if (storedUserToken.token !== token || storedUserToken.clientIp !== clientIp) {
+            throw new AppError(ExceptionStatus.invalidToken, 401)
+        }
+
+        return { userId, roles }
     }
 }
