@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
-import jwt from 'jsonwebtoken'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
-import { TokenPayload } from '@/models/auth/TokenPayload'
+import validateToken from '@/helpers/validateToken'
 
 export class Auth {
     static validateClient(req: Request, res: Response, next: NextFunction) {
@@ -24,8 +23,8 @@ export class Auth {
     }
 
     static authenticate(req: Request, res: Response, next: NextFunction) {
-        const { TOKEN_SECRET } = process.env
-        if (!TOKEN_SECRET) {
+        const { ACCESS_TOKEN_SECRET } = process.env
+        if (!ACCESS_TOKEN_SECRET) {
             throw new AppError(ExceptionStatus.serviceUnavailable, 503)
         }
         
@@ -39,23 +38,10 @@ export class Auth {
             throw new AppError(ExceptionStatus.invalidAuthorization, 401)
         }
 
-        const { userId, roles } = Auth.validateToken(token, TOKEN_SECRET)
+        const { userId, roles } = validateToken(token, ACCESS_TOKEN_SECRET)
         req.headers.userId = userId
         req.headers.roles = roles
 
         return next()
-    }
-
-    private static validateToken(token: string, secret: string) {
-        try {
-            jwt.verify(token, secret)
-            const jwtPayload = jwt.decode(token) as TokenPayload
-            return {
-                userId: jwtPayload.sub,
-                roles: jwtPayload.roles
-            }
-        } catch (e) {
-            throw new AppError(ExceptionStatus.invalidToken, 401)
-        }
     }
 }

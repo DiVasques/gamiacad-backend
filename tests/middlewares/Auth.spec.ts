@@ -14,7 +14,7 @@ describe('Auth', () => {
         res = {}
         next = jest.fn()
         process.env.CLIENT_ID = 'your-client-id'
-        process.env.TOKEN_SECRET = 'your-token-secret'
+        process.env.ACCESS_TOKEN_SECRET = 'your-token-secret'
     })
 
     afterEach(() => {
@@ -82,9 +82,9 @@ describe('Auth', () => {
             expect(next).toHaveBeenCalled()
         })
 
-        it('should throw an error if TOKEN_SECRET is not set', () => {
+        it('should throw an error if ACCESS_TOKEN_SECRET is not set', () => {
             // Arrange
-            delete process.env.TOKEN_SECRET
+            delete process.env.ACCESS_TOKEN_SECRET
 
             // Act and Assert
             expect(() => Auth.authenticate(req as Request, res as Response, next)).toThrow(AppError)
