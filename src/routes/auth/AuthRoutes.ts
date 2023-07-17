@@ -30,4 +30,10 @@ routes.post('/login/refresh', celebrate({
     })
 }), makeExpressCallback(AuthController.refreshToken))
 
+routes.post('/logout', celebrate({
+    [Segments.BODY]: StandardOptionsJoi.object().keys({
+        token: StandardOptionsJoi.string().regex(JWT_REGEX).required()
+    })
+}), makeExpressCallback(AuthController.logoutUser))
+
 export default routes

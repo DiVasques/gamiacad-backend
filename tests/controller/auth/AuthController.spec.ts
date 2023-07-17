@@ -15,7 +15,8 @@ describe('AuthController', () => {
     const authServiceMock = {
         registerUser: jest.fn().mockResolvedValue(authResult),
         loginUser: jest.fn().mockResolvedValue(authResult),
-        refreshToken: jest.fn().mockResolvedValue(authResult)
+        refreshToken: jest.fn().mockResolvedValue(authResult),
+        logoutUser: jest.fn()
     }
 
     beforeEach(() => {
@@ -126,6 +127,35 @@ describe('AuthController', () => {
             // Assert
             expect(status).toBe(401)
             expect(authServiceMock.refreshToken).toHaveBeenCalledWith(refreshTokenRequest.token, defaultHeaders['X-Forwarded-For'])
+        })
+    })
+
+    describe('logoutUser', () => {
+        it('should logout the user', async () => {
+            // Act
+            const { status } = await request(app)
+                .post('/api/logout')
+                .send(refreshTokenRequest)
+                .set(defaultHeaders)
+
+            // Assert
+            expect(status).toBe(204)
+            expect(authServiceMock.logoutUser).toHaveBeenCalledWith(refreshTokenRequest.token, defaultHeaders['X-Forwarded-For'])
+        })
+
+        it('should return 401 if invalid token', async () => {
+            // Arrange
+            authServiceMock.logoutUser.mockRejectedValueOnce(new AppError(ExceptionStatus.invalidToken, 401))
+
+            // Act
+            const { status } = await request(app)
+                .post('/api/logout')
+                .send(refreshTokenRequest)
+                .set(defaultHeaders)
+
+            // Assert
+            expect(status).toBe(401)
+            expect(authServiceMock.logoutUser).toHaveBeenCalledWith(refreshTokenRequest.token, defaultHeaders['X-Forwarded-For'])
         })
     })
 })
