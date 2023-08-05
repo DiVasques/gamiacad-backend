@@ -3,6 +3,7 @@ import { celebrate, Segments } from 'celebrate'
 import { StandardOptionsJoi } from '@/utils/Joi'
 import makeExpressCallback from '@/helpers/expressCallback'
 import { RewardController } from '@/controller/RewardController'
+import { Auth } from '@/middlewares/Auth'
 
 
 const routes = Router()
@@ -22,39 +23,39 @@ const addRewardSchema = StandardOptionsJoi.object().keys({
     availability: StandardOptionsJoi.number().greater(0).required()
 })
 
-routes.get('/reward', celebrate({
+routes.get('/', celebrate({
     [Segments.QUERY]: getRewardsSchema
-}), makeExpressCallback(RewardController.getRewards))
+}), Auth.authorizeAdminOnly, makeExpressCallback(RewardController.getRewards))
 
-routes.post('/reward', celebrate({
+routes.post('/', celebrate({
     [Segments.BODY]: addRewardSchema
-}), makeExpressCallback(RewardController.addReward))
+}), Auth.authorizeAdminOnly, makeExpressCallback(RewardController.addReward))
 
-routes.delete('/reward/:id', celebrate({
+routes.delete('/:id', celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required()
     }
-}), makeExpressCallback(RewardController.deleteReward))
+}), Auth.authorizeAdminOnly, makeExpressCallback(RewardController.deleteReward))
 
-routes.put('/reward/:id/:userId', celebrate({
+routes.put('/:id/:userId', celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required(),
         userId: StandardOptionsJoi.string().uuid().required()
     }
-}), makeExpressCallback(RewardController.claimReward))
+}), Auth.authorizeUser, makeExpressCallback(RewardController.claimReward))
 
-routes.patch('/reward/:id/:userId', celebrate({
+routes.patch('/:id/:userId', celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required(),
         userId: StandardOptionsJoi.string().uuid().required()
     }
-}), makeExpressCallback(RewardController.handReward))
+}), Auth.authorizeAdminOnly, makeExpressCallback(RewardController.handReward))
 
-routes.delete('/reward/:id/:userId', celebrate({
+routes.delete('/:id/:userId', celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required(),
         userId: StandardOptionsJoi.string().uuid().required()
     }
-}), makeExpressCallback(RewardController.cancelClaim))
+}), Auth.authorizeUser, makeExpressCallback(RewardController.cancelClaim))
 
 export default routes

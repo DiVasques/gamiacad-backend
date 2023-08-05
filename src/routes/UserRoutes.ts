@@ -3,6 +3,7 @@ import { celebrate, Segments } from 'celebrate'
 import { StandardOptionsJoi } from '@/utils/Joi'
 import makeExpressCallback from '@/helpers/expressCallback'
 import { UserController } from '@/controller/UserController'
+import { Auth } from '@/middlewares/Auth'
 
 
 const routes = Router()
@@ -18,36 +19,36 @@ const addUserSchema = StandardOptionsJoi.object().keys({
     email: StandardOptionsJoi.string().email().required()
 })
 
-routes.get('/user', celebrate({
+routes.get('/', celebrate({
     [Segments.QUERY]: getUsersSchema
-}), makeExpressCallback(UserController.getUsers))
+}), Auth.authorizeAdminOnly, makeExpressCallback(UserController.getUsers))
 
-routes.get('/user/:id', celebrate({
+routes.get('/:id', celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required()
     }
-}), makeExpressCallback(UserController.getUserById))
+}), Auth.authorizeUser, makeExpressCallback(UserController.getUserById))
 
-routes.get('/user/:id/mission', celebrate({
+routes.get('/:id/mission', celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required()
     }
-}), makeExpressCallback(UserController.getUserMissions))
+}), Auth.authorizeUser, makeExpressCallback(UserController.getUserMissions))
 
-routes.get('/user/:id/reward', celebrate({
+routes.get('/:id/reward', celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required()
     }
-}), makeExpressCallback(UserController.getUserRewards))
+}), Auth.authorizeUser, makeExpressCallback(UserController.getUserRewards))
 
-routes.post('/user', celebrate({
+routes.post('/:id', celebrate({
     [Segments.BODY]: addUserSchema
-}), makeExpressCallback(UserController.addUser))
+}), Auth.authorizeUser, makeExpressCallback(UserController.addUser))
 
-routes.delete('/user/:id', celebrate({
+routes.delete('/:id', celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required()
     }
-}), makeExpressCallback(UserController.deleteUser))
+}), Auth.authorizeUser, makeExpressCallback(UserController.deleteUser))
 
 export default routes

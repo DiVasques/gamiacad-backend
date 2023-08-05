@@ -10,6 +10,7 @@ enum ExceptionStatus {
   invalidHeaders = 'Request without necessary headers',
   invalidAuthorization = 'Authorization token needs to be a Bearer token',
   unauthorizedClient = 'Unauthorized client',
+  forbiddenResource = 'User does not have access to this resource',
   accountExists = 'There\'s already an account with this registration',
   invalidCredentials = 'Invalid credentials',
   alreadySubscribed = 'User already subscribed or completed the mission',
