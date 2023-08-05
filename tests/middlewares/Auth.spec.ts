@@ -122,4 +122,88 @@ describe('Auth', () => {
             expect(next).not.toHaveBeenCalled()
         })
     })
+
+    describe('authorizeUser', () => {
+        it('should call next if user is admin', () => {
+            // Arrange
+            req.headers = {
+                roles: ['admin']
+            }
+
+            // Act
+            Auth.authorizeUser(req as Request, res as Response, next)
+
+            // Assert
+            expect(next).toHaveBeenCalled()
+        })
+
+        it('should call next if user is accessing allowed resource', () => {
+            // Arrange
+            req.headers = {
+                roles: ['user'],
+                userId: 'user-id'
+            }
+            req.originalUrl = 'localhost/api/path/user-id'
+
+            // Act
+            Auth.authorizeUser(req as Request, res as Response, next)
+
+            // Assert
+            expect(next).toHaveBeenCalled()
+        })
+
+        it('should throw an error if user is not authorized', () => {
+            // Arrange
+            req.headers = {
+                roles: ['user'],
+                userId: 'user-id'
+            }
+            req.originalUrl = 'localhost/api/path/another-id'
+
+            // Act and Assert
+            expect(() => Auth.authorizeUser(req as Request, res as Response, next)).toThrow(AppError)
+            expect(next).not.toHaveBeenCalled()
+        })
+    })
+
+    describe('authorizeAdminOnly', () => {
+        it('should call next if user is admin', () => {
+            // Arrange
+            req.headers = {
+                roles: ['admin']
+            }
+
+            // Act
+            Auth.authorizeAdminOnly(req as Request, res as Response, next)
+
+            // Assert
+            expect(next).toHaveBeenCalled()
+        })
+
+        it('should throw an error if user is not admin', () => {
+            // Arrange
+            req.headers = {
+                roles: ['user'],
+                userId: 'user-id'
+            }
+            req.originalUrl = 'localhost/api/path/user-id'
+
+            // Act and Assert
+            expect(() => Auth.authorizeAdminOnly(req as Request, res as Response, next)).toThrow(AppError)
+            expect(next).not.toHaveBeenCalled()
+        })
+
+        it('should throw an error if user is not admin', () => {
+            // Arrange
+            req.headers = {
+                roles: ['user'],
+                userId: 'user-id'
+            }
+            req.originalUrl = 'localhost/api/path/another-id'
+
+            // Act and Assert
+            expect(() => Auth.authorizeAdminOnly(req as Request, res as Response, next)).toThrow(AppError)
+            expect(next).not.toHaveBeenCalled()
+        })
+    })
 })

@@ -3,7 +3,7 @@ import request from 'supertest'
 import { Container } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
-import { defaultHeaders } from '../../mocks/DefaultHeaders'
+import { unauthorizedHeaders } from '../../mocks/DefaultHeaders'
 import { AuthResult } from '@/ports/auth/AuthResult'
 
 describe('AuthController', () => {
@@ -40,14 +40,14 @@ describe('AuthController', () => {
             const { status, body }: { status: number, body: AuthResult } = await request(app)
                 .post('/api/signup')
                 .send(userRequest)
-                .set(defaultHeaders)
+                .set(unauthorizedHeaders)
 
             // Assert
             expect(status).toBe(201)
             expect(body.accessToken).toEqual('access-token')
             expect(body.refreshToken).toEqual('refresh-token')
             expect(body.userId).toEqual('a047efa6-d3b5-499d-8b47-5b59dc61ab32')
-            expect(authServiceMock.registerUser).toHaveBeenCalledWith(userRequest, defaultHeaders['X-Forwarded-For'])
+            expect(authServiceMock.registerUser).toHaveBeenCalledWith(userRequest, unauthorizedHeaders['X-Forwarded-For'])
         })
 
         it('should return 409 if user already registered', async () => {
@@ -58,11 +58,11 @@ describe('AuthController', () => {
             const { status } = await request(app)
                 .post('/api/signup')
                 .send(userRequest)
-                .set(defaultHeaders)
+                .set(unauthorizedHeaders)
 
             // Assert
             expect(status).toBe(409)
-            expect(authServiceMock.registerUser).toHaveBeenCalledWith(userRequest, defaultHeaders['X-Forwarded-For'])
+            expect(authServiceMock.registerUser).toHaveBeenCalledWith(userRequest, unauthorizedHeaders['X-Forwarded-For'])
         })
     })
 
@@ -72,14 +72,14 @@ describe('AuthController', () => {
             const { status, body }: { status: number, body: AuthResult } = await request(app)
                 .post('/api/login')
                 .send(userRequest)
-                .set(defaultHeaders)
+                .set(unauthorizedHeaders)
 
             // Assert
             expect(status).toBe(200)
             expect(body.accessToken).toEqual('access-token')
             expect(body.refreshToken).toEqual('refresh-token')
             expect(body.userId).toEqual('a047efa6-d3b5-499d-8b47-5b59dc61ab32')
-            expect(authServiceMock.loginUser).toHaveBeenCalledWith(userRequest, defaultHeaders['X-Forwarded-For'])
+            expect(authServiceMock.loginUser).toHaveBeenCalledWith(userRequest, unauthorizedHeaders['X-Forwarded-For'])
         })
 
         it('should return 401 if invalid credentials', async () => {
@@ -90,11 +90,11 @@ describe('AuthController', () => {
             const { status } = await request(app)
                 .post('/api/login')
                 .send(userRequest)
-                .set(defaultHeaders)
+                .set(unauthorizedHeaders)
 
             // Assert
             expect(status).toBe(401)
-            expect(authServiceMock.loginUser).toHaveBeenCalledWith(userRequest, defaultHeaders['X-Forwarded-For'])
+            expect(authServiceMock.loginUser).toHaveBeenCalledWith(userRequest, unauthorizedHeaders['X-Forwarded-For'])
         })
     })
 
@@ -104,14 +104,14 @@ describe('AuthController', () => {
             const { status, body }: { status: number, body: AuthResult } = await request(app)
                 .post('/api/login/refresh')
                 .send(refreshTokenRequest)
-                .set(defaultHeaders)
+                .set(unauthorizedHeaders)
 
             // Assert
             expect(status).toBe(200)
             expect(body.accessToken).toEqual('access-token')
             expect(body.refreshToken).toEqual('refresh-token')
             expect(body.userId).toEqual('a047efa6-d3b5-499d-8b47-5b59dc61ab32')
-            expect(authServiceMock.refreshToken).toHaveBeenCalledWith(refreshTokenRequest.token, defaultHeaders['X-Forwarded-For'])
+            expect(authServiceMock.refreshToken).toHaveBeenCalledWith(refreshTokenRequest.token, unauthorizedHeaders['X-Forwarded-For'])
         })
 
         it('should return 401 if invalid token', async () => {
@@ -122,11 +122,11 @@ describe('AuthController', () => {
             const { status } = await request(app)
                 .post('/api/login/refresh')
                 .send(refreshTokenRequest)
-                .set(defaultHeaders)
+                .set(unauthorizedHeaders)
 
             // Assert
             expect(status).toBe(401)
-            expect(authServiceMock.refreshToken).toHaveBeenCalledWith(refreshTokenRequest.token, defaultHeaders['X-Forwarded-For'])
+            expect(authServiceMock.refreshToken).toHaveBeenCalledWith(refreshTokenRequest.token, unauthorizedHeaders['X-Forwarded-For'])
         })
     })
 
@@ -136,11 +136,11 @@ describe('AuthController', () => {
             const { status } = await request(app)
                 .post('/api/logout')
                 .send(refreshTokenRequest)
-                .set(defaultHeaders)
+                .set(unauthorizedHeaders)
 
             // Assert
             expect(status).toBe(204)
-            expect(authServiceMock.logoutUser).toHaveBeenCalledWith(refreshTokenRequest.token, defaultHeaders['X-Forwarded-For'])
+            expect(authServiceMock.logoutUser).toHaveBeenCalledWith(refreshTokenRequest.token, unauthorizedHeaders['X-Forwarded-For'])
         })
 
         it('should return 401 if invalid token', async () => {
@@ -151,11 +151,11 @@ describe('AuthController', () => {
             const { status } = await request(app)
                 .post('/api/logout')
                 .send(refreshTokenRequest)
-                .set(defaultHeaders)
+                .set(unauthorizedHeaders)
 
             // Assert
             expect(status).toBe(401)
-            expect(authServiceMock.logoutUser).toHaveBeenCalledWith(refreshTokenRequest.token, defaultHeaders['X-Forwarded-For'])
+            expect(authServiceMock.logoutUser).toHaveBeenCalledWith(refreshTokenRequest.token, unauthorizedHeaders['X-Forwarded-For'])
         })
     })
 })

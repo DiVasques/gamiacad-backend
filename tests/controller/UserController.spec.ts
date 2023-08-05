@@ -6,7 +6,7 @@ import { userRewards } from '../mocks/Reward'
 import { Container } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
-import { defaultHeaders } from '../mocks/DefaultHeaders'
+import { userHeaders, adminHeaders, unauthorizedUserId, userId } from '../mocks/DefaultHeaders'
 
 describe('UserController', () => {
     const userServiceMock = {
@@ -36,7 +36,7 @@ describe('UserController', () => {
             // Act
             const { status, body } = await request(app)
                 .get('/api/user')
-                .set(defaultHeaders)
+                .set(adminHeaders)
 
             // Assert
             const expectedUsers = userList.map((user) => ({
@@ -45,21 +45,34 @@ describe('UserController', () => {
                 updatedAt: user.updatedAt.toISOString(),
             }))
 
-            expect(userServiceMock.getUsers).toHaveBeenCalled()
             expect(status).toBe(200)
+            expect(userServiceMock.getUsers).toHaveBeenCalled()
             expect(body).toEqual({ users: expectedUsers })
+        })
+
+        it('should return 403 if user is forbidden', async () => {
+            // Arrange
+
+            // Act
+            const { status } = await request(app)
+                .get('/api/user')
+                .set(userHeaders)
+
+            // Assert
+            expect(status).toBe(403)
+            expect(userServiceMock.getUsers).not.toBeCalled()
         })
     })
 
     describe('getUserById', () => {
         it('should return the corresponding user', async () => {
             // Arrange
-            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
+            const id = userId
 
             // Act
             const { status, body } = await request(app)
                 .get(`/api/user/${id}`)
-                .set(defaultHeaders)
+                .set(userHeaders)
 
             // Assert
             const expectedUser = {
@@ -74,29 +87,43 @@ describe('UserController', () => {
 
         it('should return 404 if no user was found', async () => {
             // Arrange
-            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
+            const id = userId
             userServiceMock.getUserById.mockRejectedValueOnce(new AppError(ExceptionStatus.notFound, 404))
 
             // Act
             const { status } = await request(app)
                 .get(`/api/user/${id}`)
-                .set(defaultHeaders)
+                .set(userHeaders)
 
             // Assert
             expect(status).toBe(404)
             expect(userServiceMock.getUserById).toHaveBeenCalledWith(id)
+        })
+
+        it('should return 403 if user is forbidden', async () => {
+            // Arrange
+            const id = unauthorizedUserId
+
+            // Act
+            const { status } = await request(app)
+                .get(`/api/user/${id}`)
+                .set(userHeaders)
+
+            // Assert
+            expect(status).toBe(403)
+            expect(userServiceMock.getUserById).not.toBeCalled()
         })
     })
 
     describe('getUserMissions', () => {
         it('should return the active and completed missions', async () => {
             // Arrange
-            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
+            const id = userId
 
             // Act
             const { status, body } = await request(app)
                 .get(`/api/user/${id}/mission`)
-                .set(defaultHeaders)
+                .set(userHeaders)
 
             // Assert
             const expectedActive = userMissions.active.map((mission) => ({
@@ -118,21 +145,35 @@ describe('UserController', () => {
                 updatedAt: mission.updatedAt.toISOString(),
             }))
 
-            expect(userServiceMock.getUserMissions).toHaveBeenCalled()
             expect(status).toBe(200)
+            expect(userServiceMock.getUserMissions).toHaveBeenCalled()
             expect(body).toEqual({ active: expectedActive, participating: expectedParticipating, completed: expectedCompleted })
+        })
+
+        it('should return 403 if user is forbidden', async () => {
+            // Arrange
+            const id = unauthorizedUserId
+
+            // Act
+            const { status } = await request(app)
+                .get(`/api/user/${id}/mission`)
+                .set(userHeaders)
+
+            // Assert
+            expect(status).toBe(403)
+            expect(userServiceMock.getUserMissions).not.toBeCalled()
         })
     })
 
     describe('getUserRewards', () => {
         it('should return the user available, claimed and received rewards', async () => {
             // Arrange
-            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
+            const id = userId
 
             // Act
             const { status, body } = await request(app)
                 .get(`/api/user/${id}/reward`)
-                .set(defaultHeaders)
+                .set(userHeaders)
 
             // Assert
             const expectedAvailable = userRewards.available.map((reward) => ({
@@ -151,9 +192,23 @@ describe('UserController', () => {
                 updatedAt: reward.updatedAt.toISOString(),
             }))
 
-            expect(userServiceMock.getUserRewards).toHaveBeenCalled()
             expect(status).toBe(200)
+            expect(userServiceMock.getUserRewards).toHaveBeenCalled()
             expect(body).toEqual({ available: expectedAvailable, claimed: expectedClaimed, received: expectedReceived })
+        })
+
+        it('should return 403 if user is forbidden', async () => {
+            // Arrange
+            const id = unauthorizedUserId
+
+            // Act
+            const { status } = await request(app)
+                .get(`/api/user/${id}/reward`)
+                .set(userHeaders)
+
+            // Assert
+            expect(status).toBe(403)
+            expect(userServiceMock.getUserRewards).not.toBeCalled()
         })
     })
 
@@ -161,31 +216,61 @@ describe('UserController', () => {
         it('should return a response with status code 201', async () => {
             // Arrange
             const newUser = { name: 'John Doe', email: 'johndoe@example.com' }
+            const id = userId
 
             // Act
             const { status } = await request(app)
-                .post('/api/user').send(newUser)
-                .set(defaultHeaders)
+                .post(`/api/user/${id}`).send(newUser)
+                .set(userHeaders)
 
             // Assert
-            expect(userServiceMock.addUser).toHaveBeenCalledWith(newUser)
             expect(status).toBe(201)
+            expect(userServiceMock.addUser).toHaveBeenCalledWith(newUser)
+        })
+
+        it('should return 403 if user is forbidden', async () => {
+            // Arrange
+            const newUser = { name: 'John Doe', email: 'johndoe@example.com' }
+            const id = unauthorizedUserId
+
+            // Act
+            const { status } = await request(app)
+                .post(`/api/user/${id}`).send(newUser)
+                .set(userHeaders)
+
+            // Assert
+            expect(status).toBe(403)
+            expect(userServiceMock.addUser).not.toBeCalled()
         })
     })
 
     describe('deleteUser', () => {
         it('should return a response with status code 204', async () => {
             // Arrange
-            const id = 'f94fbe96-373e-49b1-81c0-0df716e9b2ee'
+            const id = userId
 
             // Act
             const { status } = await request(app)
                 .delete(`/api/user/${id}`)
-                .set(defaultHeaders)
+                .set(userHeaders)
 
             // Assert
-            expect(userServiceMock.deleteUser).toHaveBeenCalledWith(id)
             expect(status).toBe(204)
+            expect(userServiceMock.deleteUser).toHaveBeenCalledWith(id)
+        })
+
+        it('should return 403 if user is forbidden', async () => {
+            // Arrange
+            const id = unauthorizedUserId
+
+            // Act
+            const { status } = await request(app)
+                .delete(`/api/user/${id}`)
+                .set(userHeaders)
+
+            // Assert
+            expect(status).toBe(403)
+            expect(userServiceMock.deleteUser).not.toBeCalled()
         })
     })
 })

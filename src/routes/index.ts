@@ -6,8 +6,8 @@ import RewardRoutes from '@/routes/RewardRoutes'
 
 const routes = Router()
 
-routes.use(UserRoutes)
-routes.use(MissionRoutes)
-routes.use(RewardRoutes)
+routes.use('/user', UserRoutes)
+routes.use('/mission', MissionRoutes)
+routes.use('/reward', RewardRoutes)
 
 export default routes
