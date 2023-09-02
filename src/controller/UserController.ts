@@ -30,7 +30,7 @@ export class UserController {
 
     static async addUser(request: HttpRequest): Promise<HttpResponse> {
         const userService = Container.get(UserService)
-        await userService.addUser(request.body)
+        await userService.addUser({ _id: request.params.id, ...request.body })
         return new HttpResponse(201)
     }
 
