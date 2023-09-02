@@ -225,7 +225,7 @@ describe('UserController', () => {
 
             // Assert
             expect(status).toBe(201)
-            expect(userServiceMock.addUser).toHaveBeenCalledWith(newUser)
+            expect(userServiceMock.addUser).toHaveBeenCalledWith({ _id: id, ...newUser })
         })
 
         it('should return 403 if user is forbidden', async () => {
