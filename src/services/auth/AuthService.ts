@@ -93,7 +93,7 @@ export class AuthService {
             sub: userId,
             roles
         }
-        const accessToken = jwt.sign(payload, accessTokenSecret, { expiresIn: '30s' })
+        const accessToken = jwt.sign(payload, accessTokenSecret, { expiresIn: '5m' })
         const refreshToken = jwt.sign(payload, refreshTokenSecret, { expiresIn: isRefresh ? '2d' : '7d' })
         await this.refreshTokenRepository.create({
             _id: userId,

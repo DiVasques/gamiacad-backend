@@ -12,6 +12,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
                     _id: { type: String, required: true },
                     name: { type: String, required: true },
                     email: { type: String, required: true },
+                    registration: { type: String, required: true },
                     balance: { type: Number, default: 0 },
                     totalPoints: { type: Number, default: 0 }
                 },
