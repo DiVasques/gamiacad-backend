@@ -54,7 +54,7 @@ describe('AuthService', () => {
             expect(signMock).toHaveBeenCalledWith(
                 { sub: userAuth.uuid, roles: userAuth.roles } as TokenPayload,
                 'access-token-secret',
-                { expiresIn: '30s' }
+                { expiresIn: '5m' }
             )
             expect(signMock).toHaveBeenCalledWith(
                 { sub: userAuth.uuid, roles: userAuth.roles } as TokenPayload,
@@ -147,7 +147,7 @@ describe('AuthService', () => {
             expect(signMock).toHaveBeenCalledWith(
                 { sub: userAuth.uuid, roles: userAuth.roles } as TokenPayload,
                 'access-token-secret',
-                { expiresIn: '30s' }
+                { expiresIn: '5m' }
             )
             expect(signMock).toHaveBeenCalledWith(
                 { sub: userAuth.uuid, roles: userAuth.roles } as TokenPayload,
@@ -257,7 +257,7 @@ describe('AuthService', () => {
             expect(signMock).toHaveBeenCalledWith(
                 { sub: 'user-id', roles: userAuth.roles } as TokenPayload,
                 'access-token-secret',
-                { expiresIn: '30s' }
+                { expiresIn: '5m' }
             )
             expect(signMock).toHaveBeenCalledWith(
                 { sub: 'user-id', roles: userAuth.roles } as TokenPayload,

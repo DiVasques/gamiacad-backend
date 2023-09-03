@@ -215,7 +215,7 @@ describe('UserController', () => {
     describe('addUser', () => {
         it('should return a response with status code 201', async () => {
             // Arrange
-            const newUser = { name: 'John Doe', email: 'johndoe@example.com' }
+            const newUser = { name: 'John Doe', email: 'johndoe@example.com', registration: '12345678901' }
             const id = userId
 
             // Act
@@ -230,7 +230,7 @@ describe('UserController', () => {
 
         it('should return 403 if user is forbidden', async () => {
             // Arrange
-            const newUser = { name: 'John Doe', email: 'johndoe@example.com' }
+            const newUser = { name: 'John Doe', email: 'johndoe@example.com', registration: '12345678901' }
             const id = unauthorizedUserId
 
             // Act

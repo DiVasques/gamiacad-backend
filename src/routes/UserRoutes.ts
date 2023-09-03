@@ -9,6 +9,7 @@ import { Auth } from '@/middlewares/Auth'
 const routes = Router()
 
 const USER_NAME_REGEX = /^[ a-zA-ZàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ'`-]+$/
+const USER_REGISTRATION_REGEX = /^\d{11}$/
 
 const getUsersSchema = StandardOptionsJoi.object().keys({
     name: StandardOptionsJoi.string().regex(USER_NAME_REGEX)
@@ -16,7 +17,8 @@ const getUsersSchema = StandardOptionsJoi.object().keys({
 
 const addUserSchema = StandardOptionsJoi.object().keys({
     name: StandardOptionsJoi.string().regex(USER_NAME_REGEX).required(),
-    email: StandardOptionsJoi.string().email().required()
+    registration: StandardOptionsJoi.string().regex(USER_REGISTRATION_REGEX).required(),
+    email: StandardOptionsJoi.string().email().required(),
 })
 
 routes.get('/', celebrate({
