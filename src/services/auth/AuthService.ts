@@ -37,7 +37,7 @@ export class AuthService {
         return await this.generateTokens(createdUser.uuid, createdUser.roles, ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, clientIp)
     }
 
-    async loginUser(user: AuthRequest, clientIp: string): Promise<AuthResult> {
+    async loginUser(user: AuthRequest, clientIp: string, adminOnly?: boolean): Promise<AuthResult> {
         const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } = this.getSecrets()
 
         const userAuth = await this.authRepository.findById(user.registration)
@@ -46,6 +46,10 @@ export class AuthService {
         }
 
         if (!bcrypt.compareSync(user.password, userAuth.password)) {
+            throw new AppError(ExceptionStatus.invalidCredentials, 401)
+        }
+
+        if (adminOnly && !userAuth.roles.includes('admin')) {
             throw new AppError(ExceptionStatus.invalidCredentials, 401)
         }
 

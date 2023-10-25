@@ -16,6 +16,12 @@ export class AuthController {
         return new HttpResponse(200, result)
     }
 
+    static async loginAdmin(request: HttpRequest): Promise<HttpResponse> {
+        const authService = Container.get(AuthService)
+        const result = await authService.loginUser(request.body, request.ip, true)
+        return new HttpResponse(200, result)
+    }
+
     static async refreshToken(request: HttpRequest): Promise<HttpResponse> {
         const authService = Container.get(AuthService)
         const result = await authService.refreshToken(request.body.token, request.ip)
