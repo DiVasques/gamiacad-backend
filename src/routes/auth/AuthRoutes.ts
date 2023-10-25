@@ -24,6 +24,10 @@ routes.post('/login', celebrate({
     [Segments.BODY]: userAuthSchema
 }), makeExpressCallback(AuthController.loginUser))
 
+routes.post('/login/admin', celebrate({
+    [Segments.BODY]: userAuthSchema
+}), makeExpressCallback(AuthController.loginAdmin))
+
 routes.post('/login/refresh', celebrate({
     [Segments.BODY]: StandardOptionsJoi.object().keys({
         token: StandardOptionsJoi.string().regex(JWT_REGEX).required()

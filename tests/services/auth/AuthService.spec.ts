@@ -68,7 +68,7 @@ describe('AuthService', () => {
                 _id: userAuth.uuid,
                 clientIp,
                 token: 'jwt-token'
-             })
+            })
         })
 
         it('should throw an error if ACCESS_TOKEN_SECRET env is not set', async () => {
@@ -161,7 +161,71 @@ describe('AuthService', () => {
                 _id: userAuth.uuid,
                 clientIp,
                 token: 'jwt-token'
-             })
+            })
+        })
+
+        it('should return the admin user tokens even if not admin only', async () => {
+            // Arrange
+            const adminUserAuth = { ...userAuth, roles: ['admin'] }
+            authRepositoryMock.findById.mockResolvedValueOnce(adminUserAuth)
+            jest.spyOn(bcrypt, 'compareSync').mockReturnValueOnce(true as never)
+            const signMock = jest.spyOn(jwt, 'sign').mockReturnValue('jwt-token' as never)
+
+            // Act
+            const result = await authService.loginUser(newUser, clientIp, false)
+
+            // Assert
+            expect(authRepositoryMock.findById).toHaveBeenCalledWith(newUser.registration)
+            expect(signMock).toHaveBeenCalledWith(
+                { sub: adminUserAuth.uuid, roles: adminUserAuth.roles } as TokenPayload,
+                'access-token-secret',
+                { expiresIn: '5m' }
+            )
+            expect(signMock).toHaveBeenCalledWith(
+                { sub: adminUserAuth.uuid, roles: adminUserAuth.roles } as TokenPayload,
+                'refresh-token-secret',
+                { expiresIn: '7d' }
+            )
+            expect(result.accessToken).toBe('jwt-token')
+            expect(result.userId).toBe(adminUserAuth.uuid)
+            expect(refreshTokenRepositoryMock.delete).toHaveBeenCalledWith(adminUserAuth.uuid)
+            expect(refreshTokenRepositoryMock.create).toHaveBeenCalledWith({
+                _id: adminUserAuth.uuid,
+                clientIp,
+                token: 'jwt-token'
+            })
+        })
+
+        it('should return the admin user tokens', async () => {
+            // Arrange
+            const adminUserAuth = { ...userAuth, roles: ['admin'] }
+            authRepositoryMock.findById.mockResolvedValueOnce(adminUserAuth)
+            jest.spyOn(bcrypt, 'compareSync').mockReturnValueOnce(true as never)
+            const signMock = jest.spyOn(jwt, 'sign').mockReturnValue('jwt-token' as never)
+
+            // Act
+            const result = await authService.loginUser(newUser, clientIp, true)
+
+            // Assert
+            expect(authRepositoryMock.findById).toHaveBeenCalledWith(newUser.registration)
+            expect(signMock).toHaveBeenCalledWith(
+                { sub: adminUserAuth.uuid, roles: adminUserAuth.roles } as TokenPayload,
+                'access-token-secret',
+                { expiresIn: '5m' }
+            )
+            expect(signMock).toHaveBeenCalledWith(
+                { sub: adminUserAuth.uuid, roles: adminUserAuth.roles } as TokenPayload,
+                'refresh-token-secret',
+                { expiresIn: '7d' }
+            )
+            expect(result.accessToken).toBe('jwt-token')
+            expect(result.userId).toBe(adminUserAuth.uuid)
+            expect(refreshTokenRepositoryMock.delete).toHaveBeenCalledWith(adminUserAuth.uuid)
+            expect(refreshTokenRepositoryMock.create).toHaveBeenCalledWith({
+                _id: adminUserAuth.uuid,
+                clientIp,
+                token: 'jwt-token'
+            })
         })
 
         it('should throw an error if ACCESS_TOKEN_SECRET env is not set', async () => {
@@ -239,6 +303,26 @@ describe('AuthService', () => {
             expect((error as AppError).status).toBe(401)
             expect(authRepositoryMock.findById).toHaveBeenCalledWith(newUser.registration)
         })
+
+        it('should throw 401 if admin only and user is not admin', async () => {
+            // Arrange
+            authRepositoryMock.findById.mockResolvedValueOnce(userAuth)
+            jest.spyOn(bcrypt, 'compareSync').mockReturnValueOnce(true as never)
+            let error
+
+            // Act
+            try {
+                await authService.loginUser(newUser, clientIp, true)
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).message).toBe(ExceptionStatus.invalidCredentials)
+            expect((error as AppError).status).toBe(401)
+            expect(authRepositoryMock.findById).toHaveBeenCalledWith(newUser.registration)
+        })
     })
 
     describe('refreshToken', () => {
@@ -271,7 +355,7 @@ describe('AuthService', () => {
                 _id: 'user-id',
                 clientIp,
                 token: 'jwt-token'
-             })
+            })
             expect(result.accessToken).toBe('jwt-token')
             expect(result.refreshToken).toBe('jwt-token')
             expect(result.userId).toBe('user-id')

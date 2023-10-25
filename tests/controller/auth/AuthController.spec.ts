@@ -98,6 +98,38 @@ describe('AuthController', () => {
         })
     })
 
+    describe('loginAdmin', () => {
+        it('should login and return the user tokens', async () => {
+            // Act
+            const { status, body }: { status: number, body: AuthResult } = await request(app)
+                .post('/api/login/admin')
+                .send(userRequest)
+                .set(unauthorizedHeaders)
+
+            // Assert
+            expect(status).toBe(200)
+            expect(body.accessToken).toEqual('access-token')
+            expect(body.refreshToken).toEqual('refresh-token')
+            expect(body.userId).toEqual('a047efa6-d3b5-499d-8b47-5b59dc61ab32')
+            expect(authServiceMock.loginUser).toHaveBeenCalledWith(userRequest, unauthorizedHeaders['X-Forwarded-For'], true)
+        })
+
+        it('should return 401 if invalid credentials', async () => {
+            // Arrange
+            authServiceMock.loginUser.mockRejectedValueOnce(new AppError(ExceptionStatus.invalidCredentials, 401))
+
+            // Act
+            const { status } = await request(app)
+                .post('/api/login/admin')
+                .send(userRequest)
+                .set(unauthorizedHeaders)
+
+            // Assert
+            expect(status).toBe(401)
+            expect(authServiceMock.loginUser).toHaveBeenCalledWith(userRequest, unauthorizedHeaders['X-Forwarded-For'], true)
+        })
+    })
+
     describe('refreshUserTokens', () => {
         it('should refresh and return the user tokens', async () => {
             // Act
