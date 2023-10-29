@@ -14,7 +14,7 @@ describe('RewardService', () => {
             find: jest.fn().mockResolvedValue(rewardList),
             create: jest.fn(),
             findById: jest.fn().mockResolvedValue(reward),
-            delete: jest.fn(),
+            deactivateReward: jest.fn().mockResolvedValue(1),
             claimReward: jest.fn().mockResolvedValue(1),
             handReward: jest.fn().mockResolvedValue(1),
             rollbackClaim: jest.fn()
@@ -65,7 +65,7 @@ describe('RewardService', () => {
         })
     })
 
-    describe('deleteReward', () => {
+    describe('deactivateReward', () => {
         it('should throw an error if the reward is not found', async () => {
             // Arrange
             const id = '123'
@@ -74,50 +74,49 @@ describe('RewardService', () => {
 
             // Act
             try {
-                await rewardService.deleteReward(id)
+                await rewardService.deactivateReward(id)
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(404)
             expect(rewardRepositoryMock.findById).toHaveBeenCalledWith(id)
         })
 
-        it('should throw an error if the reward was already handed', async () => {
+        it('should throw an error if the reward was already deactivated', async () => {
             // Arrange
             const id = '123'
-            const rewardWithCompleters = {
-                id: '123',
-                handed: ['user1', 'user2']
-            }
-            rewardRepositoryMock.findById.mockResolvedValue(rewardWithCompleters)
+            rewardRepositoryMock.deactivateReward.mockResolvedValue(0)
             let error
 
             // Act
             try {
-                await rewardService.deleteReward(id)
+                await rewardService.deactivateReward(id)
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(400)
             expect(rewardRepositoryMock.findById).toHaveBeenCalledWith(id)
+            expect(rewardRepositoryMock.deactivateReward).toHaveBeenCalledWith(id)
         })
 
-        it('should delete the reward if it exists and wasnt handed', async () => {
+        it('should deactivate the reward if it exists and was not deactivated', async () => {
             // Arrange
             const id = '123'
 
             // Act
-            await rewardService.deleteReward(id)
+            await rewardService.deactivateReward(id)
 
             // Assert
             expect(rewardRepositoryMock.findById).toHaveBeenCalledWith(id)
-            expect(rewardRepositoryMock.delete).toHaveBeenCalledWith(id)
+            expect(rewardRepositoryMock.deactivateReward).toHaveBeenCalledWith(id)
+            expect(rewardRepositoryMock.rollbackClaim).toHaveBeenCalledWith(id, reward.claimers.at(0))
+            expect(userRepositoryMock.givePoints).toHaveBeenCalledWith(reward.claimers.at(0), reward.price, true)
         })
     })
 
@@ -135,7 +134,7 @@ describe('RewardService', () => {
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(404)
@@ -157,7 +156,7 @@ describe('RewardService', () => {
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(404)
@@ -171,7 +170,7 @@ describe('RewardService', () => {
             // Arrange
             const id = '123'
             const userId = '456'
-            userRepositoryMock.findById.mockResolvedValue({...user, balance: 0})
+            userRepositoryMock.findById.mockResolvedValue({ ...user, balance: 0 })
             let error
 
             // Act
@@ -180,7 +179,7 @@ describe('RewardService', () => {
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(400)
@@ -204,7 +203,7 @@ describe('RewardService', () => {
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(400)
@@ -228,7 +227,7 @@ describe('RewardService', () => {
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(400)
@@ -270,7 +269,7 @@ describe('RewardService', () => {
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(404)
@@ -290,7 +289,7 @@ describe('RewardService', () => {
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(404)
@@ -311,7 +310,7 @@ describe('RewardService', () => {
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(400)
@@ -349,7 +348,7 @@ describe('RewardService', () => {
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(404)
@@ -370,7 +369,7 @@ describe('RewardService', () => {
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(404)
@@ -392,7 +391,7 @@ describe('RewardService', () => {
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(400)
