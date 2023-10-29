@@ -16,6 +16,12 @@ export class MissionController {
         return new HttpResponse(201)
     }
 
+    static async editMission(request: HttpRequest): Promise<HttpResponse> {
+        const missionService = Container.get(MissionService)
+        await missionService.editMission(request.params.id, request.body)
+        return new HttpResponse(204)
+    }
+
     static async deactivateMission(request: HttpRequest): Promise<HttpResponse> {
         const missionService = Container.get(MissionService)
         await missionService.deactivateMission(request.params.id)
