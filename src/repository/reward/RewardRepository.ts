@@ -62,14 +62,14 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
 
     async findAvailableRewards(userId: string): Promise<Reward[]> {
         return await this.model.find({ availability: { $gt: 0 }, claimers: { $ne: userId }, active: true })
-            .lean().sort({ number: 1 }).exec()
+            .lean().sort({ number: -1 }).exec()
     }
 
     async findClaimedRewards(userId: string): Promise<Reward[]> {
-        return await this.model.find({ claimers: userId }).lean().sort({ number: 1 }).exec()
+        return await this.model.find({ claimers: userId }).lean().sort({ number: -1 }).exec()
     }
 
     async findHandedRewards(userId: string): Promise<Reward[]> {
-        return await this.model.find({ handed: userId }).lean().sort({ number: 1 }).exec()
+        return await this.model.find({ handed: userId }).lean().sort({ number: -1 }).exec()
     }
 }

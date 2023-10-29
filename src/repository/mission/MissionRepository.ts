@@ -61,7 +61,7 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
                 createdBy: { $ne: userId },
                 active: true
             }
-        ).lean().sort({ number: 1 }).exec()
+        ).lean().sort({ number: -1 }).exec()
     }
 
     async findUserParticipatingMissions(userId: string): Promise<Mission[]> {
@@ -71,10 +71,10 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
                 participants: userId,
                 active: true
             }
-        ).lean().sort({ number: 1 }).exec()
+        ).lean().sort({ number: -1 }).exec()
     }
 
     async findUserCompletedMissions(userId: string): Promise<Mission[]> {
-        return await this.model.find({ completers: userId }).lean().sort({ number: 1 }).exec()
+        return await this.model.find({ completers: userId }).lean().sort({ number: -1 }).exec()
     }
 }
