@@ -36,7 +36,7 @@ routes.delete('/:id', celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required()
     }
-}), Auth.authorizeAdminOnly, makeExpressCallback(MissionController.deleteMission))
+}), Auth.authorizeAdminOnly, makeExpressCallback(MissionController.deactivateMission))
 
 routes.put('/:id/:userId', celebrate({
     [Segments.PARAMS]: {

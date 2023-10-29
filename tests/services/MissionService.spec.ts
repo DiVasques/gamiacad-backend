@@ -14,7 +14,7 @@ describe('MissionService', () => {
             find: jest.fn().mockResolvedValue(missionList),
             create: jest.fn(),
             findById: jest.fn().mockResolvedValue(mission),
-            delete: jest.fn(),
+            deactivateMission: jest.fn(),
             subscribeUser: jest.fn().mockResolvedValue(1),
             completeMission: jest.fn().mockResolvedValue(1)
         }
@@ -64,7 +64,7 @@ describe('MissionService', () => {
         })
     })
 
-    describe('deleteMission', () => {
+    describe('deactivateMission', () => {
         it('should throw an error if the mission is not found', async () => {
             // Arrange
             const id = '123'
@@ -73,7 +73,7 @@ describe('MissionService', () => {
 
             // Act
             try {
-                await missionService.deleteMission(id)
+                await missionService.deactivateMission(id)
             } catch (e) {
                 error = e
             }
@@ -84,39 +84,16 @@ describe('MissionService', () => {
             expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
         })
 
-        it('should throw an error if the mission has completers', async () => {
-            // Arrange
-            const id = '123'
-            const missionWithCompleters = {
-                id: '123',
-                completers: ['user1', 'user2']
-            }
-            missionRepositoryMock.findById.mockResolvedValue(missionWithCompleters)
-            let error
-
-            // Act
-            try {
-                await missionService.deleteMission(id)
-            } catch (e) {
-                error = e
-            }
-            
-            // Assert
-            expect(error).toBeInstanceOf(AppError)
-            expect((error as AppError).status).toBe(400)
-            expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
-        })
-
-        it('should delete the mission if it exists and has no completers', async () => {
+        it('should deactivate the mission if it exists', async () => {
             // Arrange
             const id = '123'
 
             // Act
-            await missionService.deleteMission(id)
+            await missionService.deactivateMission(id)
 
             // Assert
             expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
-            expect(missionRepositoryMock.delete).toHaveBeenCalledWith(id)
+            expect(missionRepositoryMock.deactivateMission).toHaveBeenCalledWith(id)
         })
     })
 

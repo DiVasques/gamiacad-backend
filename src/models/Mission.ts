@@ -10,4 +10,5 @@ export interface Mission {
     createdBy: string
     participants: Array<string>
     completers: Array<string>
+    active: boolean
 }

@@ -11,7 +11,8 @@ export const mission: Mission = {
     participants: [],
     completers: [],
     createdAt: new Date('2043-06-19T20:24:21.417Z'),
-    updatedAt: new Date('2043-06-19T20:24:21.417Z')
+    updatedAt: new Date('2043-06-19T20:24:21.417Z'),
+    active: true
 }
 
 export const missionList: Mission[] = [

@@ -21,15 +21,12 @@ export class MissionService {
         await this.missionRepository.create(mission)
     }
 
-    async deleteMission(id: string) {
+    async deactivateMission(id: string) {
         const mission = await this.missionRepository.findById(id)
         if (!mission) {
             throw new AppError(ExceptionStatus.notFound, 404)
         }
-        if (mission.completers.length > 0) {
-            throw new AppError(ExceptionStatus.invalidRequest, 400)
-        }
-        await this.missionRepository.delete(id)
+        await this.missionRepository.deactivateMission(id)
     }
 
     async subscribeUser(id: string, userId: string) {
