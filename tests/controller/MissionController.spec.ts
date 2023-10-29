@@ -10,7 +10,7 @@ describe('MissionController', () => {
     const missionServiceMock = {
         getMissions: jest.fn().mockResolvedValue(missionList),
         addMission: jest.fn(),
-        deleteMission: jest.fn(),
+        deactivateMission: jest.fn(),
         subscribeUser: jest.fn(),
         completeMission: jest.fn()
     }
@@ -108,7 +108,7 @@ describe('MissionController', () => {
         })
     })
 
-    describe('deleteMission', () => {
+    describe('deactivateMission', () => {
         it('should return a response with status code 204', async () => {
             // Arrange
 
@@ -119,12 +119,12 @@ describe('MissionController', () => {
 
             // Assert
             expect(status).toBe(204)
-            expect(missionServiceMock.deleteMission).toHaveBeenCalledWith(id)
+            expect(missionServiceMock.deactivateMission).toHaveBeenCalledWith(id)
         })
 
         it('should return 404 if no mission was found', async () => {
             // Arrange
-            missionServiceMock.deleteMission.mockRejectedValueOnce(new AppError(ExceptionStatus.notFound, 404))
+            missionServiceMock.deactivateMission.mockRejectedValueOnce(new AppError(ExceptionStatus.notFound, 404))
 
             // Act
             const { status } = await request(app)
@@ -133,21 +133,7 @@ describe('MissionController', () => {
 
             // Assert
             expect(status).toBe(404)
-            expect(missionServiceMock.deleteMission).toHaveBeenCalledWith(id)
-        })
-
-        it('should return 400 if mission has completers', async () => {
-            // Arrange
-            missionServiceMock.deleteMission.mockRejectedValueOnce(new AppError(ExceptionStatus.invalidRequest, 400))
-
-            // Act
-            const { status } = await request(app)
-                .delete(`/api/mission/${id}`)
-                .set(adminHeaders)
-
-            // Assert
-            expect(status).toBe(400)
-            expect(missionServiceMock.deleteMission).toHaveBeenCalledWith(id)
+            expect(missionServiceMock.deactivateMission).toHaveBeenCalledWith(id)
         })
 
         it('should return 403 if user is forbidden', async () => {
@@ -160,7 +146,7 @@ describe('MissionController', () => {
 
             // Assert
             expect(status).toBe(403)
-            expect(missionServiceMock.deleteMission).not.toBeCalled()
+            expect(missionServiceMock.deactivateMission).not.toBeCalled()
         })
     })
 

@@ -17,7 +17,8 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
                 points: { type: Number, required: true },
                 expirationDate: { type: Date, required: true },
                 participants: { type: [String], default: [] },
-                completers: { type: [String], default: [] }
+                completers: { type: [String], default: [] },
+                active: { type: Boolean, default: true },
             },
             {
                 timestamps: true
@@ -42,6 +43,13 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
             { $push: { completers: userId }, $pull: { participants: userId } }
         ).exec()
         return modifiedCount
+    }
+
+    async deactivateMission(_id: string): Promise<void> {
+        await this.model.updateOne(
+            { _id },
+            { $set: { active: false } }
+        ).exec()
     }
 
     async findUserActiveMissions(userId: string): Promise<Mission[]> {

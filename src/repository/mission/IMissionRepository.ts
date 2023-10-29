@@ -7,11 +7,11 @@ export interface IMissionRepository {
 
     create: (Mission: Partial<Mission>) => Promise<void>
     update(_id: string, data: Partial<Mission>, options?: object): Promise<void>
-    delete: (_id: string) => Promise<void>
     findOneAndUpdate: (filter: Partial<Mission>, item: Partial<Mission>) => Promise<(Mission) | null>
     
     subscribeUser: (_id: string, userId: string) => Promise<number>
     completeMission: (_id: string, userId: string) => Promise<number>
+    deactivateMission: (_id: string) => Promise<void>
     
     findUserActiveMissions: (userId: string) => Promise<Mission[]>
     findUserParticipatingMissions: (userId: string) => Promise<Mission[]>
