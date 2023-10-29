@@ -4,12 +4,13 @@ import { rewardList } from '../mocks/Reward'
 import { Container } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
-import { adminHeaders, userHeaders, userId as authorizedUser, unauthorizedUserId} from '../mocks/DefaultHeaders'
+import { adminHeaders, userHeaders, userId as authorizedUser, unauthorizedUserId } from '../mocks/DefaultHeaders'
 
 describe('RewardController', () => {
     const rewardServiceMock = {
         getRewards: jest.fn().mockResolvedValue(rewardList),
         addReward: jest.fn(),
+        editReward: jest.fn(),
         deactivateReward: jest.fn(),
         claimReward: jest.fn(),
         handReward: jest.fn(),
@@ -101,6 +102,60 @@ describe('RewardController', () => {
             // Assert
             expect(status).toBe(403)
             expect(rewardServiceMock.addReward).not.toBeCalled()
+        })
+    })
+
+    describe('editReward', () => {
+        it('should return a response with status code 204', async () => {
+            // Arrange
+            const editReward = {
+                name: 'Reward 2',
+                description: 'this is a description'
+            }
+
+            // Act
+            const { status } = await request(app)
+                .patch(`/api/reward/${id}`).send(editReward)
+                .set(adminHeaders)
+
+            // Assert
+            expect(status).toBe(204)
+            expect(rewardServiceMock.editReward).toHaveBeenCalledWith(id, editReward)
+        })
+
+        it('should return 404 if reward was not found', async () => {
+            // Arrange
+            const editReward = {
+                name: 'Reward 2',
+                description: 'this is a description'
+            }
+            rewardServiceMock.editReward.mockRejectedValueOnce(new AppError(ExceptionStatus.notFound, 404))
+
+            // Act
+            const { status } = await request(app)
+                .patch(`/api/reward/${id}`).send(editReward)
+                .set(adminHeaders)
+
+            // Assert
+            expect(status).toBe(404)
+            expect(rewardServiceMock.editReward).toHaveBeenCalledWith(id, editReward)
+        })
+
+        it('should return 403 if user is forbidden', async () => {
+            // Arrange
+            const editReward = {
+                name: 'Reward 2',
+                description: 'this is a description'
+            }
+
+            // Act
+            const { status } = await request(app)
+                .patch(`/api/reward/${id}`).send(editReward)
+                .set(userHeaders)
+
+            // Assert
+            expect(status).toBe(403)
+            expect(rewardServiceMock.editReward).not.toBeCalled()
         })
     })
 

@@ -1,6 +1,6 @@
 import { RewardService } from '@/services/RewardService'
 import { Reward } from '@/models/Reward'
-import { reward, rewardList } from '../mocks/Reward'
+import { editReward, reward, rewardList } from '../mocks/Reward'
 import { user } from '../mocks/User'
 import AppError from '@/models/error/AppError'
 
@@ -13,6 +13,7 @@ describe('RewardService', () => {
         rewardRepositoryMock = {
             find: jest.fn().mockResolvedValue(rewardList),
             create: jest.fn(),
+            update: jest.fn(),
             findById: jest.fn().mockResolvedValue(reward),
             deactivateReward: jest.fn().mockResolvedValue(1),
             claimReward: jest.fn().mockResolvedValue(1),
@@ -62,6 +63,39 @@ describe('RewardService', () => {
 
             // Assert
             expect(rewardRepositoryMock.create).toHaveBeenCalledWith(reward)
+        })
+    })
+
+    describe('editReward', () => {
+        it('should throw an error if the reward is not found', async () => {
+            // Arrange
+            const id = '123'
+            rewardRepositoryMock.findById.mockResolvedValue(null)
+            let error
+
+            // Act
+            try {
+                await rewardService.editReward(id, editReward)
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).status).toBe(404)
+            expect(rewardRepositoryMock.findById).toHaveBeenCalledWith(id)
+        })
+
+        it('should edit the reward if it exists', async () => {
+            // Arrange
+            const id = '123'
+
+            // Act
+            await rewardService.editReward(id, editReward)
+
+            // Assert
+            expect(rewardRepositoryMock.findById).toHaveBeenCalledWith(id)
+            expect(rewardRepositoryMock.update).toHaveBeenCalledWith(id, editReward)
         })
     })
 

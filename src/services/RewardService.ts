@@ -5,6 +5,7 @@ import { IUserRepository } from '@/repository/user/IUserRepository'
 import { Inject, Service } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
+import { EditReward } from '@/ports/reward/EditReward'
 
 @Service()
 export class RewardService {
@@ -19,6 +20,14 @@ export class RewardService {
 
     async addReward(reward: Partial<Reward>) {
         await this.rewardRepository.create(reward)
+    }
+
+    async editReward(id: string, editReward: EditReward) {
+        const reward = await this.rewardRepository.findById(id)
+        if (!reward) {
+            throw new AppError(ExceptionStatus.notFound, 404)
+        }
+        await this.rewardRepository.update(id, editReward)
     }
 
     async deactivateReward(id: string) {
