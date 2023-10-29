@@ -31,7 +31,7 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
 
     async subscribeUser(_id: string, userId: string): Promise<number> {
         const { modifiedCount } = await this.model.updateOne(
-            { _id, participants: { $ne: userId }, completers: { $ne: userId } },
+            { _id, participants: { $ne: userId }, completers: { $ne: userId }, createdBy: { $ne: userId } },
             { $push: { participants: userId } }
         ).exec()
         return modifiedCount
@@ -58,6 +58,7 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
                 expirationDate: { $gt: new Date() },
                 participants: { $ne: userId },
                 completers: { $ne: userId },
+                createdBy: { $ne: userId },
                 active: true
             }
         ).lean().sort({ number: 1 }).exec()
@@ -65,7 +66,11 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
 
     async findUserParticipatingMissions(userId: string): Promise<Mission[]> {
         return await this.model.find(
-            { expirationDate: { $gt: new Date() }, participants: userId, active: true }
+            {
+                expirationDate: { $gt: new Date() },
+                participants: userId,
+                active: true
+            }
         ).lean().sort({ number: 1 }).exec()
     }
 
