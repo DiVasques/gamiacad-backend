@@ -16,7 +16,8 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
                 price: { type: Number, required: true },
                 availability: { type: Number, required: true },
                 claimers: { type: [String], default: [] },
-                handed: { type: [String], default: [] }
+                handed: { type: [String], default: [] },
+                active: { type: Boolean, default: true },
             },
             {
                 timestamps: true
@@ -29,7 +30,7 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
 
     async claimReward(_id: string, userId: string): Promise<number> {
         const { modifiedCount } = await this.model.updateOne(
-            { _id, availability: { $gt: 0 }, claimers: {$ne: userId} },
+            { _id, availability: { $gt: 0 }, claimers: { $ne: userId }, active: true },
             { $push: { claimers: userId }, $inc: { availability: -1 } }
         ).exec()
         return modifiedCount
@@ -51,15 +52,24 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
         return modifiedCount
     }
 
+    async deactivateReward(_id: string): Promise<number> {
+        const { modifiedCount } = await this.model.updateOne(
+            { _id, active: { $ne: false } },
+            { $set: { active: false } }
+        ).exec()
+        return modifiedCount
+    }
+
     async findAvailableRewards(userId: string): Promise<Reward[]> {
-        return await this.model.find({ availability: { $gt: 0 }, claimers: {$ne: userId} }).lean().exec()
+        return await this.model.find({ availability: { $gt: 0 }, claimers: { $ne: userId }, active: true })
+            .lean().sort({ number: 1 }).exec()
     }
 
     async findClaimedRewards(userId: string): Promise<Reward[]> {
-        return await this.model.find({ claimers: userId }).lean().exec()
+        return await this.model.find({ claimers: userId }).lean().sort({ number: 1 }).exec()
     }
 
     async findHandedRewards(userId: string): Promise<Reward[]> {
-        return await this.model.find({ handed: userId }).lean().exec()
+        return await this.model.find({ handed: userId }).lean().sort({ number: 1 }).exec()
     }
 }

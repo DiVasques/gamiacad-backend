@@ -10,7 +10,7 @@ describe('RewardController', () => {
     const rewardServiceMock = {
         getRewards: jest.fn().mockResolvedValue(rewardList),
         addReward: jest.fn(),
-        deleteReward: jest.fn(),
+        deactivateReward: jest.fn(),
         claimReward: jest.fn(),
         handReward: jest.fn(),
         cancelClaim: jest.fn()
@@ -104,7 +104,7 @@ describe('RewardController', () => {
         })
     })
 
-    describe('deleteReward', () => {
+    describe('deactivateReward', () => {
         it('should return a response with status code 204', async () => {
             // Arrange
 
@@ -115,12 +115,12 @@ describe('RewardController', () => {
 
             // Assert
             expect(status).toBe(204)
-            expect(rewardServiceMock.deleteReward).toHaveBeenCalledWith(id)
+            expect(rewardServiceMock.deactivateReward).toHaveBeenCalledWith(id)
         })
 
         it('should return 404 if no reward was found', async () => {
             // Arrange
-            rewardServiceMock.deleteReward.mockRejectedValueOnce(new AppError(ExceptionStatus.notFound, 404))
+            rewardServiceMock.deactivateReward.mockRejectedValueOnce(new AppError(ExceptionStatus.notFound, 404))
 
             // Act
             const { status } = await request(app)
@@ -129,12 +129,12 @@ describe('RewardController', () => {
 
             // Assert
             expect(status).toBe(404)
-            expect(rewardServiceMock.deleteReward).toHaveBeenCalledWith(id)
+            expect(rewardServiceMock.deactivateReward).toHaveBeenCalledWith(id)
         })
 
-        it('should return 400 if reward was handed', async () => {
+        it('should return 400 if reward is inactive', async () => {
             // Arrange
-            rewardServiceMock.deleteReward.mockRejectedValueOnce(new AppError(ExceptionStatus.invalidRequest, 400))
+            rewardServiceMock.deactivateReward.mockRejectedValueOnce(new AppError(ExceptionStatus.invalidRequest, 400))
 
             // Act
             const { status } = await request(app)
@@ -143,7 +143,7 @@ describe('RewardController', () => {
 
             // Assert
             expect(status).toBe(400)
-            expect(rewardServiceMock.deleteReward).toHaveBeenCalledWith(id)
+            expect(rewardServiceMock.deactivateReward).toHaveBeenCalledWith(id)
         })
 
         it('should return 403 if user is forbidden', async () => {
@@ -156,7 +156,7 @@ describe('RewardController', () => {
 
             // Assert
             expect(status).toBe(403)
-            expect(rewardServiceMock.deleteReward).not.toBeCalled()
+            expect(rewardServiceMock.deactivateReward).not.toBeCalled()
         })
     })
 

@@ -21,15 +21,19 @@ export class RewardService {
         await this.rewardRepository.create(reward)
     }
 
-    async deleteReward(id: string) {
+    async deactivateReward(id: string) {
         const reward = await this.rewardRepository.findById(id)
         if (!reward) {
             throw new AppError(ExceptionStatus.notFound, 404)
         }
-        if (reward.handed.length > 0) {
-            throw new AppError(ExceptionStatus.invalidRequest, 400)
+        const modifiedCount = await this.rewardRepository.deactivateReward(id)
+        if (modifiedCount === 0) {
+            throw new AppError(ExceptionStatus.rewardAlreadyInactive, 400)
         }
-        await this.rewardRepository.delete(id)
+        await Promise.all(reward.claimers.map(userId => {
+            this.rewardRepository.rollbackClaim(id, userId)
+            this.userRepository.givePoints(userId, reward.price, true)
+        }))
     }
 
     async claimReward(id: string, userId: string) {

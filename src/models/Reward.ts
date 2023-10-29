@@ -9,4 +9,5 @@ export interface Reward {
     updatedAt: Date
     claimers: Array<string>
     handed: Array<string>
+    active: boolean
 }

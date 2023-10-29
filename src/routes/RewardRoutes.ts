@@ -35,7 +35,7 @@ routes.delete('/:id', celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required()
     }
-}), Auth.authorizeAdminOnly, makeExpressCallback(RewardController.deleteReward))
+}), Auth.authorizeAdminOnly, makeExpressCallback(RewardController.deactivateReward))
 
 routes.put('/:id/:userId', celebrate({
     [Segments.PARAMS]: {

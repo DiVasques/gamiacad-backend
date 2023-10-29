@@ -7,12 +7,12 @@ export interface IRewardRepository {
 
     create: (Reward: Partial<Reward>) => Promise<void>
     update(_id: string, data: Partial<Reward>, options?: object): Promise<void>
-    delete: (_id: string) => Promise<void>
     findOneAndUpdate: (filter: Partial<Reward>, item: Partial<Reward>) => Promise<(Reward) | null>
 
     claimReward: (_id: string, userId: string) => Promise<number>
     rollbackClaim: (_id: string, userId: string) => Promise<number>
     handReward: (_id: string, userId: string) => Promise<number>
+    deactivateReward: (_id: string) => Promise<number>
     
     findAvailableRewards: (userId: string) => Promise<Reward[]>
     findClaimedRewards: (userId: string) => Promise<Reward[]>

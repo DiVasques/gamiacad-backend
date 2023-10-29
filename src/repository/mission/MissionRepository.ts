@@ -31,7 +31,7 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
 
     async subscribeUser(_id: string, userId: string): Promise<number> {
         const { modifiedCount } = await this.model.updateOne(
-            { _id, participants: { $ne: userId }, completers: { $ne: userId }, createdBy: { $ne: userId } },
+            { _id, participants: { $ne: userId }, completers: { $ne: userId }, createdBy: { $ne: userId }, active: true },
             { $push: { participants: userId } }
         ).exec()
         return modifiedCount
