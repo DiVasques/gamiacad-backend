@@ -16,6 +16,12 @@ export class RewardController {
         return new HttpResponse(201)
     }
 
+    static async editReward(request: HttpRequest): Promise<HttpResponse> {
+        const rewardService = Container.get(RewardService)
+        await rewardService.editReward(request.params.id, request.body)
+        return new HttpResponse(204)
+    }
+
     static async deactivateReward(request: HttpRequest): Promise<HttpResponse> {
         const rewardService = Container.get(RewardService)
         await rewardService.deactivateReward(request.params.id)

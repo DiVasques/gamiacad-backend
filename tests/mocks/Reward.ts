@@ -1,4 +1,5 @@
 import { Reward } from '@/models/Reward'
+import { EditReward } from '@/ports/reward/EditReward'
 
 export const reward: Reward = {
     _id: '75dd7fd0-347e-4e38-821d-2a49438d15c2',
@@ -12,6 +13,11 @@ export const reward: Reward = {
     createdAt: new Date('2043-06-19T20:24:21.417Z'),
     updatedAt: new Date('2043-06-19T20:24:21.417Z'),
     active: true
+}
+
+export const editReward: EditReward = {
+    name: 'Reward 1',
+    description: 'This is a description'
 }
 
 export const rewardList: Reward[] = [

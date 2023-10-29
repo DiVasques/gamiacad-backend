@@ -23,6 +23,11 @@ const addRewardSchema = StandardOptionsJoi.object().keys({
     availability: StandardOptionsJoi.number().greater(0).required()
 })
 
+const editRewardSchema = StandardOptionsJoi.object().keys({
+    name: StandardOptionsJoi.string().regex(REWARD_NAME_REGEX),
+    description: StandardOptionsJoi.string().regex(DESCRIPTION_REGEX)
+})
+
 routes.get('/', celebrate({
     [Segments.QUERY]: getRewardsSchema
 }), Auth.authorizeAdminOnly, makeExpressCallback(RewardController.getRewards))
@@ -30,6 +35,13 @@ routes.get('/', celebrate({
 routes.post('/', celebrate({
     [Segments.BODY]: addRewardSchema
 }), Auth.authorizeAdminOnly, makeExpressCallback(RewardController.addReward))
+
+routes.patch('/:id', celebrate({
+    [Segments.PARAMS]: {
+        id: StandardOptionsJoi.string().uuid().required()
+    },
+    [Segments.BODY]: editRewardSchema
+}), Auth.authorizeAdminOnly, makeExpressCallback(RewardController.editReward))
 
 routes.delete('/:id', celebrate({
     [Segments.PARAMS]: {
