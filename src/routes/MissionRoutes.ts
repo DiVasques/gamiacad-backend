@@ -24,6 +24,12 @@ const addMissionSchema = StandardOptionsJoi.object().keys({
     createdBy: StandardOptionsJoi.string().uuid().required()
 })
 
+const editMissionSchema = StandardOptionsJoi.object().keys({
+    name: StandardOptionsJoi.string().regex(MISSION_NAME_REGEX),
+    description: StandardOptionsJoi.string().regex(DESCRIPTION_REGEX),
+    expirationDate: StandardOptionsJoi.date().min(new Date())
+})
+
 routes.get('/', celebrate({
     [Segments.QUERY]: getMissionsSchema
 }), Auth.authorizeAdminOnly, makeExpressCallback(MissionController.getMissions))
@@ -31,6 +37,13 @@ routes.get('/', celebrate({
 routes.post('/', celebrate({
     [Segments.BODY]: addMissionSchema
 }), Auth.authorizeAdminOnly, makeExpressCallback(MissionController.addMission))
+
+routes.patch('/:id', celebrate({
+    [Segments.PARAMS]: {
+        id: StandardOptionsJoi.string().uuid().required()
+    },
+    [Segments.BODY]: editMissionSchema
+}), Auth.authorizeAdminOnly, makeExpressCallback(MissionController.editMission))
 
 routes.delete('/:id', celebrate({
     [Segments.PARAMS]: {

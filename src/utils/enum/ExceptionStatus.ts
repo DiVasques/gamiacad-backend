@@ -18,6 +18,7 @@ enum ExceptionStatus {
   rewardUnavailable = 'This reward is not available anymore or was already claimed by this user',
   rewardAlreadyInactive = 'This reward is already inactive',
   cantHandOrCancelReward = 'User did not claim this reward',
-  insufficientBalance = 'User does not have sufficient balance to claim this reward'
+  insufficientBalance = 'User does not have sufficient balance to claim this reward',
+  invalidExpirationDate = 'The expiration date must be greater than the one set before'
 }
 export default ExceptionStatus

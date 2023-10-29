@@ -10,6 +10,7 @@ describe('MissionController', () => {
     const missionServiceMock = {
         getMissions: jest.fn().mockResolvedValue(missionList),
         addMission: jest.fn(),
+        editMission: jest.fn(),
         deactivateMission: jest.fn(),
         subscribeUser: jest.fn(),
         completeMission: jest.fn()
@@ -108,6 +109,86 @@ describe('MissionController', () => {
         })
     })
 
+    describe('editMission', () => {
+        it('should return a response with status code 204', async () => {
+            // Arrange
+            const editMission = {
+                name: 'Mission 1',
+                description: 'this is a description',
+                expirationDate: new Date(9999999999999)
+            }
+
+            // Act
+            const { status } = await request(app)
+                .patch(`/api/mission/${id}`)
+                .set(adminHeaders)
+                .send(editMission)
+
+            // Assert
+            expect(status).toBe(204)
+            expect(missionServiceMock.editMission).toHaveBeenCalledWith(id, editMission)
+        })
+
+        it('should return 404 if no mission was found', async () => {
+            // Arrange
+            const editMission = {
+                name: 'Mission 1',
+                description: 'this is a description',
+                expirationDate: new Date(9999999999999)
+            }
+            missionServiceMock.editMission.mockRejectedValueOnce(new AppError(ExceptionStatus.notFound, 404))
+
+            // Act
+            const { status } = await request(app)
+                .patch(`/api/mission/${id}`)
+                .set(adminHeaders)
+                .send(editMission)
+
+            // Assert
+            expect(status).toBe(404)
+            expect(missionServiceMock.editMission).toHaveBeenCalledWith(id, editMission)
+        })
+
+        it('should return 400 if expiration date is invalid', async () => {
+            // Arrange
+            const editMission = {
+                name: 'Mission 1',
+                description: 'this is a description',
+                expirationDate: new Date(9999999999999)
+            }
+            missionServiceMock.editMission.mockRejectedValueOnce(new AppError(ExceptionStatus.invalidExpirationDate, 400))
+
+            // Act
+            const { status } = await request(app)
+                .patch(`/api/mission/${id}`)
+                .set(adminHeaders)
+                .send(editMission)
+
+            // Assert
+            expect(status).toBe(400)
+            expect(missionServiceMock.editMission).toHaveBeenCalledWith(id, editMission)
+        })
+
+        it('should return 403 if user is forbidden', async () => {
+            // Arrange
+            const editMission = {
+                name: 'Mission 1',
+                description: 'this is a description',
+                expirationDate: new Date(9999999999999)
+            }
+
+            // Act
+            const { status } = await request(app)
+                .patch(`/api/mission/${id}`)
+                .set(userHeaders)
+                .send(editMission)
+
+            // Assert
+            expect(status).toBe(403)
+            expect(missionServiceMock.editMission).not.toBeCalled()
+        })
+    })
+
     describe('deactivateMission', () => {
         it('should return a response with status code 204', async () => {
             // Arrange
@@ -184,7 +265,7 @@ describe('MissionController', () => {
         it('should return 400 if user already participating on the mission', async () => {
             // Arrange
             const userId = authorizedUser
-            missionServiceMock.subscribeUser.mockRejectedValueOnce(new AppError(ExceptionStatus.invalidRequest, 400))
+            missionServiceMock.subscribeUser.mockRejectedValueOnce(new AppError(ExceptionStatus.rewardAlreadyInactive, 400))
 
             // Act
             const { status } = await request(app)

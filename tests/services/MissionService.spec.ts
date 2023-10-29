@@ -1,6 +1,6 @@
 import { MissionService } from '@/services/MissionService'
 import { Mission } from '@/models/Mission'
-import { mission, missionList } from '../mocks/Mission'
+import { editMission, mission, missionList } from '../mocks/Mission'
 import { user } from '../mocks/User'
 import AppError from '@/models/error/AppError'
 
@@ -13,6 +13,7 @@ describe('MissionService', () => {
         missionRepositoryMock = {
             find: jest.fn().mockResolvedValue(missionList),
             create: jest.fn(),
+            update: jest.fn(),
             findById: jest.fn().mockResolvedValue(mission),
             deactivateMission: jest.fn(),
             subscribeUser: jest.fn().mockResolvedValue(1),
@@ -64,6 +65,58 @@ describe('MissionService', () => {
         })
     })
 
+    describe('editMission', () => {
+        it('should throw an error if the mission is not found', async () => {
+            // Arrange
+            const id = '123'
+            missionRepositoryMock.findById.mockResolvedValue(null)
+            let error
+
+            // Act
+            try {
+                await missionService.editMission(id, editMission)
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).status).toBe(404)
+            expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
+        })
+
+        it('should throw an error if the expiration is less than the original', async () => {
+            // Arrange
+            const id = '123'
+            const invalidEditMission = { ...editMission, expirationDate: new Date('2003-06-25T20:20:14.000Z') }
+            let error
+
+            // Act
+            try {
+                await missionService.editMission(id, invalidEditMission)
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).status).toBe(400)
+            expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
+        })
+
+        it('should update the mission if it exists', async () => {
+            // Arrange
+            const id = '123'
+
+            // Act
+            await missionService.editMission(id, editMission)
+
+            // Assert
+            expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
+            expect(missionRepositoryMock.update).toHaveBeenCalledWith(id, editMission)
+        })
+    })
+
     describe('deactivateMission', () => {
         it('should throw an error if the mission is not found', async () => {
             // Arrange
@@ -77,7 +130,7 @@ describe('MissionService', () => {
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(404)
@@ -111,7 +164,7 @@ describe('MissionService', () => {
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(404)
@@ -131,7 +184,7 @@ describe('MissionService', () => {
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(404)
@@ -152,7 +205,7 @@ describe('MissionService', () => {
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(400)
@@ -190,7 +243,7 @@ describe('MissionService', () => {
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(404)
@@ -211,7 +264,7 @@ describe('MissionService', () => {
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(404)
@@ -233,7 +286,7 @@ describe('MissionService', () => {
             } catch (e) {
                 error = e
             }
-            
+
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(400)

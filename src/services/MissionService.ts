@@ -5,6 +5,7 @@ import { IUserRepository } from '@/repository/user/IUserRepository'
 import { Inject, Service } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
+import { EditMission } from '@/ports/mission/EditMission'
 
 @Service()
 export class MissionService {
@@ -19,6 +20,17 @@ export class MissionService {
 
     async addMission(mission: Partial<Mission>) {
         await this.missionRepository.create(mission)
+    }
+
+    async editMission(id: string, editMission: EditMission) {
+        const mission = await this.missionRepository.findById(id)
+        if (!mission) {
+            throw new AppError(ExceptionStatus.notFound, 404)
+        }
+        if (!!editMission.expirationDate && mission.expirationDate > editMission.expirationDate) {
+            throw new AppError(ExceptionStatus.invalidExpirationDate, 400)
+        }
+        await this.missionRepository.update(id, editMission)
     }
 
     async deactivateMission(id: string) {

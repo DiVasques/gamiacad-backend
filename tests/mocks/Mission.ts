@@ -1,4 +1,5 @@
 import { Mission } from '@/models/Mission'
+import { EditMission } from '@/ports/mission/EditMission'
 
 export const mission: Mission = {
     _id: '75dd7fd0-347e-4e38-821d-2a49438d15c2',
@@ -13,6 +14,12 @@ export const mission: Mission = {
     createdAt: new Date('2043-06-19T20:24:21.417Z'),
     updatedAt: new Date('2043-06-19T20:24:21.417Z'),
     active: true
+}
+
+export const editMission: EditMission = {
+    name: 'Mission 1 Edited',
+    description: 'This is a edited description',
+    expirationDate: new Date('2050-06-25T20:20:14.000Z')
 }
 
 export const missionList: Mission[] = [
