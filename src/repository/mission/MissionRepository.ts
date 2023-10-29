@@ -53,14 +53,23 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
     }
 
     async findUserActiveMissions(userId: string): Promise<Mission[]> {
-        return await this.model.find({ expirationDate: { $gt: new Date() }, participants: { $ne: userId }, completers: { $ne: userId } }).lean().exec()
+        return await this.model.find(
+            {
+                expirationDate: { $gt: new Date() },
+                participants: { $ne: userId },
+                completers: { $ne: userId },
+                active: true
+            }
+        ).lean().sort({ number: 1 }).exec()
     }
 
     async findUserParticipatingMissions(userId: string): Promise<Mission[]> {
-        return await this.model.find({ expirationDate: { $gt: new Date() }, participants: userId }).lean().exec()
+        return await this.model.find(
+            { expirationDate: { $gt: new Date() }, participants: userId, active: true }
+        ).lean().sort({ number: 1 }).exec()
     }
 
     async findUserCompletedMissions(userId: string): Promise<Mission[]> {
-        return await this.model.find({ completers: userId }).lean().exec()
+        return await this.model.find({ completers: userId }).lean().sort({ number: 1 }).exec()
     }
 }
