@@ -9,7 +9,6 @@ const routes = Router()
 
 const REGISTRATION_REGEX = /^\d{11}$/
 const PASSWORD_REGEX = /^(?=.*\d)(?=.*[A-Z])(?=.*\W).{12,}$/
-const JWT_REGEX = /^[\w-]+\.[\w-]+\.[\w-]+$/
 
 const userAuthSchema = StandardOptionsJoi.object().keys({
     registration: StandardOptionsJoi.string().regex(REGISTRATION_REGEX).required(),
@@ -28,16 +27,8 @@ routes.post('/login/admin', celebrate({
     [Segments.BODY]: userAuthSchema
 }), makeExpressCallback(AuthController.loginAdmin))
 
-routes.post('/login/refresh', celebrate({
-    [Segments.BODY]: StandardOptionsJoi.object().keys({
-        token: StandardOptionsJoi.string().regex(JWT_REGEX).required()
-    })
-}), makeExpressCallback(AuthController.refreshToken))
+routes.post('/login/refresh', makeExpressCallback(AuthController.refreshToken))
 
-routes.post('/logout', celebrate({
-    [Segments.BODY]: StandardOptionsJoi.object().keys({
-        token: StandardOptionsJoi.string().regex(JWT_REGEX).required()
-    })
-}), makeExpressCallback(AuthController.logoutUser))
+routes.post('/logout', makeExpressCallback(AuthController.logoutUser))
 
 export default routes
