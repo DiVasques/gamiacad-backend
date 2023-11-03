@@ -1,6 +1,6 @@
 import { UserService } from '@/services/UserService'
-import { mission, missionList, userMission } from '../mocks/Mission'
-import { reward, rewardList, userReward } from '../mocks/Reward'
+import { userMission } from '../mocks/Mission'
+import { rewardList, userReward } from '../mocks/Reward'
 import { user, userList } from '../mocks/User'
 import { User } from '@/models/User'
 import AppError from '@/models/error/AppError'
@@ -20,9 +20,9 @@ describe('UserService', () => {
             delete: jest.fn()
         }
         missionRepositoryMock = {
-            findUserActiveMissions: jest.fn().mockResolvedValue(missionList),
-            findUserParticipatingMissions: jest.fn().mockResolvedValue(missionList),
-            findUserCompletedMissions: jest.fn().mockResolvedValue(missionList)
+            findUserActiveMissions: jest.fn().mockResolvedValue([userMission]),
+            findUserParticipatingMissions: jest.fn().mockResolvedValue([userMission]),
+            findUserCompletedMissions: jest.fn().mockResolvedValue([userMission])
         }
         rewardRepositoryMock = {
             findAvailableRewards: jest.fn().mockResolvedValue(rewardList),
@@ -90,13 +90,13 @@ describe('UserService', () => {
         it('should return the active and completed missions', async () => {
             // Arrange
             const id = '412312312'
-            missionRepositoryMock.findUserActiveMissions.mockResolvedValueOnce([mission])
+            missionRepositoryMock.findUserActiveMissions.mockResolvedValueOnce([userMission])
             missionRepositoryMock.findUserParticipatingMissions.mockResolvedValueOnce([
-                mission,
-                { ...mission, name: 'Foo', _id: '12345', participants: [id] }
+                userMission,
+                { ...userMission, name: 'Foo', _id: '12345' }
             ])
             missionRepositoryMock.findUserCompletedMissions.mockResolvedValueOnce([
-                { ...mission, name: 'Bar', _id: '12346', completers: [id] }
+                { ...userMission, name: 'Bar', _id: '12346' }
             ])
 
             // Act
@@ -118,13 +118,13 @@ describe('UserService', () => {
         it('should return the user available, claimed and received rewards', async () => {
             // Arrange
             const id = '412312312'
-            rewardRepositoryMock.findAvailableRewards.mockResolvedValueOnce([reward])
+            rewardRepositoryMock.findAvailableRewards.mockResolvedValueOnce([userReward])
             rewardRepositoryMock.findClaimedRewards.mockResolvedValueOnce([
-                { ...reward, name: 'Foo', _id: '12345', claimers: [id] },
-                { ...reward, name: 'Beer', _id: '1234551451', claimers: [id, id, 'not-id'] }
+                { ...userReward, name: 'Foo', _id: '12345' },
+                { ...userReward, name: 'Beer', _id: '1234551451' }
             ])
             rewardRepositoryMock.findHandedRewards.mockResolvedValueOnce([
-                { ...reward, name: 'Bar', _id: '12346', handed: [id, id] }
+                { ...userReward, name: 'Bar', _id: '12346', count: 3 }
             ])
 
             // Act
@@ -136,8 +136,8 @@ describe('UserService', () => {
             expect(rewardRepositoryMock.findHandedRewards).toHaveBeenCalledWith(id)
             expect(result).toEqual({
                 available: [userReward],
-                claimed: [{ ...userReward, name: 'Foo', _id: '12345', count: 1 }, { ...userReward, name: 'Beer', _id: '1234551451', count: 2 }],
-                received: [{ ...userReward, name: 'Bar', _id: '12346', count: 2 }]
+                claimed: [{ ...userReward, name: 'Foo', _id: '12345' }, { ...userReward, name: 'Beer', _id: '1234551451' }],
+                received: [{ ...userReward, name: 'Bar', _id: '12346', count: 3 }]
             })
         })
     })

@@ -1,5 +1,3 @@
-import { Mission } from '@/models/Mission'
-import { Reward } from '@/models/Reward'
 import { User } from '@/models/User'
 import { ServiceToken } from '@/config/di'
 import { IMissionRepository } from '@/repository/mission/IMissionRepository'
@@ -8,8 +6,6 @@ import { IUserRepository } from '@/repository/user/IUserRepository'
 import { Inject, Service } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
-import { UserMission } from '@/ports/user/UserMission'
-import { UserReward } from '@/ports/user/UserReward'
 import { UserMissionsResult } from '@/ports/user/UserMissionsResult'
 import { UserRewardsResult } from '@/ports/user/UserRewardsResult'
 
@@ -51,9 +47,9 @@ export class UserService {
             ]
         )
         return {
-            active: activeMissions.map(this.parseMission),
-            participating: participatingMissions.map(this.parseMission),
-            completed: completedMissions.map(this.parseMission)
+            active: activeMissions,
+            participating: participatingMissions,
+            completed: completedMissions
         }
     }
 
@@ -66,33 +62,9 @@ export class UserService {
             ]
         )
         return {
-            available: availableRewards.map(this.parseReward),
-            claimed: claimedRewards.map((reward) => this.parseRewardWithCount(id, reward, 'claimers')),
-            received: receivedRewards.map((reward) => this.parseRewardWithCount(id, reward, 'handed'))
-        }
-    }
-
-    private parseMission(mission: Mission): UserMission {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { participants, completers, ...parsedMission } = mission
-        return parsedMission
-    }
-
-    private parseReward(reward: Reward): UserReward {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { claimers, handed, ...parsedReward } = reward
-        return parsedReward
-    }
-
-    private parseRewardWithCount(id: string, reward: Reward, arrayToCount: 'claimers' | 'handed'): UserReward {
-        return {
-            ...this.parseReward(reward),
-            count: reward[arrayToCount].reduce((count, userId) => {
-                if (userId === id) {
-                    return count + 1
-                }
-                return count
-            }, 0)
+            available: availableRewards,
+            claimed: claimedRewards,
+            received: receivedRewards
         }
     }
 }

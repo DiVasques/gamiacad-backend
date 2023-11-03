@@ -1,5 +1,6 @@
 import { Mission } from '@/models/Mission'
 import { MissionWithUsers } from '@/models/MissionWithUsers'
+import { UserMission } from '@/models/UserMission'
 import { BaseRepository } from '@/repository/base/BaseRepository'
 import { IMissionRepository } from '@/repository/mission/IMissionRepository'
 import mongoose, { Document, Schema } from 'mongoose'
@@ -64,13 +65,13 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
                     },
                 },
                 {
-                  $unwind: {
-                    path: '$createdByInfo',
-                    preserveNullAndEmptyArrays: true
-                  }
+                    $unwind: {
+                        path: '$createdByInfo',
+                        preserveNullAndEmptyArrays: true
+                    }
                 }
             ]
-        )
+        ).sort({ number: -1 }).exec()
     }
 
     async subscribeUser(_id: string, userId: string): Promise<number> {
@@ -96,29 +97,63 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
         ).exec()
     }
 
-    async findUserActiveMissions(userId: string): Promise<Mission[]> {
-        return await this.model.find(
-            {
-                expirationDate: { $gt: new Date() },
-                participants: { $ne: userId },
-                completers: { $ne: userId },
-                createdBy: { $ne: userId },
-                active: true
-            }
-        ).lean().sort({ number: -1 }).exec()
+    async findUserActiveMissions(userId: string): Promise<UserMission[]> {
+        return await this.model.aggregate(
+            [
+                {
+                    $match: {
+                        expirationDate: { $gt: new Date() },
+                        participants: { $ne: userId },
+                        completers: { $ne: userId },
+                        createdBy: { $ne: userId },
+                        active: true
+                    }
+                },
+                {
+                    $project: {
+                        participants: 0,
+                        completers: 0
+                    }
+                }
+            ]
+        ).sort({ number: -1 }).exec()
     }
 
-    async findUserParticipatingMissions(userId: string): Promise<Mission[]> {
-        return await this.model.find(
-            {
-                expirationDate: { $gt: new Date() },
-                participants: userId,
-                active: true
-            }
-        ).lean().sort({ number: -1 }).exec()
+    async findUserParticipatingMissions(userId: string): Promise<UserMission[]> {
+        return await this.model.aggregate(
+            [
+                {
+                    $match: {
+                        expirationDate: { $gt: new Date() },
+                        participants: userId,
+                        active: true
+                    }
+                },
+                {
+                    $project: {
+                        participants: 0,
+                        completers: 0
+                    }
+                }
+            ]
+        ).sort({ number: -1 }).exec()
     }
 
-    async findUserCompletedMissions(userId: string): Promise<Mission[]> {
-        return await this.model.find({ completers: userId }).lean().sort({ number: -1 }).exec()
+    async findUserCompletedMissions(userId: string): Promise<UserMission[]> {
+        return await this.model.aggregate(
+            [
+                {
+                    $match: {
+                        completers: userId
+                    }
+                },
+                {
+                    $project: {
+                        participants: 0,
+                        completers: 0
+                    }
+                }
+            ]
+        ).sort({ number: -1 }).exec()
     }
 }

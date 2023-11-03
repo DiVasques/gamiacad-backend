@@ -1,5 +1,6 @@
 import { Reward } from '@/models/Reward'
 import { RewardWithUsers } from '@/models/RewardWithUsers'
+import { UserReward } from '@/models/UserReward'
 import { BaseRepository } from '@/repository/base/BaseRepository'
 import { IRewardRepository } from '@/repository/reward/IRewardRepository'
 import mongoose, { Document, Schema } from 'mongoose'
@@ -54,7 +55,7 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
                     }
                 }
             ]
-        )
+        ).sort({ number: -1 }).exec()
     }
 
     async claimReward(_id: string, userId: string): Promise<number> {
@@ -89,16 +90,72 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
         return modifiedCount
     }
 
-    async findAvailableRewards(userId: string): Promise<Reward[]> {
-        return await this.model.find({ availability: { $gt: 0 }, claimers: { $ne: userId }, active: true })
-            .lean().sort({ number: -1 }).exec()
+    async findAvailableRewards(userId: string): Promise<UserReward[]> {
+        return await this.model.aggregate(
+            [
+                {
+                    $match: {
+                        availability: { $gt: 0 },
+                        claimers: { $ne: userId },
+                        active: true
+                    }
+                },
+                {
+                    $project: {
+                        claimers: 0,
+                        handed: 0
+                    }
+                }
+            ]
+        ).sort({ name: 1 }).exec()
     }
 
-    async findClaimedRewards(userId: string): Promise<Reward[]> {
-        return await this.model.find({ claimers: userId }).lean().sort({ number: -1 }).exec()
+    async findClaimedRewards(userId: string): Promise<UserReward[]> {
+        return await this.model.aggregate(
+            [
+                {
+                    $match: {
+                        claimers: userId
+                    }
+                },
+                {
+                    $project: {
+                        claimers: 0,
+                        handed: 0
+                    }
+                }
+            ]
+        ).sort({ name: 1 }).exec()
     }
 
-    async findHandedRewards(userId: string): Promise<Reward[]> {
-        return await this.model.find({ handed: userId }).lean().sort({ number: -1 }).exec()
+    async findHandedRewards(userId: string): Promise<UserReward[]> {
+        return await this.model.aggregate(
+            [
+                {
+                    $match: {
+                        handed: userId
+                    }
+                },
+                {
+                    $addFields: {
+                        count: {
+                            $size: {
+                                $filter: {
+                                    input: '$handed',
+                                    as: 'handedList',
+                                    cond: { $eq: ['$$handedList', userId] }
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        claimers: 0,
+                        handed: 0
+                    }
+                }
+            ]
+        ).sort({ name: 1 }).exec()
     }
 }
