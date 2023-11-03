@@ -3,6 +3,7 @@ import { Mission } from '@/models/Mission'
 import { editMission, mission, missionList } from '../mocks/Mission'
 import { user } from '../mocks/User'
 import AppError from '@/models/error/AppError'
+import { userId } from '../mocks/DefaultHeaders'
 
 describe('MissionService', () => {
     let missionService: MissionService
@@ -86,15 +87,14 @@ describe('MissionService', () => {
                 name: 'Mission 1',
                 description: 'this is a description',
                 points: 150,
-                expirationDate: new Date(9999999999999),
-                createdBy: '1b6ec50e-9be1-459f-bd69-11bfa325d03b'
+                expirationDate: new Date(9999999999999)
             }
 
             // Act
-            await missionService.addMission(mission)
+            await missionService.addMission(mission, userId)
 
             // Assert
-            expect(missionRepositoryMock.create).toHaveBeenCalledWith(mission)
+            expect(missionRepositoryMock.create).toHaveBeenCalledWith({ ...mission, createdBy: userId })
         })
     })
 

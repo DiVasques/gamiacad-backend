@@ -14,7 +14,8 @@ export default function makeExpressCallback(controller: (request: HttpRequest) =
       headers: {
         'Content-Type': req.get('Content-Type'),
         Referer: req.get('referer'),
-        'User-Agent': req.get('User-Agent')
+        'User-Agent': req.get('User-Agent'),
+        userId: req.headers['userId'] as string
       }
     }
     controller(httpRequest)
