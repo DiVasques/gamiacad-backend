@@ -6,6 +6,7 @@ import { Inject, Service } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
 import { EditMission } from '@/ports/mission/EditMission'
+import { MissionWithUsers } from '@/models/MissionWithUsers'
 
 @Service()
 export class MissionService {
@@ -22,8 +23,8 @@ export class MissionService {
         return mission
     }
 
-    async getMissions(filter: Partial<Mission>): Promise<Mission[]> {
-        return await this.missionRepository.find(filter)
+    async getMissions(filter: Partial<Mission>): Promise<MissionWithUsers[]> {
+        return await this.missionRepository.getMissionsWithUsers(filter)
     }
 
     async addMission(mission: Partial<Mission>, createdBy: string) {

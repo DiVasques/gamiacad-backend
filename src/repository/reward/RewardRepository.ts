@@ -1,4 +1,5 @@
 import { Reward } from '@/models/Reward'
+import { RewardWithUsers } from '@/models/RewardWithUsers'
 import { BaseRepository } from '@/repository/base/BaseRepository'
 import { IRewardRepository } from '@/repository/reward/IRewardRepository'
 import mongoose, { Document, Schema } from 'mongoose'
@@ -26,6 +27,34 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
         rewardSchema.plugin(autoIncrement.plugin, { model: 'Reward', field: 'number' })
         const rewardModel = mongoose.model<Reward & Document>('Reward', rewardSchema, 'Reward')
         super(rewardModel)
+    }
+
+    async getRewardsWithUsers(filter: any = {}): Promise<RewardWithUsers[]> {
+        return await this.model.aggregate(
+            [
+                {
+                    $match: filter
+                },
+                {
+                    $lookup:
+                    {
+                        from: 'User',
+                        localField: 'claimers',
+                        foreignField: '_id',
+                        as: 'claimersInfo'
+                    }
+                },
+                {
+                    $lookup:
+                    {
+                        from: 'User',
+                        localField: 'handed',
+                        foreignField: '_id',
+                        as: 'handedInfo'
+                    }
+                }
+            ]
+        )
     }
 
     async claimReward(_id: string, userId: string): Promise<number> {

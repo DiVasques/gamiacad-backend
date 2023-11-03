@@ -1,6 +1,6 @@
 import { MissionService } from '@/services/MissionService'
 import { Mission } from '@/models/Mission'
-import { editMission, mission, missionList } from '../mocks/Mission'
+import { editMission, mission, missionList, missionListWithUsers } from '../mocks/Mission'
 import { user } from '../mocks/User'
 import AppError from '@/models/error/AppError'
 import { userId } from '../mocks/DefaultHeaders'
@@ -16,6 +16,7 @@ describe('MissionService', () => {
             create: jest.fn(),
             update: jest.fn(),
             findById: jest.fn().mockResolvedValue(mission),
+            getMissionsWithUsers: jest.fn().mockResolvedValue(missionListWithUsers),
             deactivateMission: jest.fn(),
             subscribeUser: jest.fn().mockResolvedValue(1),
             completeMission: jest.fn().mockResolvedValue(1)
@@ -42,8 +43,8 @@ describe('MissionService', () => {
             const result = await missionService.getMissions(filter)
 
             // Assert
-            expect(missionRepositoryMock.find).toHaveBeenCalledWith(filter)
-            expect(result).toEqual(missionList)
+            expect(missionRepositoryMock.getMissionsWithUsers).toHaveBeenCalledWith(filter)
+            expect(result).toEqual(missionListWithUsers)
         })
     })
 

@@ -1,4 +1,5 @@
 import { Reward } from '@/models/Reward'
+import { RewardWithUsers } from '@/models/RewardWithUsers'
 import { EditReward } from '@/ports/reward/EditReward'
 
 export const reward: Reward = {
@@ -15,6 +16,12 @@ export const reward: Reward = {
     active: true
 }
 
+export const rewardWithUsers: RewardWithUsers = {
+    ...reward,
+    claimersInfo: [],
+    handedInfo: []
+}
+
 export const editReward: EditReward = {
     name: 'Reward 1',
     description: 'This is a description'
@@ -23,6 +30,11 @@ export const editReward: EditReward = {
 export const rewardList: Reward[] = [
     reward,
     { ...reward, name: 'Foo', _id: '12345' }
+]
+
+export const rewardListWithUsers: RewardWithUsers[] = [
+    rewardWithUsers,
+    { ...rewardWithUsers, name: 'Foo', _id: '12345' }
 ]
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

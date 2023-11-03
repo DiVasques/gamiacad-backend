@@ -1,5 +1,7 @@
 import { Mission } from '@/models/Mission'
+import { MissionWithUsers } from '@/models/MissionWithUsers'
 import { EditMission } from '@/ports/mission/EditMission'
+import { user } from './User'
 
 export const mission: Mission = {
     _id: '75dd7fd0-347e-4e38-821d-2a49438d15c2',
@@ -16,6 +18,13 @@ export const mission: Mission = {
     active: true
 }
 
+export const missionWithUsers: MissionWithUsers = {
+    ...mission,
+    participantsInfo: [],
+    completersInfo: [],
+    createdByInfo: user,
+}
+
 export const editMission: EditMission = {
     name: 'Mission 1 Edited',
     description: 'This is a edited description',
@@ -25,6 +34,11 @@ export const editMission: EditMission = {
 export const missionList: Mission[] = [
     mission,
     { ...mission, name: 'Foo', _id: '12345' }
+]
+
+export const missionListWithUsers: MissionWithUsers[] = [
+    missionWithUsers,
+    { ...missionWithUsers, name: 'Foo', _id: '12345' }
 ]
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
