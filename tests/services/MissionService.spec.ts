@@ -46,6 +46,39 @@ describe('MissionService', () => {
         })
     })
 
+    describe('getMission', () => {
+        it('should throw an error if the mission is not found', async () => {
+            // Arrange
+            const id = '123'
+            missionRepositoryMock.findById.mockResolvedValue(null)
+            let error
+
+            // Act
+            try {
+                await missionService.getMission(id)
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).status).toBe(404)
+            expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
+        })
+
+        it('should return the mission if it exists', async () => {
+            // Arrange
+            const id = '123'
+
+            // Act
+            const result = await missionService.getMission(id)
+
+            // Assert
+            expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
+            expect(result).toEqual(mission)
+        })
+    })
+
     describe('addMission', () => {
         it('should add the mission', async () => {
             // Arrange

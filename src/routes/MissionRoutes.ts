@@ -38,6 +38,12 @@ routes.post('/', celebrate({
     [Segments.BODY]: addMissionSchema
 }), Auth.authorizeAdminOnly, makeExpressCallback(MissionController.addMission))
 
+routes.get('/:id', celebrate({
+    [Segments.PARAMS]: {
+        id: StandardOptionsJoi.string().uuid().required()
+    }
+}), Auth.authorizeAdminOnly, makeExpressCallback(MissionController.getMission))
+
 routes.patch('/:id', celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required()

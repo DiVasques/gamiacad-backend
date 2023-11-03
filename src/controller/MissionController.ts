@@ -4,6 +4,11 @@ import HttpResponse from '@/ports/http/HttpResponse'
 import { Container } from 'typedi'
 
 export class MissionController {
+    static async getMission(request: HttpRequest): Promise<HttpResponse> {
+        const missionService = Container.get(MissionService)
+        const mission = await missionService.getMission(request.params.id)
+        return new HttpResponse(200, mission)
+    }
     static async getMissions(request: HttpRequest): Promise<HttpResponse> {
         const missionService = Container.get(MissionService)
         const missions = await missionService.getMissions(request.query)

@@ -14,6 +14,14 @@ export class MissionService {
     @Inject(ServiceToken.missionRepository)
     private missionRepository: IMissionRepository
 
+    async getMission(id: string): Promise<Mission> {
+        const mission = await this.missionRepository.findById(id)
+        if (!mission) {
+            throw new AppError(ExceptionStatus.notFound, 404)
+        }
+        return mission
+    }
+
     async getMissions(filter: Partial<Mission>): Promise<Mission[]> {
         return await this.missionRepository.find(filter)
     }
