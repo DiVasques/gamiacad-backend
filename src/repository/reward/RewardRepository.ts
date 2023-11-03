@@ -46,7 +46,7 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
 
     async handReward(_id: string, userId: string): Promise<number> {
         const { modifiedCount } = await this.model.updateOne(
-            { _id, claimers: userId },
+            { _id, claimers: userId, active: true },
             { $push: { handed: userId }, $pull: { claimers: userId } }
         ).exec()
         return modifiedCount
@@ -54,7 +54,7 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
 
     async deactivateReward(_id: string): Promise<number> {
         const { modifiedCount } = await this.model.updateOne(
-            { _id, active: { $ne: false } },
+            { _id, active: true },
             { $set: { active: false } }
         ).exec()
         return modifiedCount

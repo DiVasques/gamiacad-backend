@@ -1,6 +1,6 @@
 import app from '@/app'
 import request from 'supertest'
-import { missionList } from '../mocks/Mission'
+import { mission, missionList } from '../mocks/Mission'
 import { Container } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
@@ -9,6 +9,7 @@ import { adminHeaders, userHeaders, userId as authorizedUser, unauthorizedUserId
 describe('MissionController', () => {
     const missionServiceMock = {
         getMissions: jest.fn().mockResolvedValue(missionList),
+        getMission: jest.fn().mockResolvedValue(mission),
         addMission: jest.fn(),
         editMission: jest.fn(),
         deactivateMission: jest.fn(),
@@ -62,6 +63,48 @@ describe('MissionController', () => {
             // Assert
             expect(status).toBe(403)
             expect(missionServiceMock.getMissions).not.toBeCalled()
+        })
+    })
+
+    describe('getMission', () => {
+        it('should return the mission', async () => {
+            // Arrange
+
+            // Act
+            const { status } = await request(app)
+                .get(`/api/mission/${id}`)
+                .set(adminHeaders)
+
+            // Assert
+            expect(status).toBe(200)
+            expect(missionServiceMock.getMission).toHaveBeenCalledWith(id)
+        })
+
+        it('should return 404 if no mission was found', async () => {
+            // Arrange
+            missionServiceMock.getMission.mockRejectedValueOnce(new AppError(ExceptionStatus.notFound, 404))
+
+            // Act
+            const { status } = await request(app)
+                .get(`/api/mission/${id}`)
+                .set(adminHeaders)
+
+            // Assert
+            expect(status).toBe(404)
+            expect(missionServiceMock.getMission).toHaveBeenCalledWith(id)
+        })
+
+        it('should return 403 if user is forbidden', async () => {
+            // Arrange
+
+            // Act
+            const { status } = await request(app)
+                .get(`/api/mission/${id}`)
+                .set(userHeaders)
+
+            // Assert
+            expect(status).toBe(403)
+            expect(missionServiceMock.getMission).not.toBeCalled()
         })
     })
 
