@@ -31,6 +31,54 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
         super(missionModel)
     }
 
+    async getMissionByIdWithUsers(_id: string): Promise<(MissionWithUsers) | null> {
+        const missions = await this.model.aggregate(
+            [
+                {
+                    $match: { _id }
+                },
+                {
+                    $lookup:
+                    {
+                        from: 'User',
+                        localField: 'participants',
+                        foreignField: '_id',
+                        as: 'participantsInfo'
+                    }
+                },
+                {
+                    $lookup:
+                    {
+                        from: 'User',
+                        localField: 'completers',
+                        foreignField: '_id',
+                        as: 'completersInfo'
+                    }
+                },
+                {
+                    $lookup:
+                    {
+                        from: 'User',
+                        localField: 'createdBy',
+                        foreignField: '_id',
+                        as: 'createdByInfo'
+                    },
+                },
+                {
+                    $unwind: {
+                        path: '$createdByInfo',
+                        preserveNullAndEmptyArrays: true
+                    }
+                }
+            ]
+        ).exec()
+
+        if (!missions) {
+            return null
+        }
+        return missions.at(0)
+    }
+
     async getMissionsWithUsers(filter: any = {}): Promise<MissionWithUsers[]> {
         return await this.model.aggregate(
             [

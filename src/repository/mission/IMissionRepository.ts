@@ -11,12 +11,13 @@ export interface IMissionRepository {
     update(_id: string, data: Partial<Mission>, options?: object): Promise<void>
     findOneAndUpdate: (filter: Partial<Mission>, item: Partial<Mission>) => Promise<(Mission) | null>
 
+    getMissionByIdWithUsers: (id: string) => Promise<(MissionWithUsers) | null>
     getMissionsWithUsers: (filter: Partial<Mission>) => Promise<MissionWithUsers[]>
-    
+
     subscribeUser: (_id: string, userId: string) => Promise<number>
     completeMission: (_id: string, userId: string) => Promise<number>
     deactivateMission: (_id: string) => Promise<void>
-    
+
     findUserActiveMissions: (userId: string) => Promise<UserMission[]>
     findUserParticipatingMissions: (userId: string) => Promise<UserMission[]>
     findUserCompletedMissions: (userId: string) => Promise<UserMission[]>
