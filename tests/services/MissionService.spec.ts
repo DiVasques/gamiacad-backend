@@ -1,6 +1,6 @@
 import { MissionService } from '@/services/MissionService'
 import { Mission } from '@/models/Mission'
-import { editMission, mission, missionList, missionListWithUsers } from '../mocks/Mission'
+import { editMission, mission, missionList, missionListWithUsers, missionWithUsers } from '../mocks/Mission'
 import { user } from '../mocks/User'
 import AppError from '@/models/error/AppError'
 import { userId } from '../mocks/DefaultHeaders'
@@ -16,6 +16,7 @@ describe('MissionService', () => {
             create: jest.fn(),
             update: jest.fn(),
             findById: jest.fn().mockResolvedValue(mission),
+            getMissionByIdWithUsers: jest.fn().mockResolvedValue(missionWithUsers),
             getMissionsWithUsers: jest.fn().mockResolvedValue(missionListWithUsers),
             deactivateMission: jest.fn(),
             subscribeUser: jest.fn().mockResolvedValue(1),
@@ -52,7 +53,7 @@ describe('MissionService', () => {
         it('should throw an error if the mission is not found', async () => {
             // Arrange
             const id = '123'
-            missionRepositoryMock.findById.mockResolvedValue(null)
+            missionRepositoryMock.getMissionByIdWithUsers.mockResolvedValue(null)
             let error
 
             // Act
@@ -65,7 +66,7 @@ describe('MissionService', () => {
             // Assert
             expect(error).toBeInstanceOf(AppError)
             expect((error as AppError).status).toBe(404)
-            expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
+            expect(missionRepositoryMock.getMissionByIdWithUsers).toHaveBeenCalledWith(id)
         })
 
         it('should return the mission if it exists', async () => {
@@ -76,8 +77,8 @@ describe('MissionService', () => {
             const result = await missionService.getMission(id)
 
             // Assert
-            expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
-            expect(result).toEqual(mission)
+            expect(missionRepositoryMock.getMissionByIdWithUsers).toHaveBeenCalledWith(id)
+            expect(result).toEqual(missionWithUsers)
         })
     })
 

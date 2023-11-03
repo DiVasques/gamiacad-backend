@@ -16,7 +16,7 @@ export class MissionService {
     private missionRepository: IMissionRepository
 
     async getMission(id: string): Promise<Mission> {
-        const mission = await this.missionRepository.findById(id)
+        const mission = await this.missionRepository.getMissionByIdWithUsers(id)
         if (!mission) {
             throw new AppError(ExceptionStatus.notFound, 404)
         }
