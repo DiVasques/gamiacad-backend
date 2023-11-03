@@ -1,4 +1,5 @@
 import { Reward } from '@/models/Reward'
+import { RewardWithUsers } from '@/models/RewardWithUsers'
 
 export interface IRewardRepository {
     findById: (id: string) => Promise<(Reward) | null>,
@@ -8,6 +9,8 @@ export interface IRewardRepository {
     create: (Reward: Partial<Reward>) => Promise<void>
     update(_id: string, data: Partial<Reward>, options?: object): Promise<void>
     findOneAndUpdate: (filter: Partial<Reward>, item: Partial<Reward>) => Promise<(Reward) | null>
+
+    getRewardsWithUsers: (filter: Partial<Reward>) => Promise<RewardWithUsers[]>
 
     claimReward: (_id: string, userId: string) => Promise<number>
     rollbackClaim: (_id: string, userId: string) => Promise<number>

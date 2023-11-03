@@ -1,4 +1,5 @@
 import { Mission } from '@/models/Mission'
+import { MissionWithUsers } from '@/models/MissionWithUsers'
 
 export interface IMissionRepository {
     findById: (id: string) => Promise<(Mission) | null>,
@@ -8,6 +9,8 @@ export interface IMissionRepository {
     create: (Mission: Partial<Mission>) => Promise<void>
     update(_id: string, data: Partial<Mission>, options?: object): Promise<void>
     findOneAndUpdate: (filter: Partial<Mission>, item: Partial<Mission>) => Promise<(Mission) | null>
+
+    getMissionsWithUsers: (filter: Partial<Mission>) => Promise<MissionWithUsers[]>
     
     subscribeUser: (_id: string, userId: string) => Promise<number>
     completeMission: (_id: string, userId: string) => Promise<number>

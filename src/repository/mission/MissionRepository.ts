@@ -1,4 +1,5 @@
 import { Mission } from '@/models/Mission'
+import { MissionWithUsers } from '@/models/MissionWithUsers'
 import { BaseRepository } from '@/repository/base/BaseRepository'
 import { IMissionRepository } from '@/repository/mission/IMissionRepository'
 import mongoose, { Document, Schema } from 'mongoose'
@@ -27,6 +28,49 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
         missionSchema.plugin(autoIncrement.plugin, { model: 'Mission', field: 'number' })
         const missionModel = mongoose.model<Mission & Document>('Mission', missionSchema, 'Mission')
         super(missionModel)
+    }
+
+    async getMissionsWithUsers(filter: any = {}): Promise<MissionWithUsers[]> {
+        return await this.model.aggregate(
+            [
+                {
+                    $match: filter
+                },
+                {
+                    $lookup:
+                    {
+                        from: 'User',
+                        localField: 'participants',
+                        foreignField: '_id',
+                        as: 'participantsInfo'
+                    }
+                },
+                {
+                    $lookup:
+                    {
+                        from: 'User',
+                        localField: 'completers',
+                        foreignField: '_id',
+                        as: 'completersInfo'
+                    }
+                },
+                {
+                    $lookup:
+                    {
+                        from: 'User',
+                        localField: 'createdBy',
+                        foreignField: '_id',
+                        as: 'createdByInfo'
+                    },
+                },
+                {
+                  $unwind: {
+                    path: '$createdByInfo',
+                    preserveNullAndEmptyArrays: true
+                  }
+                }
+            ]
+        )
     }
 
     async subscribeUser(_id: string, userId: string): Promise<number> {

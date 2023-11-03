@@ -15,7 +15,7 @@ export class RewardService {
     private userRepository: IUserRepository
 
     async getRewards(filter: Partial<Reward>): Promise<Reward[]> {
-        return await this.rewardRepository.find(filter)
+        return await this.rewardRepository.getRewardsWithUsers(filter)
     }
 
     async addReward(reward: Partial<Reward>) {

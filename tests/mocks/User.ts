@@ -1,7 +1,7 @@
 import { User } from '@/models/User'
 
 export const user: User = {
-    _id: '1234',
+    _id: '1b6ec50e-9be1-459f-bd69-11bfa325d03b',
     name: 'Diogo',
     email: 'email@email.com',
     registration: '12345678901',

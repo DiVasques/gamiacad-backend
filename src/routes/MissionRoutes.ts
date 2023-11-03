@@ -13,7 +13,8 @@ const DESCRIPTION_REGEX = /^[\w\s,.]+$/
 
 const getMissionsSchema = StandardOptionsJoi.object().keys({
     name: StandardOptionsJoi.string().regex(MISSION_NAME_REGEX),
-    number: StandardOptionsJoi.number().greater(0)
+    number: StandardOptionsJoi.number().greater(0),
+    createdBy: StandardOptionsJoi.string().uuid()
 })
 
 const addMissionSchema = StandardOptionsJoi.object().keys({
