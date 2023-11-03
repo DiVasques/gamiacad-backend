@@ -26,8 +26,8 @@ export class MissionService {
         return await this.missionRepository.find(filter)
     }
 
-    async addMission(mission: Partial<Mission>) {
-        await this.missionRepository.create(mission)
+    async addMission(mission: Partial<Mission>, createdBy: string) {
+        await this.missionRepository.create({ ...mission, createdBy: createdBy })
     }
 
     async editMission(id: string, editMission: EditMission) {

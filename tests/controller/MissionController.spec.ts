@@ -4,7 +4,7 @@ import { mission, missionList } from '../mocks/Mission'
 import { Container } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
-import { adminHeaders, userHeaders, userId as authorizedUser, unauthorizedUserId } from '../mocks/DefaultHeaders'
+import { adminHeaders, userHeaders, userId as authorizedUser, unauthorizedUserId, userId } from '../mocks/DefaultHeaders'
 
 describe('MissionController', () => {
     const missionServiceMock = {
@@ -115,8 +115,7 @@ describe('MissionController', () => {
                 name: 'Mission 1',
                 description: 'this is a description',
                 points: 150,
-                expirationDate: new Date(9999999999999),
-                createdBy: '1b6ec50e-9be1-459f-bd69-11bfa325d03b'
+                expirationDate: new Date(9999999999999)
             }
 
             // Act
@@ -127,7 +126,7 @@ describe('MissionController', () => {
 
             // Assert
             expect(status).toBe(201)
-            expect(missionServiceMock.addMission).toHaveBeenCalledWith(newMission)
+            expect(missionServiceMock.addMission).toHaveBeenCalledWith(newMission, userId)
         })
 
         it('should return 403 if user is forbidden', async () => {
@@ -136,8 +135,7 @@ describe('MissionController', () => {
                 name: 'Mission 1',
                 description: 'this is a description',
                 points: 150,
-                expirationDate: new Date(9999999999999),
-                createdBy: '1b6ec50e-9be1-459f-bd69-11bfa325d03b'
+                expirationDate: new Date(9999999999999)
             }
 
             // Act

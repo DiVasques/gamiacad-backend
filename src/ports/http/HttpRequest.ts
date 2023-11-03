@@ -12,6 +12,7 @@ interface HttpRequest {
         'Content-Type': string | undefined
         Referer: string | undefined
         'User-Agent': string | undefined
+        userId: string
     }
 }
 export default HttpRequest

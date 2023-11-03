@@ -20,8 +20,7 @@ const addMissionSchema = StandardOptionsJoi.object().keys({
     name: StandardOptionsJoi.string().regex(MISSION_NAME_REGEX).required(),
     description: StandardOptionsJoi.string().regex(DESCRIPTION_REGEX).required(),
     points: StandardOptionsJoi.number().greater(0).required(),
-    expirationDate: StandardOptionsJoi.date().min(new Date()).required(),
-    createdBy: StandardOptionsJoi.string().uuid().required()
+    expirationDate: StandardOptionsJoi.date().min(new Date()).required()
 })
 
 const editMissionSchema = StandardOptionsJoi.object().keys({
