@@ -28,46 +28,46 @@ const editRewardSchema = StandardOptionsJoi.object().keys({
     description: StandardOptionsJoi.string().regex(DESCRIPTION_REGEX)
 })
 
-routes.get('/', celebrate({
+routes.get('/', Auth.authorizeAdminOnly, celebrate({
     [Segments.QUERY]: getRewardsSchema
-}), Auth.authorizeAdminOnly, makeExpressCallback(RewardController.getRewards))
+}), makeExpressCallback(RewardController.getRewards))
 
-routes.post('/', celebrate({
+routes.post('/', Auth.authorizeAdminOnly, celebrate({
     [Segments.BODY]: addRewardSchema
-}), Auth.authorizeAdminOnly, makeExpressCallback(RewardController.addReward))
+}), makeExpressCallback(RewardController.addReward))
 
-routes.patch('/:id', celebrate({
+routes.patch('/:id', Auth.authorizeAdminOnly, celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required()
     },
     [Segments.BODY]: editRewardSchema
-}), Auth.authorizeAdminOnly, makeExpressCallback(RewardController.editReward))
+}), makeExpressCallback(RewardController.editReward))
 
-routes.delete('/:id', celebrate({
+routes.delete('/:id', Auth.authorizeAdminOnly, celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required()
     }
-}), Auth.authorizeAdminOnly, makeExpressCallback(RewardController.deactivateReward))
+}), makeExpressCallback(RewardController.deactivateReward))
 
-routes.put('/:id/:userId', celebrate({
+routes.put('/:id/:userId', Auth.authorizeUser, celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required(),
         userId: StandardOptionsJoi.string().uuid().required()
     }
-}), Auth.authorizeUser, makeExpressCallback(RewardController.claimReward))
+}), makeExpressCallback(RewardController.claimReward))
 
-routes.patch('/:id/:userId', celebrate({
+routes.patch('/:id/:userId', Auth.authorizeAdminOnly, celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required(),
         userId: StandardOptionsJoi.string().uuid().required()
     }
-}), Auth.authorizeAdminOnly, makeExpressCallback(RewardController.handReward))
+}), makeExpressCallback(RewardController.handReward))
 
-routes.delete('/:id/:userId', celebrate({
+routes.delete('/:id/:userId', Auth.authorizeUser, celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required(),
         userId: StandardOptionsJoi.string().uuid().required()
     }
-}), Auth.authorizeUser, makeExpressCallback(RewardController.cancelClaim))
+}), makeExpressCallback(RewardController.cancelClaim))
 
 export default routes

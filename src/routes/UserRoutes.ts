@@ -21,36 +21,36 @@ const addUserSchema = StandardOptionsJoi.object().keys({
     email: StandardOptionsJoi.string().email().required(),
 })
 
-routes.get('/', celebrate({
+routes.get('/', Auth.authorizeAdminOnly, celebrate({
     [Segments.QUERY]: getUsersSchema
-}), Auth.authorizeAdminOnly, makeExpressCallback(UserController.getUsers))
+}), makeExpressCallback(UserController.getUsers))
 
-routes.get('/:id', celebrate({
+routes.get('/:id', Auth.authorizeUser, celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required()
     }
-}), Auth.authorizeUser, makeExpressCallback(UserController.getUserById))
+}), makeExpressCallback(UserController.getUserById))
 
-routes.get('/:id/mission', celebrate({
+routes.get('/:id/mission', Auth.authorizeUser, celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required()
     }
-}), Auth.authorizeUser, makeExpressCallback(UserController.getUserMissions))
+}), makeExpressCallback(UserController.getUserMissions))
 
-routes.get('/:id/reward', celebrate({
+routes.get('/:id/reward', Auth.authorizeUser, celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required()
     }
-}), Auth.authorizeUser, makeExpressCallback(UserController.getUserRewards))
+}), makeExpressCallback(UserController.getUserRewards))
 
-routes.post('/:id', celebrate({
+routes.post('/:id', Auth.authorizeUser, celebrate({
     [Segments.BODY]: addUserSchema
-}), Auth.authorizeUser, makeExpressCallback(UserController.addUser))
+}), makeExpressCallback(UserController.addUser))
 
-routes.delete('/:id', celebrate({
+routes.delete('/:id', Auth.authorizeUser, celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required()
     }
-}), Auth.authorizeUser, makeExpressCallback(UserController.deleteUser))
+}), makeExpressCallback(UserController.deleteUser))
 
 export default routes

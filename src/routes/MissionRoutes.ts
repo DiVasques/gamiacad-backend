@@ -30,45 +30,45 @@ const editMissionSchema = StandardOptionsJoi.object().keys({
     expirationDate: StandardOptionsJoi.date().min(new Date())
 })
 
-routes.get('/', celebrate({
+routes.get('/', Auth.authorizeAdminOnly, celebrate({
     [Segments.QUERY]: getMissionsSchema
-}), Auth.authorizeAdminOnly, makeExpressCallback(MissionController.getMissions))
+}), makeExpressCallback(MissionController.getMissions))
 
-routes.post('/', celebrate({
+routes.post('/', Auth.authorizeAdminOnly, celebrate({
     [Segments.BODY]: addMissionSchema
-}), Auth.authorizeAdminOnly, makeExpressCallback(MissionController.addMission))
+}), makeExpressCallback(MissionController.addMission))
 
-routes.get('/:id', celebrate({
+routes.get('/:id', Auth.authorizeAdminOnly, celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required()
     }
-}), Auth.authorizeAdminOnly, makeExpressCallback(MissionController.getMission))
+}), makeExpressCallback(MissionController.getMission))
 
-routes.patch('/:id', celebrate({
+routes.patch('/:id', Auth.authorizeAdminOnly, celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required()
     },
     [Segments.BODY]: editMissionSchema
-}), Auth.authorizeAdminOnly, makeExpressCallback(MissionController.editMission))
+}), makeExpressCallback(MissionController.editMission))
 
-routes.delete('/:id', celebrate({
+routes.delete('/:id', Auth.authorizeAdminOnly, celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required()
     }
-}), Auth.authorizeAdminOnly, makeExpressCallback(MissionController.deactivateMission))
+}), makeExpressCallback(MissionController.deactivateMission))
 
-routes.put('/:id/:userId', celebrate({
+routes.put('/:id/:userId', Auth.authorizeUser, celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required(),
         userId: StandardOptionsJoi.string().uuid().required()
     }
-}), Auth.authorizeUser, makeExpressCallback(MissionController.subscribeUser))
+}), makeExpressCallback(MissionController.subscribeUser))
 
-routes.patch('/:id/:userId', celebrate({
+routes.patch('/:id/:userId', Auth.authorizeAdminOnly, celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required(),
         userId: StandardOptionsJoi.string().uuid().required()
     }
-}), Auth.authorizeAdminOnly, makeExpressCallback(MissionController.completeMission))
+}), makeExpressCallback(MissionController.completeMission))
 
 export default routes
