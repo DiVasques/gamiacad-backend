@@ -1,5 +1,6 @@
 import { Mission } from '@/models/Mission'
 import { MissionWithUsers } from '@/models/MissionWithUsers'
+import { UserMission } from '@/models/UserMission'
 
 export interface IMissionRepository {
     findById: (id: string) => Promise<(Mission) | null>,
@@ -16,7 +17,7 @@ export interface IMissionRepository {
     completeMission: (_id: string, userId: string) => Promise<number>
     deactivateMission: (_id: string) => Promise<void>
     
-    findUserActiveMissions: (userId: string) => Promise<Mission[]>
-    findUserParticipatingMissions: (userId: string) => Promise<Mission[]>
-    findUserCompletedMissions: (userId: string) => Promise<Mission[]>
+    findUserActiveMissions: (userId: string) => Promise<UserMission[]>
+    findUserParticipatingMissions: (userId: string) => Promise<UserMission[]>
+    findUserCompletedMissions: (userId: string) => Promise<UserMission[]>
 }
