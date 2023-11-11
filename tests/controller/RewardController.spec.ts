@@ -42,6 +42,7 @@ describe('RewardController', () => {
             // Assert
             const expectedRewards = rewardList.map((reward) => ({
                 ...reward,
+                claimers: [{...reward.claimers.at(0), date: reward.claimers.at(0)?.date.toISOString()}],
                 createdAt: reward.createdAt.toISOString(),
                 updatedAt: reward.updatedAt.toISOString(),
             }))

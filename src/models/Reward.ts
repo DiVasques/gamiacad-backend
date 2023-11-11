@@ -1,3 +1,5 @@
+import { ActionWithDate } from '@/models/ActionWithDate'
+
 export interface Reward {
     _id: string
     number: number
@@ -7,7 +9,7 @@ export interface Reward {
     availability: number
     createdAt: Date
     updatedAt: Date
-    claimers: Array<string>
-    handed: Array<string>
+    claimers: Array<ActionWithDate>
+    handed: Array<ActionWithDate>
     active: boolean
 }

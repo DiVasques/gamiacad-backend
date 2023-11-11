@@ -39,9 +39,9 @@ export class RewardService {
         if (modifiedCount === 0) {
             throw new AppError(ExceptionStatus.rewardAlreadyInactive, 400)
         }
-        await Promise.all(reward.claimers.map(userId => {
-            this.rewardRepository.rollbackClaim(id, userId)
-            this.userRepository.givePoints(userId, reward.price, true)
+        await Promise.all(reward.claimers.map(userAction => {
+            this.rewardRepository.rollbackClaim(id, userAction.id)
+            this.userRepository.givePoints(userAction.id, reward.price, true)
         }))
     }
 

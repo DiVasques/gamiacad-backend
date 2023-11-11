@@ -1,3 +1,5 @@
+import { ActionWithDate } from '@/models/ActionWithDate'
+
 export interface Mission {
     _id: string
     number: number
@@ -8,7 +10,7 @@ export interface Mission {
     createdAt: Date
     updatedAt: Date
     createdBy: string
-    participants: Array<string>
-    completers: Array<string>
+    participants: Array<ActionWithDate>
+    completers: Array<ActionWithDate>
     active: boolean
 }

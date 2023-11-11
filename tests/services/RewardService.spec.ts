@@ -150,8 +150,8 @@ describe('RewardService', () => {
             // Assert
             expect(rewardRepositoryMock.findById).toHaveBeenCalledWith(id)
             expect(rewardRepositoryMock.deactivateReward).toHaveBeenCalledWith(id)
-            expect(rewardRepositoryMock.rollbackClaim).toHaveBeenCalledWith(id, reward.claimers.at(0))
-            expect(userRepositoryMock.givePoints).toHaveBeenCalledWith(reward.claimers.at(0), reward.price, true)
+            expect(rewardRepositoryMock.rollbackClaim).toHaveBeenCalledWith(id, reward.claimers.at(0)?.id)
+            expect(userRepositoryMock.givePoints).toHaveBeenCalledWith(reward.claimers.at(0)?.id, reward.price, true)
         })
     })
 
