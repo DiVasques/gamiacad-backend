@@ -3,28 +3,14 @@ import { RewardWithUsers } from '@/models/RewardWithUsers'
 import { UserReward } from '@/models/UserReward'
 import { BaseRepository } from '@/repository/base/BaseRepository'
 import { IRewardRepository } from '@/repository/reward/IRewardRepository'
-import mongoose, { Document, Schema } from 'mongoose'
+import { RewardSchema } from '@/repository/schemas/RewardSchema'
+import mongoose, { Document } from 'mongoose'
 import autoIncrement from 'mongoose-auto-increment'
-import { v4 as uuid } from 'uuid'
 
 export class RewardRepository extends BaseRepository<Reward> implements IRewardRepository {
     constructor() {
         autoIncrement.initialize(mongoose.connection)
-        const rewardSchema = new Schema<Reward>(
-            {
-                _id: { type: String, default: uuid },
-                name: { type: String, required: true },
-                description: { type: String, required: true },
-                price: { type: Number, required: true },
-                availability: { type: Number, required: true },
-                claimers: { type: [String], default: [] },
-                handed: { type: [String], default: [] },
-                active: { type: Boolean, default: true },
-            },
-            {
-                timestamps: true
-            }
-        )
+        const rewardSchema = RewardSchema
         rewardSchema.plugin(autoIncrement.plugin, { model: 'Reward', field: 'number' })
         const rewardModel = mongoose.model<Reward & Document>('Reward', rewardSchema, 'Reward')
         super(rewardModel)
@@ -40,7 +26,7 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
                     $lookup:
                     {
                         from: 'User',
-                        localField: 'claimers',
+                        localField: 'claimers.id',
                         foreignField: '_id',
                         as: 'claimersInfo'
                     }
@@ -49,7 +35,7 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
                     $lookup:
                     {
                         from: 'User',
-                        localField: 'handed',
+                        localField: 'handed.id',
                         foreignField: '_id',
                         as: 'handedInfo'
                     }
@@ -60,24 +46,24 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
 
     async claimReward(_id: string, userId: string): Promise<number> {
         const { modifiedCount } = await this.model.updateOne(
-            { _id, availability: { $gt: 0 }, claimers: { $ne: userId }, active: true },
-            { $push: { claimers: userId }, $inc: { availability: -1 } }
+            { _id, availability: { $gt: 0 }, 'claimers.id': { $ne: userId }, active: true },
+            { $push: { claimers: { id: userId, date: new Date() } }, $inc: { availability: -1 } }
         ).exec()
         return modifiedCount
     }
 
     async rollbackClaim(_id: string, userId: string): Promise<number> {
         const { modifiedCount } = await this.model.updateOne(
-            { _id, claimers: userId },
-            { $pull: { claimers: userId }, $inc: { availability: 1 } }
+            { _id, 'claimers.id': userId },
+            { $pull: { claimers: { id: userId } }, $inc: { availability: 1 } }
         ).exec()
         return modifiedCount
     }
 
     async handReward(_id: string, userId: string): Promise<number> {
         const { modifiedCount } = await this.model.updateOne(
-            { _id, claimers: userId, active: true },
-            { $push: { handed: userId }, $pull: { claimers: userId } }
+            { _id, 'claimers.id': userId, active: true },
+            { $push: { handed: { id: userId, date: new Date() } }, $pull: { claimers: { id: userId } } }
         ).exec()
         return modifiedCount
     }
@@ -96,7 +82,7 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
                 {
                     $match: {
                         availability: { $gt: 0 },
-                        claimers: { $ne: userId },
+                        'claimers.id': { $ne: userId },
                         active: true
                     }
                 },
@@ -115,7 +101,7 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
             [
                 {
                     $match: {
-                        claimers: userId
+                        'claimers.id': userId
                     }
                 },
                 {
@@ -133,7 +119,7 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
             [
                 {
                     $match: {
-                        handed: userId
+                        'handed.id': userId
                     }
                 },
                 {
@@ -141,7 +127,7 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
                         count: {
                             $size: {
                                 $filter: {
-                                    input: '$handed',
+                                    input: '$handed.id',
                                     as: 'handedList',
                                     cond: { $eq: ['$$handedList', userId] }
                                 }

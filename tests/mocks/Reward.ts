@@ -9,7 +9,12 @@ export const reward: Reward = {
     description: 'This is a description',
     price: 150,
     availability: 10,
-    claimers: ['c4ee73c6-2d09-4397-a345-549396286083'],
+    claimers: [
+        {
+            id: 'c4ee73c6-2d09-4397-a345-549396286083',
+            date: new Date('2043-06-19T20:24:21.417Z')
+        },
+    ],
     handed: [],
     createdAt: new Date('2043-06-19T20:24:21.417Z'),
     updatedAt: new Date('2043-06-19T20:24:21.417Z'),

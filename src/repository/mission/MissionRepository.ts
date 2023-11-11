@@ -3,29 +3,14 @@ import { MissionWithUsers } from '@/models/MissionWithUsers'
 import { UserMission } from '@/models/UserMission'
 import { BaseRepository } from '@/repository/base/BaseRepository'
 import { IMissionRepository } from '@/repository/mission/IMissionRepository'
-import mongoose, { Document, Schema } from 'mongoose'
+import { MissionSchema } from '@/repository/schemas/MissionSchema'
+import mongoose, { Document } from 'mongoose'
 import autoIncrement from 'mongoose-auto-increment'
-import { v4 as uuid } from 'uuid'
 
 export class MissionRepository extends BaseRepository<Mission> implements IMissionRepository {
     constructor() {
         autoIncrement.initialize(mongoose.connection)
-        const missionSchema = new Schema<Mission>(
-            {
-                _id: { type: String, default: uuid },
-                name: { type: String, required: true },
-                createdBy: { type: String, required: true },
-                description: { type: String, required: true },
-                points: { type: Number, required: true },
-                expirationDate: { type: Date, required: true },
-                participants: { type: [String], default: [] },
-                completers: { type: [String], default: [] },
-                active: { type: Boolean, default: true },
-            },
-            {
-                timestamps: true
-            }
-        )
+        const missionSchema = MissionSchema
         missionSchema.plugin(autoIncrement.plugin, { model: 'Mission', field: 'number' })
         const missionModel = mongoose.model<Mission & Document>('Mission', missionSchema, 'Mission')
         super(missionModel)
@@ -41,7 +26,7 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
                     $lookup:
                     {
                         from: 'User',
-                        localField: 'participants',
+                        localField: 'participants.id',
                         foreignField: '_id',
                         as: 'participantsInfo'
                     }
@@ -50,7 +35,7 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
                     $lookup:
                     {
                         from: 'User',
-                        localField: 'completers',
+                        localField: 'completers.id',
                         foreignField: '_id',
                         as: 'completersInfo'
                     }
@@ -89,7 +74,7 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
                     $lookup:
                     {
                         from: 'User',
-                        localField: 'participants',
+                        localField: 'participants.id',
                         foreignField: '_id',
                         as: 'participantsInfo'
                     }
@@ -98,7 +83,7 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
                     $lookup:
                     {
                         from: 'User',
-                        localField: 'completers',
+                        localField: 'completers.id',
                         foreignField: '_id',
                         as: 'completersInfo'
                     }
@@ -124,16 +109,16 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
 
     async subscribeUser(_id: string, userId: string): Promise<number> {
         const { modifiedCount } = await this.model.updateOne(
-            { _id, participants: { $ne: userId }, completers: { $ne: userId }, createdBy: { $ne: userId }, active: true },
-            { $push: { participants: userId } }
+            { _id, 'participants.id': { $ne: userId }, 'completers.id': { $ne: userId }, createdBy: { $ne: userId }, active: true, expirationDate: { $gt: new Date() } },
+            { $push: { participants: { id: userId, date: new Date() } } }
         ).exec()
         return modifiedCount
     }
 
     async completeMission(_id: string, userId: string): Promise<number> {
         const { modifiedCount } = await this.model.updateOne(
-            { _id, participants: userId, completers: { $ne: userId }, active: true },
-            { $push: { completers: userId }, $pull: { participants: userId } }
+            { _id, 'participants.id': userId, 'completers.id': { $ne: userId }, active: true },
+            { $push: { completers: { id: userId, date: new Date() } }, $pull: { participants: { id: userId } } }
         ).exec()
         return modifiedCount
     }
@@ -151,8 +136,8 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
                 {
                     $match: {
                         expirationDate: { $gt: new Date() },
-                        participants: { $ne: userId },
-                        completers: { $ne: userId },
+                        'participants.id': { $ne: userId },
+                        'completers.id': { $ne: userId },
                         createdBy: { $ne: userId },
                         active: true
                     }
@@ -173,7 +158,7 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
                 {
                     $match: {
                         expirationDate: { $gt: new Date() },
-                        participants: userId,
+                        'participants.id': userId,
                         active: true
                     }
                 },
@@ -192,7 +177,7 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
             [
                 {
                     $match: {
-                        completers: userId
+                        'completers.id': userId
                     }
                 },
                 {
