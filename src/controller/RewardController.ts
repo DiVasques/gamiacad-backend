@@ -10,6 +10,12 @@ export class RewardController {
         return new HttpResponse(200, { rewards })
     }
 
+    static async getClaimedRewards(_: HttpRequest): Promise<HttpResponse> {
+        const rewardService = Container.get(RewardService)
+        const rewards = await rewardService.getClaimedRewards()
+        return new HttpResponse(200, { rewards })
+    }
+
     static async addReward(request: HttpRequest): Promise<HttpResponse> {
         const rewardService = Container.get(RewardService)
         await rewardService.addReward(request.body)
@@ -30,21 +36,21 @@ export class RewardController {
 
     static async claimReward(request: HttpRequest): Promise<HttpResponse> {
         const rewardService = Container.get(RewardService)
-        const {id, userId} = request.params
+        const { id, userId } = request.params
         await rewardService.claimReward(id, userId)
         return new HttpResponse(204)
     }
 
     static async handReward(request: HttpRequest): Promise<HttpResponse> {
         const rewardService = Container.get(RewardService)
-        const {id, userId} = request.params
+        const { id, userId } = request.params
         await rewardService.handReward(id, userId)
         return new HttpResponse(204)
     }
 
     static async cancelClaim(request: HttpRequest): Promise<HttpResponse> {
         const rewardService = Container.get(RewardService)
-        const {id, userId} = request.params
+        const { id, userId } = request.params
         await rewardService.cancelClaim(id, userId)
         return new HttpResponse(204)
     }

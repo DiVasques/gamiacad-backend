@@ -25,9 +25,9 @@ describe('UserService', () => {
             findUserCompletedMissions: jest.fn().mockResolvedValue([userMission])
         }
         rewardRepositoryMock = {
-            findAvailableRewards: jest.fn().mockResolvedValue(rewardList),
-            findClaimedRewards: jest.fn().mockResolvedValue(rewardList),
-            findHandedRewards: jest.fn().mockResolvedValue(rewardList)
+            findUserAvailableRewards: jest.fn().mockResolvedValue(rewardList),
+            findUserClaimedRewards: jest.fn().mockResolvedValue(rewardList),
+            findUserHandedRewards: jest.fn().mockResolvedValue(rewardList)
         }
         userService = new UserService()
         userService['userRepository'] = userRepositoryMock
@@ -118,12 +118,12 @@ describe('UserService', () => {
         it('should return the user available, claimed and received rewards', async () => {
             // Arrange
             const id = '412312312'
-            rewardRepositoryMock.findAvailableRewards.mockResolvedValueOnce([userReward])
-            rewardRepositoryMock.findClaimedRewards.mockResolvedValueOnce([
+            rewardRepositoryMock.findUserAvailableRewards.mockResolvedValueOnce([userReward])
+            rewardRepositoryMock.findUserClaimedRewards.mockResolvedValueOnce([
                 { ...userReward, name: 'Foo', _id: '12345' },
                 { ...userReward, name: 'Beer', _id: '1234551451' }
             ])
-            rewardRepositoryMock.findHandedRewards.mockResolvedValueOnce([
+            rewardRepositoryMock.findUserHandedRewards.mockResolvedValueOnce([
                 { ...userReward, name: 'Bar', _id: '12346', count: 3 }
             ])
 
@@ -131,9 +131,9 @@ describe('UserService', () => {
             const result = await userService.getUserRewards(id)
 
             // Assert
-            expect(rewardRepositoryMock.findAvailableRewards).toHaveBeenCalledWith(id)
-            expect(rewardRepositoryMock.findClaimedRewards).toHaveBeenCalledWith(id)
-            expect(rewardRepositoryMock.findHandedRewards).toHaveBeenCalledWith(id)
+            expect(rewardRepositoryMock.findUserAvailableRewards).toHaveBeenCalledWith(id)
+            expect(rewardRepositoryMock.findUserClaimedRewards).toHaveBeenCalledWith(id)
+            expect(rewardRepositoryMock.findUserHandedRewards).toHaveBeenCalledWith(id)
             expect(result).toEqual({
                 available: [userReward],
                 claimed: [{ ...userReward, name: 'Foo', _id: '12345' }, { ...userReward, name: 'Beer', _id: '1234551451' }],

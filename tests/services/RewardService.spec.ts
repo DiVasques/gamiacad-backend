@@ -1,6 +1,6 @@
 import { RewardService } from '@/services/RewardService'
 import { Reward } from '@/models/Reward'
-import { editReward, reward, rewardList, rewardListWithUsers } from '../mocks/Reward'
+import { claimedRewardList, editReward, reward, rewardList, rewardListWithUsers } from '../mocks/Reward'
 import { user } from '../mocks/User'
 import AppError from '@/models/error/AppError'
 
@@ -16,6 +16,7 @@ describe('RewardService', () => {
             update: jest.fn(),
             findById: jest.fn().mockResolvedValue(reward),
             getRewardsWithUsers: jest.fn().mockResolvedValue(rewardListWithUsers),
+            findClaimedRewards: jest.fn().mockResolvedValue(claimedRewardList),
             deactivateReward: jest.fn().mockResolvedValue(1),
             claimReward: jest.fn().mockResolvedValue(1),
             handReward: jest.fn().mockResolvedValue(1),
@@ -46,6 +47,17 @@ describe('RewardService', () => {
             // Assert
             expect(rewardRepositoryMock.getRewardsWithUsers).toHaveBeenCalledWith(filter)
             expect(result).toEqual(rewardListWithUsers)
+        })
+    })
+
+    describe('getClaimedRewards', () => {
+        it('should return rewards from the repository', async () => {
+            // Act
+            const result = await rewardService.getClaimedRewards()
+
+            // Assert
+            expect(rewardRepositoryMock.findClaimedRewards).toHaveBeenCalled()
+            expect(result).toEqual(claimedRewardList)
         })
     })
 

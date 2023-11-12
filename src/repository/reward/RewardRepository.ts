@@ -1,3 +1,4 @@
+import { ClaimedReward } from '@/models/ClaimedReward'
 import { Reward } from '@/models/Reward'
 import { RewardWithUsers } from '@/models/RewardWithUsers'
 import { UserReward } from '@/models/UserReward'
@@ -76,7 +77,45 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
         return modifiedCount
     }
 
-    async findAvailableRewards(userId: string): Promise<UserReward[]> {
+    async findClaimedRewards(): Promise<ClaimedReward[]> {
+        return await this.model.aggregate(
+            [
+                {
+                    $match: { claimers: { $exists: true, $ne: [] } }
+                },
+                {
+                  $unwind: '$claimers',
+                },
+                {
+                    $lookup:
+                    {
+                        from: 'User',
+                        localField: 'claimers.id',
+                        foreignField: '_id',
+                        as: 'claimersInfo'
+                    }
+                },
+                {
+                  $unwind: '$claimersInfo'
+                },
+                {
+                  $project: {
+                    _id: 1,
+                    name: 1,
+                    number: 1,
+                    price: 1,
+                    claimer: {
+                        id: '$claimers.id',
+                        name: '$claimersInfo.name'
+                    },
+                    claimDate: '$claimers.date',
+                  },
+                },
+            ]
+        ).sort({ claimDate: -1 }).exec()
+    }
+
+    async findUserAvailableRewards(userId: string): Promise<UserReward[]> {
         return await this.model.aggregate(
             [
                 {
@@ -96,7 +135,7 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
         ).sort({ name: 1 }).exec()
     }
 
-    async findClaimedRewards(userId: string): Promise<UserReward[]> {
+    async findUserClaimedRewards(userId: string): Promise<UserReward[]> {
         return await this.model.aggregate(
             [
                 {
@@ -114,7 +153,7 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
         ).sort({ name: 1 }).exec()
     }
 
-    async findHandedRewards(userId: string): Promise<UserReward[]> {
+    async findUserHandedRewards(userId: string): Promise<UserReward[]> {
         return await this.model.aggregate(
             [
                 {

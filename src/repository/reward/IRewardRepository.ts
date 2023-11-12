@@ -1,3 +1,4 @@
+import { ClaimedReward } from '@/models/ClaimedReward'
 import { Reward } from '@/models/Reward'
 import { RewardWithUsers } from '@/models/RewardWithUsers'
 import { UserReward } from '@/models/UserReward'
@@ -12,13 +13,14 @@ export interface IRewardRepository {
     findOneAndUpdate: (filter: Partial<Reward>, item: Partial<Reward>) => Promise<(Reward) | null>
 
     getRewardsWithUsers: (filter: Partial<Reward>) => Promise<RewardWithUsers[]>
+    findClaimedRewards: () => Promise<ClaimedReward[]>
 
     claimReward: (_id: string, userId: string) => Promise<number>
     rollbackClaim: (_id: string, userId: string) => Promise<number>
     handReward: (_id: string, userId: string) => Promise<number>
     deactivateReward: (_id: string) => Promise<number>
-    
-    findAvailableRewards: (userId: string) => Promise<UserReward[]>
-    findClaimedRewards: (userId: string) => Promise<UserReward[]>
-    findHandedRewards: (userId: string) => Promise<UserReward[]>
+
+    findUserAvailableRewards: (userId: string) => Promise<UserReward[]>
+    findUserClaimedRewards: (userId: string) => Promise<UserReward[]>
+    findUserHandedRewards: (userId: string) => Promise<UserReward[]>
 }

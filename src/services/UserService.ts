@@ -56,9 +56,9 @@ export class UserService {
     async getUserRewards(id: string): Promise<UserRewardsResult> {
         const [availableRewards, claimedRewards, receivedRewards] = await Promise.all(
             [
-                this.rewardRepository.findAvailableRewards(id),
-                this.rewardRepository.findClaimedRewards(id),
-                this.rewardRepository.findHandedRewards(id)
+                this.rewardRepository.findUserAvailableRewards(id),
+                this.rewardRepository.findUserClaimedRewards(id),
+                this.rewardRepository.findUserHandedRewards(id)
             ]
         )
         return {

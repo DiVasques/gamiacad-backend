@@ -32,6 +32,9 @@ routes.get('/', Auth.authorizeAdminOnly, celebrate({
     [Segments.QUERY]: getRewardsSchema
 }), makeExpressCallback(RewardController.getRewards))
 
+routes.get('/claimed', Auth.authorizeAdminOnly,
+    makeExpressCallback(RewardController.getClaimedRewards))
+
 routes.post('/', Auth.authorizeAdminOnly, celebrate({
     [Segments.BODY]: addRewardSchema
 }), makeExpressCallback(RewardController.addReward))

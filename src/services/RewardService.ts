@@ -6,6 +6,7 @@ import { Inject, Service } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
 import { EditReward } from '@/ports/reward/EditReward'
+import { ClaimedReward } from '@/models/ClaimedReward'
 
 @Service()
 export class RewardService {
@@ -16,6 +17,10 @@ export class RewardService {
 
     async getRewards(filter: Partial<Reward>): Promise<Reward[]> {
         return await this.rewardRepository.getRewardsWithUsers(filter)
+    }
+
+    async getClaimedRewards(): Promise<ClaimedReward[]> {
+        return await this.rewardRepository.findClaimedRewards()
     }
 
     async addReward(reward: Partial<Reward>) {

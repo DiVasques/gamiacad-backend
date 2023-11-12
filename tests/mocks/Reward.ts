@@ -1,3 +1,4 @@
+import { ClaimedReward } from '@/models/ClaimedReward'
 import { Reward } from '@/models/Reward'
 import { RewardWithUsers } from '@/models/RewardWithUsers'
 import { EditReward } from '@/ports/reward/EditReward'
@@ -32,9 +33,26 @@ export const editReward: EditReward = {
     description: 'This is a description'
 }
 
+export const claimedReward: ClaimedReward = {
+    _id: reward._id,
+    name: reward.name,
+    number: reward.number,
+    price: reward.price,
+    claimer: {
+        id: 'c4ee73c6-2d09-4397-a345-549396286083',
+        name: 'User Name',
+    },
+    claimDate: new Date('2043-06-19T20:24:21.417Z')
+}
+
 export const rewardList: Reward[] = [
     reward,
     { ...reward, name: 'Foo', _id: '12345' }
+]
+
+export const claimedRewardList: ClaimedReward[] = [
+    claimedReward,
+    { ...claimedReward, name: 'Foo', _id: '12345' }
 ]
 
 export const rewardListWithUsers: RewardWithUsers[] = [
