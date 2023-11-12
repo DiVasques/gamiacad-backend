@@ -1,6 +1,6 @@
 import app from '@/app'
 import request from 'supertest'
-import { rewardList } from '../mocks/Reward'
+import { claimedRewardList, rewardList } from '../mocks/Reward'
 import { Container } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
@@ -9,6 +9,7 @@ import { adminHeaders, userHeaders, userId as authorizedUser, unauthorizedUserId
 describe('RewardController', () => {
     const rewardServiceMock = {
         getRewards: jest.fn().mockResolvedValue(rewardList),
+        getClaimedRewards: jest.fn().mockResolvedValue(claimedRewardList),
         addReward: jest.fn(),
         editReward: jest.fn(),
         deactivateReward: jest.fn(),
@@ -63,6 +64,36 @@ describe('RewardController', () => {
             // Assert
             expect(status).toBe(403)
             expect(rewardServiceMock.getRewards).not.toBeCalled()
+        })
+    })
+
+    describe('getClaimedRewards', () => {
+        it('should return a list of rewards', async () => {
+            // Act
+            const { status, body } = await request(app)
+                .get('/api/reward/claimed')
+                .set(adminHeaders)
+
+            // Assert
+            const expectedRewards = claimedRewardList.map((reward) => ({
+                ...reward,
+                claimDate: reward.claimDate.toISOString(),
+            }))
+
+            expect(status).toBe(200)
+            expect(rewardServiceMock.getClaimedRewards).toHaveBeenCalled()
+            expect(body).toEqual({ rewards: expectedRewards })
+        })
+
+        it('should return 403 if user is forbidden', async () => {
+            // Act
+            const { status } = await request(app)
+                .get('/api/reward/claimed')
+                .set(userHeaders)
+
+            // Assert
+            expect(status).toBe(403)
+            expect(rewardServiceMock.getClaimedRewards).not.toBeCalled()
         })
     })
 
