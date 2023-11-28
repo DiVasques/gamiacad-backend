@@ -13,7 +13,8 @@ export const reward: Reward = {
     claimers: [
         {
             id: 'c4ee73c6-2d09-4397-a345-549396286083',
-            date: new Date('2043-06-19T20:24:21.417Z')
+            date: new Date('2043-06-19T20:24:21.417Z'),
+            createdBy: 'ada4940f-d516-4f4b-bd75-b349cd5e6675'
         },
     ],
     handed: [],

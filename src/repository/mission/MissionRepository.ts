@@ -107,18 +107,18 @@ export class MissionRepository extends BaseRepository<Mission> implements IMissi
         ).sort({ number: -1 }).exec()
     }
 
-    async subscribeUser(_id: string, userId: string): Promise<number> {
+    async subscribeUser(_id: string, userId: string, createdBy: string): Promise<number> {
         const { modifiedCount } = await this.model.updateOne(
             { _id, 'participants.id': { $ne: userId }, 'completers.id': { $ne: userId }, createdBy: { $ne: userId }, active: true, expirationDate: { $gt: new Date() } },
-            { $push: { participants: { id: userId, date: new Date() } } }
+            { $push: { participants: { id: userId, date: new Date(), createdBy: createdBy } } }
         ).exec()
         return modifiedCount
     }
 
-    async completeMission(_id: string, userId: string): Promise<number> {
+    async completeMission(_id: string, userId: string, createdBy: string): Promise<number> {
         const { modifiedCount } = await this.model.updateOne(
             { _id, 'participants.id': userId, 'completers.id': { $ne: userId }, active: true },
-            { $push: { completers: { id: userId, date: new Date() } }, $pull: { participants: { id: userId } } }
+            { $push: { completers: { id: userId, date: new Date(), createdBy: createdBy } }, $pull: { participants: { id: userId } } }
         ).exec()
         return modifiedCount
     }
