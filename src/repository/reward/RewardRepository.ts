@@ -45,10 +45,10 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
         ).sort({ number: -1 }).exec()
     }
 
-    async claimReward(_id: string, userId: string): Promise<number> {
+    async claimReward(_id: string, userId: string, createdBy: string): Promise<number> {
         const { modifiedCount } = await this.model.updateOne(
             { _id, availability: { $gt: 0 }, 'claimers.id': { $ne: userId }, active: true },
-            { $push: { claimers: { id: userId, date: new Date() } }, $inc: { availability: -1 } }
+            { $push: { claimers: { id: userId, date: new Date(), createdBy: createdBy } }, $inc: { availability: -1 } }
         ).exec()
         return modifiedCount
     }
@@ -61,10 +61,10 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
         return modifiedCount
     }
 
-    async handReward(_id: string, userId: string): Promise<number> {
+    async handReward(_id: string, userId: string, createdBy: string): Promise<number> {
         const { modifiedCount } = await this.model.updateOne(
             { _id, 'claimers.id': userId, active: true },
-            { $push: { handed: { id: userId, date: new Date() } }, $pull: { claimers: { id: userId } } }
+            { $push: { handed: { id: userId, date: new Date(), createdBy: createdBy } }, $pull: { claimers: { id: userId } } }
         ).exec()
         return modifiedCount
     }
