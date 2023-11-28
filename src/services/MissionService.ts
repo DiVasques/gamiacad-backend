@@ -50,7 +50,7 @@ export class MissionService {
         await this.missionRepository.deactivateMission(id)
     }
 
-    async subscribeUser(id: string, userId: string) {
+    async subscribeUser(id: string, userId: string, createdBy: string) {
         const [user, mission] = await Promise.all([this.userRepository.findById(userId), this.missionRepository.findById(id)])
         if (!user) {
             throw new AppError(ExceptionStatus.notFound, 404)
@@ -58,13 +58,13 @@ export class MissionService {
         if (!mission) {
             throw new AppError(ExceptionStatus.notFound, 404)
         }
-        const modifiedCount = await this.missionRepository.subscribeUser(id, userId)
+        const modifiedCount = await this.missionRepository.subscribeUser(id, userId, createdBy)
         if (modifiedCount === 0) {
             throw new AppError(ExceptionStatus.alreadySubscribed, 400)
         }
     }
 
-    async completeMission(id: string, userId: string) {
+    async completeMission(id: string, userId: string, createdBy: string) {
         const [user, mission] = await Promise.all([this.userRepository.findById(userId), this.missionRepository.findById(id)])
         if (!user) {
             throw new AppError(ExceptionStatus.notFound, 404)
@@ -72,7 +72,7 @@ export class MissionService {
         if (!mission) {
             throw new AppError(ExceptionStatus.notFound, 404)
         }
-        const modifiedCount = await this.missionRepository.completeMission(id, userId)
+        const modifiedCount = await this.missionRepository.completeMission(id, userId, createdBy)
         if (modifiedCount === 0) {
             throw new AppError(ExceptionStatus.cantCompleteMission, 400)
         }

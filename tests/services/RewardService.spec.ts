@@ -177,7 +177,7 @@ describe('RewardService', () => {
 
             // Act
             try {
-                await rewardService.claimReward(id, userId)
+                await rewardService.claimReward(id, userId, userId)
             } catch (e) {
                 error = e
             }
@@ -199,7 +199,7 @@ describe('RewardService', () => {
 
             // Act
             try {
-                await rewardService.claimReward(id, userId)
+                await rewardService.claimReward(id, userId, userId)
             } catch (e) {
                 error = e
             }
@@ -222,7 +222,7 @@ describe('RewardService', () => {
 
             // Act
             try {
-                await rewardService.claimReward(id, userId)
+                await rewardService.claimReward(id, userId, userId)
             } catch (e) {
                 error = e
             }
@@ -246,7 +246,7 @@ describe('RewardService', () => {
 
             // Act
             try {
-                await rewardService.claimReward(id, userId)
+                await rewardService.claimReward(id, userId, userId)
             } catch (e) {
                 error = e
             }
@@ -256,7 +256,7 @@ describe('RewardService', () => {
             expect((error as AppError).status).toBe(400)
             expect(rewardRepositoryMock.findById).toHaveBeenCalledWith(id)
             expect(userRepositoryMock.findById).toHaveBeenCalledWith(userId)
-            expect(rewardRepositoryMock.claimReward).toHaveBeenCalledWith(id, userId)
+            expect(rewardRepositoryMock.claimReward).toHaveBeenCalledWith(id, userId, userId)
             expect(userRepositoryMock.withdrawPoints).not.toHaveBeenCalled()
             expect(rewardRepositoryMock.rollbackClaim).not.toHaveBeenCalled()
         })
@@ -270,7 +270,7 @@ describe('RewardService', () => {
 
             // Act
             try {
-                await rewardService.claimReward(id, userId)
+                await rewardService.claimReward(id, userId, userId)
             } catch (e) {
                 error = e
             }
@@ -280,7 +280,7 @@ describe('RewardService', () => {
             expect((error as AppError).status).toBe(400)
             expect(rewardRepositoryMock.findById).toHaveBeenCalledWith(id)
             expect(userRepositoryMock.findById).toHaveBeenCalledWith(userId)
-            expect(rewardRepositoryMock.claimReward).toHaveBeenCalledWith(id, userId)
+            expect(rewardRepositoryMock.claimReward).toHaveBeenCalledWith(id, userId, userId)
             expect(userRepositoryMock.withdrawPoints).toHaveBeenCalledWith(userId, reward.price)
             expect(rewardRepositoryMock.rollbackClaim).toHaveBeenCalledWith(id, userId)
         })
@@ -291,12 +291,12 @@ describe('RewardService', () => {
             const userId = '456'
 
             // Act
-            await rewardService.claimReward(id, userId)
+            await rewardService.claimReward(id, userId, userId)
 
             // Assert
             expect(rewardRepositoryMock.findById).toHaveBeenCalledWith(id)
             expect(userRepositoryMock.findById).toHaveBeenCalledWith(userId)
-            expect(rewardRepositoryMock.claimReward).toHaveBeenCalledWith(id, userId)
+            expect(rewardRepositoryMock.claimReward).toHaveBeenCalledWith(id, userId, userId)
             expect(userRepositoryMock.withdrawPoints).toHaveBeenCalledWith(userId, reward.price)
             expect(rewardRepositoryMock.rollbackClaim).not.toHaveBeenCalled()
         })
@@ -307,12 +307,13 @@ describe('RewardService', () => {
             // Arrange
             const id = '123'
             const userId = '456'
+            const adminUserId = '789'
             rewardRepositoryMock.findById.mockResolvedValue(null)
             let error
 
             // Act
             try {
-                await rewardService.handReward(id, userId)
+                await rewardService.handReward(id, userId, adminUserId)
             } catch (e) {
                 error = e
             }
@@ -327,12 +328,13 @@ describe('RewardService', () => {
             // Arrange
             const id = '123'
             const userId = '456'
+            const adminUserId = '789'
             userRepositoryMock.findById.mockResolvedValue(null)
             let error
 
             // Act
             try {
-                await rewardService.handReward(id, userId)
+                await rewardService.handReward(id, userId, adminUserId)
             } catch (e) {
                 error = e
             }
@@ -348,12 +350,13 @@ describe('RewardService', () => {
             // Arrange
             const id = '123'
             const userId = '456'
+            const adminUserId = '789'
             rewardRepositoryMock.handReward.mockResolvedValue(0)
             let error
 
             // Act
             try {
-                await rewardService.handReward(id, userId)
+                await rewardService.handReward(id, userId, adminUserId)
             } catch (e) {
                 error = e
             }
@@ -363,21 +366,22 @@ describe('RewardService', () => {
             expect((error as AppError).status).toBe(400)
             expect(rewardRepositoryMock.findById).toHaveBeenCalledWith(id)
             expect(userRepositoryMock.findById).toHaveBeenCalledWith(userId)
-            expect(rewardRepositoryMock.handReward).toHaveBeenCalledWith(id, userId)
+            expect(rewardRepositoryMock.handReward).toHaveBeenCalledWith(id, userId, adminUserId)
         })
 
         it('should hand the reward', async () => {
             // Arrange
             const id = '123'
             const userId = '456'
+            const adminUserId = '789'
 
             // Act
-            await rewardService.handReward(id, userId)
+            await rewardService.handReward(id, userId, adminUserId)
 
             // Assert
             expect(rewardRepositoryMock.findById).toHaveBeenCalledWith(id)
             expect(userRepositoryMock.findById).toHaveBeenCalledWith(userId)
-            expect(rewardRepositoryMock.handReward).toHaveBeenCalledWith(id, userId)
+            expect(rewardRepositoryMock.handReward).toHaveBeenCalledWith(id, userId, adminUserId)
         })
     })
 

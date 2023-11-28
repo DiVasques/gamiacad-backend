@@ -50,7 +50,7 @@ export class RewardService {
         }))
     }
 
-    async claimReward(id: string, userId: string) {
+    async claimReward(id: string, userId: string, createdBy: string) {
         const [user, reward] = await Promise.all([this.userRepository.findById(userId), this.rewardRepository.findById(id)])
         if (!user) {
             throw new AppError(ExceptionStatus.notFound, 404)
@@ -61,7 +61,7 @@ export class RewardService {
         if (user.balance < reward.price) {
             throw new AppError(ExceptionStatus.insufficientBalance, 400)
         }
-        let modifiedCount = await this.rewardRepository.claimReward(id, userId)
+        let modifiedCount = await this.rewardRepository.claimReward(id, userId, createdBy)
         if (modifiedCount === 0) {
             throw new AppError(ExceptionStatus.rewardUnavailable, 400)
         }
@@ -72,7 +72,7 @@ export class RewardService {
         }
     }
 
-    async handReward(id: string, userId: string) {
+    async handReward(id: string, userId: string, createdBy: string) {
         const [user, reward] = await Promise.all([this.userRepository.findById(userId), this.rewardRepository.findById(id)])
         if (!user) {
             throw new AppError(ExceptionStatus.notFound, 404)
@@ -80,7 +80,7 @@ export class RewardService {
         if (!reward) {
             throw new AppError(ExceptionStatus.notFound, 404)
         }
-        const modifiedCount = await this.rewardRepository.handReward(id, userId)
+        const modifiedCount = await this.rewardRepository.handReward(id, userId, createdBy)
         if (modifiedCount === 0) {
             throw new AppError(ExceptionStatus.cantHandOrCancelReward, 400)
         }

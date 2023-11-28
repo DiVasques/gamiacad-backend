@@ -4,7 +4,7 @@ import { mission, missionList } from '../mocks/Mission'
 import { Container } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
-import { adminHeaders, userHeaders, userId as authorizedUser, unauthorizedUserId, userId } from '../mocks/DefaultHeaders'
+import { adminHeaders, userHeaders, userId as authorizedUser, unauthorizedUserId, adminUserId } from '../mocks/DefaultHeaders'
 
 describe('MissionController', () => {
     const missionServiceMock = {
@@ -126,7 +126,7 @@ describe('MissionController', () => {
 
             // Assert
             expect(status).toBe(201)
-            expect(missionServiceMock.addMission).toHaveBeenCalledWith(newMission, userId)
+            expect(missionServiceMock.addMission).toHaveBeenCalledWith(newMission, adminUserId)
         })
 
         it('should return 403 if user is forbidden', async () => {
@@ -284,7 +284,7 @@ describe('MissionController', () => {
 
             // Assert
             expect(status).toBe(204)
-            expect(missionServiceMock.subscribeUser).toHaveBeenCalledWith(id, userId)
+            expect(missionServiceMock.subscribeUser).toHaveBeenCalledWith(id, userId, userId)
         })
 
         it('should return 404 if no mission or user was found', async () => {
@@ -300,7 +300,7 @@ describe('MissionController', () => {
 
             // Assert
             expect(status).toBe(404)
-            expect(missionServiceMock.subscribeUser).toHaveBeenCalledWith(id, userId)
+            expect(missionServiceMock.subscribeUser).toHaveBeenCalledWith(id, userId, userId)
         })
 
         it('should return 400 if user already participating on the mission', async () => {
@@ -315,7 +315,7 @@ describe('MissionController', () => {
 
             // Assert
             expect(status).toBe(400)
-            expect(missionServiceMock.subscribeUser).toHaveBeenCalledWith(id, userId)
+            expect(missionServiceMock.subscribeUser).toHaveBeenCalledWith(id, userId, userId)
         })
 
         it('should return 403 if user is forbidden', async () => {
@@ -345,7 +345,7 @@ describe('MissionController', () => {
 
             // Assert
             expect(status).toBe(204)
-            expect(missionServiceMock.completeMission).toHaveBeenCalledWith(id, userId)
+            expect(missionServiceMock.completeMission).toHaveBeenCalledWith(id, userId, adminUserId)
         })
 
         it('should return 404 if no mission or user was found', async () => {
@@ -361,7 +361,7 @@ describe('MissionController', () => {
 
             // Assert
             expect(status).toBe(404)
-            expect(missionServiceMock.completeMission).toHaveBeenCalledWith(id, userId)
+            expect(missionServiceMock.completeMission).toHaveBeenCalledWith(id, userId, adminUserId)
         })
 
         it('should return 400 if user not participating or already completed the mission', async () => {
@@ -376,7 +376,7 @@ describe('MissionController', () => {
 
             // Assert
             expect(status).toBe(400)
-            expect(missionServiceMock.completeMission).toHaveBeenCalledWith(id, userId)
+            expect(missionServiceMock.completeMission).toHaveBeenCalledWith(id, userId, adminUserId)
         })
 
         it('should return 403 if user is forbidden', async () => {

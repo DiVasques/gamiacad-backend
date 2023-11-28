@@ -195,7 +195,7 @@ describe('MissionService', () => {
 
             // Act
             try {
-                await missionService.subscribeUser(id, userId)
+                await missionService.subscribeUser(id, userId, userId)
             } catch (e) {
                 error = e
             }
@@ -215,7 +215,7 @@ describe('MissionService', () => {
 
             // Act
             try {
-                await missionService.subscribeUser(id, userId)
+                await missionService.subscribeUser(id, userId, userId)
             } catch (e) {
                 error = e
             }
@@ -236,7 +236,7 @@ describe('MissionService', () => {
 
             // Act
             try {
-                await missionService.subscribeUser(id, userId)
+                await missionService.subscribeUser(id, userId, userId)
             } catch (e) {
                 error = e
             }
@@ -246,7 +246,7 @@ describe('MissionService', () => {
             expect((error as AppError).status).toBe(400)
             expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
             expect(userRepositoryMock.findById).toHaveBeenCalledWith(userId)
-            expect(missionRepositoryMock.subscribeUser).toHaveBeenCalledWith(id, userId)
+            expect(missionRepositoryMock.subscribeUser).toHaveBeenCalledWith(id, userId, userId)
         })
 
         it('should subscribe the user', async () => {
@@ -255,12 +255,12 @@ describe('MissionService', () => {
             const userId = '456'
 
             // Act
-            await missionService.subscribeUser(id, userId)
+            await missionService.subscribeUser(id, userId, userId)
 
             // Assert
             expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
             expect(userRepositoryMock.findById).toHaveBeenCalledWith(userId)
-            expect(missionRepositoryMock.subscribeUser).toHaveBeenCalledWith(id, userId)
+            expect(missionRepositoryMock.subscribeUser).toHaveBeenCalledWith(id, userId, userId)
         })
     })
 
@@ -269,12 +269,13 @@ describe('MissionService', () => {
             // Arrange
             const id = '123'
             const userId = '456'
+            const adminUserId = '789'
             missionRepositoryMock.findById.mockResolvedValue(null)
             let error
 
             // Act
             try {
-                await missionService.completeMission(id, userId)
+                await missionService.completeMission(id, userId, adminUserId)
             } catch (e) {
                 error = e
             }
@@ -290,12 +291,13 @@ describe('MissionService', () => {
             // Arrange
             const id = '123'
             const userId = '456'
+            const adminUserId = '789'
             userRepositoryMock.findById.mockResolvedValue(null)
             let error
 
             // Act
             try {
-                await missionService.completeMission(id, userId)
+                await missionService.completeMission(id, userId, adminUserId)
             } catch (e) {
                 error = e
             }
@@ -312,12 +314,13 @@ describe('MissionService', () => {
             // Arrange
             const id = '123'
             const userId = '456'
+            const adminUserId = '789'
             missionRepositoryMock.completeMission.mockResolvedValue(0)
             let error
 
             // Act
             try {
-                await missionService.completeMission(id, userId)
+                await missionService.completeMission(id, userId, adminUserId)
             } catch (e) {
                 error = e
             }
@@ -327,7 +330,7 @@ describe('MissionService', () => {
             expect((error as AppError).status).toBe(400)
             expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
             expect(userRepositoryMock.findById).toHaveBeenCalledWith(userId)
-            expect(missionRepositoryMock.completeMission).toHaveBeenCalledWith(id, userId)
+            expect(missionRepositoryMock.completeMission).toHaveBeenCalledWith(id, userId, adminUserId)
             expect(userRepositoryMock.givePoints).not.toHaveBeenCalled()
         })
 
@@ -335,14 +338,15 @@ describe('MissionService', () => {
             // Arrange
             const id = '123'
             const userId = '456'
+            const adminUserId = '789'
 
             // Act
-            await missionService.completeMission(id, userId)
+            await missionService.completeMission(id, userId, adminUserId)
 
             // Assert
             expect(missionRepositoryMock.findById).toHaveBeenCalledWith(id)
             expect(userRepositoryMock.findById).toHaveBeenCalledWith(userId)
-            expect(missionRepositoryMock.completeMission).toHaveBeenCalledWith(id, userId)
+            expect(missionRepositoryMock.completeMission).toHaveBeenCalledWith(id, userId, adminUserId)
             expect(userRepositoryMock.givePoints).toHaveBeenCalledWith(userId, mission.points)
         })
     })

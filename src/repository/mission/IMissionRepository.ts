@@ -14,8 +14,8 @@ export interface IMissionRepository {
     getMissionByIdWithUsers: (id: string) => Promise<(MissionWithUsers) | null>
     getMissionsWithUsers: (filter: Partial<Mission>) => Promise<MissionWithUsers[]>
 
-    subscribeUser: (_id: string, userId: string) => Promise<number>
-    completeMission: (_id: string, userId: string) => Promise<number>
+    subscribeUser: (_id: string, userId: string, createdBy: string) => Promise<number>
+    completeMission: (_id: string, userId: string, createdBy: string) => Promise<number>
     deactivateMission: (_id: string) => Promise<void>
 
     findUserActiveMissions: (userId: string) => Promise<UserMission[]>

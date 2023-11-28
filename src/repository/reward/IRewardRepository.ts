@@ -15,9 +15,9 @@ export interface IRewardRepository {
     getRewardsWithUsers: (filter: Partial<Reward>) => Promise<RewardWithUsers[]>
     findClaimedRewards: () => Promise<ClaimedReward[]>
 
-    claimReward: (_id: string, userId: string) => Promise<number>
+    claimReward: (_id: string, userId: string, createdBy: string) => Promise<number>
     rollbackClaim: (_id: string, userId: string) => Promise<number>
-    handReward: (_id: string, userId: string) => Promise<number>
+    handReward: (_id: string, userId: string, createdBy: string) => Promise<number>
     deactivateReward: (_id: string) => Promise<number>
 
     findUserAvailableRewards: (userId: string) => Promise<UserReward[]>

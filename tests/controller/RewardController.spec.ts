@@ -4,7 +4,7 @@ import { claimedRewardList, rewardList } from '../mocks/Reward'
 import { Container } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
-import { adminHeaders, userHeaders, userId as authorizedUser, unauthorizedUserId } from '../mocks/DefaultHeaders'
+import { adminHeaders, userHeaders, userId as authorizedUser, unauthorizedUserId, adminUserId } from '../mocks/DefaultHeaders'
 
 describe('RewardController', () => {
     const rewardServiceMock = {
@@ -259,7 +259,7 @@ describe('RewardController', () => {
 
             // Assert
             expect(status).toBe(204)
-            expect(rewardServiceMock.claimReward).toHaveBeenCalledWith(id, userId)
+            expect(rewardServiceMock.claimReward).toHaveBeenCalledWith(id, userId, userId)
         })
 
         it('should return 404 if no reward or user was found', async () => {
@@ -275,7 +275,7 @@ describe('RewardController', () => {
 
             // Assert
             expect(status).toBe(404)
-            expect(rewardServiceMock.claimReward).toHaveBeenCalledWith(id, userId)
+            expect(rewardServiceMock.claimReward).toHaveBeenCalledWith(id, userId, userId)
         })
 
         it('should return 400 if user does not have sufficient balance', async () => {
@@ -290,7 +290,7 @@ describe('RewardController', () => {
 
             // Assert
             expect(status).toBe(400)
-            expect(rewardServiceMock.claimReward).toHaveBeenCalledWith(id, userId)
+            expect(rewardServiceMock.claimReward).toHaveBeenCalledWith(id, userId, userId)
         })
 
         it('should return 403 if user is forbidden', async () => {
@@ -320,7 +320,7 @@ describe('RewardController', () => {
 
             // Assert
             expect(status).toBe(204)
-            expect(rewardServiceMock.handReward).toHaveBeenCalledWith(id, userId)
+            expect(rewardServiceMock.handReward).toHaveBeenCalledWith(id, userId, adminUserId)
         })
 
         it('should return 404 if no reward or user was found', async () => {
@@ -336,7 +336,7 @@ describe('RewardController', () => {
 
             // Assert
             expect(status).toBe(404)
-            expect(rewardServiceMock.handReward).toHaveBeenCalledWith(id, userId)
+            expect(rewardServiceMock.handReward).toHaveBeenCalledWith(id, userId, adminUserId)
         })
 
         it('should return 400 if user did not claim the reward', async () => {
@@ -351,7 +351,7 @@ describe('RewardController', () => {
 
             // Assert
             expect(status).toBe(400)
-            expect(rewardServiceMock.handReward).toHaveBeenCalledWith(id, userId)
+            expect(rewardServiceMock.handReward).toHaveBeenCalledWith(id, userId, adminUserId)
         })
 
         it('should return 403 if user is forbidden', async () => {

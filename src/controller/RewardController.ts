@@ -37,14 +37,14 @@ export class RewardController {
     static async claimReward(request: HttpRequest): Promise<HttpResponse> {
         const rewardService = Container.get(RewardService)
         const { id, userId } = request.params
-        await rewardService.claimReward(id, userId)
+        await rewardService.claimReward(id, userId, request.headers.userId)
         return new HttpResponse(204)
     }
 
     static async handReward(request: HttpRequest): Promise<HttpResponse> {
         const rewardService = Container.get(RewardService)
         const { id, userId } = request.params
-        await rewardService.handReward(id, userId)
+        await rewardService.handReward(id, userId, request.headers.userId)
         return new HttpResponse(204)
     }
 
