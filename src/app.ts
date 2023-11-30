@@ -3,6 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import routes from '@/routes'
 import authRoutes from '@/routes/auth/AuthRoutes'
+import secureAuthRoutes from '@/routes/auth/SecureAuthRoutes'
 import 'reflect-metadata'
 import { Exception } from '@/middlewares/Exception'
 import { Auth } from '@/middlewares/Auth'
@@ -22,6 +23,7 @@ app.use(cors())
 app.use(Auth.validateClient)
 app.use('/api', logger, authRoutes)
 app.use('/api', bodyLogger, Auth.authenticate, routes)
+app.use('/api', bodyLogger, Auth.authenticate, secureAuthRoutes)
 
 app.use(Exception)
 
