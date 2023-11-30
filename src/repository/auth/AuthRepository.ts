@@ -26,4 +26,20 @@ export class AuthRepository extends BaseRepository<UserAuth> implements IAuthRep
     async registerUser(user: Partial<UserAuth>): Promise<UserAuth> {
         return await this.model.create(user)
     }
+
+    async giveAdminPrivileges(userId: string): Promise<number> {
+        const { modifiedCount } = await this.model.updateOne(
+            { uuid: userId, roles: { $ne: 'admin' } },
+            { $push: { roles: 'admin' } }
+        ).exec()
+        return modifiedCount
+    }
+
+    async revokeAdminPrivileges(userId: string): Promise<number> {
+        const { modifiedCount } = await this.model.updateOne(
+            { uuid: userId, roles: 'admin' },
+            { $pull: { roles: 'admin' } }
+        ).exec()
+        return modifiedCount
+    }
 }
