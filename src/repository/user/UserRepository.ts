@@ -1,4 +1,5 @@
 import { User } from '@/models/User'
+import { UserWithPrivilege } from '@/models/UserWithPrivilege'
 import { BaseRepository } from '@/repository/base/BaseRepository'
 import { IUserRepository } from '@/repository/user/IUserRepository'
 import mongoose, { Document, Schema } from 'mongoose'
@@ -37,5 +38,45 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
             { $inc: { balance: -points } }
         ).exec()
         return modifiedCount
+    }
+
+    async getUsersWithPrivilege(filter: any = {}): Promise<UserWithPrivilege[]> {
+        return await this.model.aggregate(
+            [
+                {
+                    $match: filter
+                },
+                {
+                    $lookup:
+                    {
+                        from: 'Auth',
+                        localField: '_id',
+                        foreignField: 'uuid',
+                        as: 'authInfo'
+                    }
+                },
+                {
+                  $unwind: '$authInfo'
+                },
+                {
+                  $addFields: {
+                    admin: {
+                      $cond: {
+                        if: {
+                          $in: ['admin', '$authInfo.roles']
+                        },
+                        then: true,
+                        else: false
+                      }
+                    }
+                  }
+                },
+                {
+                  $project: {
+                    authInfo: 0,
+                  }
+                }
+            ]
+        ).sort({ name: 1 }).exec()
     }
 }

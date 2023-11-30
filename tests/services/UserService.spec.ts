@@ -1,7 +1,7 @@
 import { UserService } from '@/services/UserService'
 import { userMission } from '../mocks/Mission'
 import { rewardList, userReward } from '../mocks/Reward'
-import { user, userList } from '../mocks/User'
+import { user, userWithPrivilegeList } from '../mocks/User'
 import { User } from '@/models/User'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
@@ -14,7 +14,7 @@ describe('UserService', () => {
 
     beforeEach(() => {
         userRepositoryMock = {
-            find: jest.fn().mockResolvedValue(userList),
+            getUsersWithPrivilege: jest.fn().mockResolvedValue(userWithPrivilegeList),
             findById: jest.fn().mockResolvedValue(user),
             create: jest.fn(),
             delete: jest.fn()
@@ -48,8 +48,8 @@ describe('UserService', () => {
             const result = await userService.getUsers(filter)
 
             // Assert
-            expect(userRepositoryMock.find).toHaveBeenCalledWith(filter)
-            expect(result).toEqual(userList)
+            expect(userRepositoryMock.getUsersWithPrivilege).toHaveBeenCalledWith(filter)
+            expect(result).toEqual(userWithPrivilegeList)
         })
     })
 

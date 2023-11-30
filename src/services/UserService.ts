@@ -8,6 +8,7 @@ import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
 import { UserMissionsResult } from '@/ports/user/UserMissionsResult'
 import { UserRewardsResult } from '@/ports/user/UserRewardsResult'
+import { UserWithPrivilege } from '@/models/UserWithPrivilege'
 
 @Service()
 export class UserService {
@@ -18,8 +19,8 @@ export class UserService {
     @Inject(ServiceToken.rewardRepository)
     private rewardRepository: IRewardRepository
 
-    async getUsers(filter: Partial<User>): Promise<User[]> {
-        return await this.userRepository.find(filter)
+    async getUsers(filter: Partial<User>): Promise<UserWithPrivilege[]> {
+        return await this.userRepository.getUsersWithPrivilege(filter)
     }
 
     async getUserById(id: string): Promise<User> {

@@ -1,6 +1,6 @@
 import app from '@/app'
 import request from 'supertest'
-import { user, userList } from '../mocks/User'
+import { user, userWithPrivilegeList } from '../mocks/User'
 import { userMissions } from '../mocks/Mission'
 import { userRewards } from '../mocks/Reward'
 import { Container } from 'typedi'
@@ -10,7 +10,7 @@ import { userHeaders, adminHeaders, unauthorizedUserId, userId } from '../mocks/
 
 describe('UserController', () => {
     const userServiceMock = {
-        getUsers: jest.fn().mockResolvedValue(userList),
+        getUsers: jest.fn().mockResolvedValue(userWithPrivilegeList),
         getUserById: jest.fn().mockResolvedValue(user),
         addUser: jest.fn(),
         deleteUser: jest.fn(),
@@ -39,7 +39,7 @@ describe('UserController', () => {
                 .set(adminHeaders)
 
             // Assert
-            const expectedUsers = userList.map((user) => ({
+            const expectedUsers = userWithPrivilegeList.map((user) => ({
                 ...user,
                 createdAt: user.createdAt.toISOString(),
                 updatedAt: user.updatedAt.toISOString(),
