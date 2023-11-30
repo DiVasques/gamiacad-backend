@@ -42,6 +42,7 @@ export const claimedReward: ClaimedReward = {
     claimer: {
         id: 'c4ee73c6-2d09-4397-a345-549396286083',
         name: 'User Name',
+        registration: '12345678909'
     },
     claimDate: new Date('2043-06-19T20:24:21.417Z')
 }

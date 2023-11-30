@@ -6,6 +6,7 @@ export interface ClaimedReward {
     claimer: {
         id: string
         name: string
+        registration: string
     },
     claimDate: Date
 }
