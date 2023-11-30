@@ -1,6 +1,6 @@
 import app from '@/app'
 import request from 'supertest'
-import { claimedRewardList, rewardList } from '../mocks/Reward'
+import { claimedRewardList, reward, rewardList } from '../mocks/Reward'
 import { Container } from 'typedi'
 import AppError from '@/models/error/AppError'
 import ExceptionStatus from '@/utils/enum/ExceptionStatus'
@@ -9,6 +9,7 @@ import { adminHeaders, userHeaders, userId as authorizedUser, unauthorizedUserId
 describe('RewardController', () => {
     const rewardServiceMock = {
         getRewards: jest.fn().mockResolvedValue(rewardList),
+        getReward: jest.fn().mockResolvedValue(reward),
         getClaimedRewards: jest.fn().mockResolvedValue(claimedRewardList),
         addReward: jest.fn(),
         editReward: jest.fn(),
@@ -64,6 +65,48 @@ describe('RewardController', () => {
             // Assert
             expect(status).toBe(403)
             expect(rewardServiceMock.getRewards).not.toBeCalled()
+        })
+    })
+
+    describe('getReward', () => {
+        it('should return the reward', async () => {
+            // Arrange
+
+            // Act
+            const { status } = await request(app)
+                .get(`/api/reward/${id}`)
+                .set(adminHeaders)
+
+            // Assert
+            expect(status).toBe(200)
+            expect(rewardServiceMock.getReward).toHaveBeenCalledWith(id)
+        })
+
+        it('should return 404 if no reward was found', async () => {
+            // Arrange
+            rewardServiceMock.getReward.mockRejectedValueOnce(new AppError(ExceptionStatus.notFound, 404))
+
+            // Act
+            const { status } = await request(app)
+                .get(`/api/reward/${id}`)
+                .set(adminHeaders)
+
+            // Assert
+            expect(status).toBe(404)
+            expect(rewardServiceMock.getReward).toHaveBeenCalledWith(id)
+        })
+
+        it('should return 403 if user is forbidden', async () => {
+            // Arrange
+
+            // Act
+            const { status } = await request(app)
+                .get(`/api/reward/${id}`)
+                .set(userHeaders)
+
+            // Assert
+            expect(status).toBe(403)
+            expect(rewardServiceMock.getReward).not.toBeCalled()
         })
     })
 

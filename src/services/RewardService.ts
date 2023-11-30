@@ -15,6 +15,14 @@ export class RewardService {
     @Inject(ServiceToken.userRepository)
     private userRepository: IUserRepository
 
+    async getReward(id: string): Promise<Reward> {
+        const reward = await this.rewardRepository.getRewardByIdWithUsers(id)
+        if (!reward) {
+            throw new AppError(ExceptionStatus.notFound, 404)
+        }
+        return reward
+    }
+
     async getRewards(filter: Partial<Reward>): Promise<Reward[]> {
         return await this.rewardRepository.getRewardsWithUsers(filter)
     }

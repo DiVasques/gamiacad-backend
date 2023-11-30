@@ -34,15 +34,15 @@ routes.get('/', Auth.authorizeAdminOnly, celebrate({
     [Segments.QUERY]: getMissionsSchema
 }), makeExpressCallback(MissionController.getMissions))
 
-routes.post('/', Auth.authorizeAdminOnly, celebrate({
-    [Segments.BODY]: addMissionSchema
-}), makeExpressCallback(MissionController.addMission))
-
 routes.get('/:id', Auth.authorizeAdminOnly, celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required()
     }
 }), makeExpressCallback(MissionController.getMission))
+
+routes.post('/', Auth.authorizeAdminOnly, celebrate({
+    [Segments.BODY]: addMissionSchema
+}), makeExpressCallback(MissionController.addMission))
 
 routes.patch('/:id', Auth.authorizeAdminOnly, celebrate({
     [Segments.PARAMS]: {
@@ -50,6 +50,13 @@ routes.patch('/:id', Auth.authorizeAdminOnly, celebrate({
     },
     [Segments.BODY]: editMissionSchema
 }), makeExpressCallback(MissionController.editMission))
+
+routes.patch('/:id/:userId', Auth.authorizeAdminOnly, celebrate({
+    [Segments.PARAMS]: {
+        id: StandardOptionsJoi.string().uuid().required(),
+        userId: StandardOptionsJoi.string().uuid().required()
+    }
+}), makeExpressCallback(MissionController.completeMission))
 
 routes.delete('/:id', Auth.authorizeAdminOnly, celebrate({
     [Segments.PARAMS]: {
@@ -63,12 +70,5 @@ routes.put('/:id/:userId', Auth.authorizeUser, celebrate({
         userId: StandardOptionsJoi.string().uuid().required()
     }
 }), makeExpressCallback(MissionController.subscribeUser))
-
-routes.patch('/:id/:userId', Auth.authorizeAdminOnly, celebrate({
-    [Segments.PARAMS]: {
-        id: StandardOptionsJoi.string().uuid().required(),
-        userId: StandardOptionsJoi.string().uuid().required()
-    }
-}), makeExpressCallback(MissionController.completeMission))
 
 export default routes
