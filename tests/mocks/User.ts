@@ -14,7 +14,8 @@ export const user: User = {
 
 export const userWithPrivilege: UserWithPrivilege = {
     ...user,
-    admin: true
+    admin: true,
+    active: true
 }
 
 export const userList: User[] = [
