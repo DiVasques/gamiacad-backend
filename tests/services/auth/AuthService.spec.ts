@@ -323,6 +323,26 @@ describe('AuthService', () => {
             expect((error as AppError).status).toBe(401)
             expect(authRepositoryMock.findById).toHaveBeenCalledWith(newUser.registration)
         })
+
+        it('should throw 401 if user is not active', async () => {
+            // Arrange
+            authRepositoryMock.findById.mockResolvedValueOnce({...userAuth, active: false})
+            jest.spyOn(bcrypt, 'compareSync').mockReturnValueOnce(true as never)
+            let error
+
+            // Act
+            try {
+                await authService.loginUser(newUser, clientIp)
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).message).toBe(ExceptionStatus.invalidCredentials)
+            expect((error as AppError).status).toBe(401)
+            expect(authRepositoryMock.findById).toHaveBeenCalledWith(newUser.registration)
+        })
     })
 
     describe('refreshToken', () => {

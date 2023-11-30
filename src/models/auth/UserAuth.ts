@@ -5,6 +5,7 @@ export interface UserAuth {
     uuid: string
     password: string
     roles: Role[]
+    active: boolean
     createdAt: Date
     updatedAt: Date
 }

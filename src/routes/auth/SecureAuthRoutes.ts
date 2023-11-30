@@ -7,7 +7,16 @@ import { SecureAuthController } from '@/controller/auth/SecureAuthController'
 
 const routes = Router()
 
-routes.patch('/admin/:id', Auth.authorizeAdminOnly, celebrate({
+routes.patch('/user/status/:id', Auth.authorizeAdminOnly, celebrate({
+    [Segments.PARAMS]: {
+        id: StandardOptionsJoi.string().uuid().required()
+    },
+    [Segments.BODY]: {
+        active: StandardOptionsJoi.boolean().required()
+    }
+}), makeExpressCallback(SecureAuthController.updateUserStatus))
+
+routes.patch('/user/admin/:id', Auth.authorizeAdminOnly, celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required()
     },

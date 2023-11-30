@@ -20,6 +20,8 @@ enum ExceptionStatus {
   cantHandOrCancelReward = 'User did not claim this reward',
   insufficientBalance = 'User does not have sufficient balance to claim this reward',
   invalidExpirationDate = 'The expiration date must be greater than the one set before',
+  cantEnableUser = 'Cannot enable this User',
+  cantDisableUser = 'Cannot disable this User',
   cantGiveAdminPrivileges = 'Cannot give Admin Privileges to this User',
   cantRevokeAdminPrivileges = 'Cannot revoke Admin Privileges from this User'
 }
