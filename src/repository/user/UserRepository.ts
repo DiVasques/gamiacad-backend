@@ -72,6 +72,11 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
                   }
                 },
                 {
+                  $addFields: {
+                    active: '$authInfo.active',
+                  }
+                },
+                {
                   $project: {
                     authInfo: 0,
                   }
