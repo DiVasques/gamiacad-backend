@@ -53,6 +53,10 @@ export class AuthService {
             throw new AppError(ExceptionStatus.invalidCredentials, 401)
         }
 
+        if (!userAuth.active) {
+            throw new AppError(ExceptionStatus.invalidCredentials, 401)
+        }
+
         return await this.generateTokens(userAuth.uuid, userAuth.roles, ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, clientIp)
     }
 
