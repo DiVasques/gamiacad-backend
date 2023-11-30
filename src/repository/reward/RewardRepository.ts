@@ -106,7 +106,8 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
                     price: 1,
                     claimer: {
                         id: '$claimers.id',
-                        name: '$claimersInfo.name'
+                        name: '$claimersInfo.name',
+                        registration: '$claimersInfo.registration',
                     },
                     claimDate: '$claimers.date',
                   },
