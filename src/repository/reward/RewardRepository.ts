@@ -17,6 +17,39 @@ export class RewardRepository extends BaseRepository<Reward> implements IRewardR
         super(rewardModel)
     }
 
+    async getRewardByIdWithUsers(_id: string): Promise<(RewardWithUsers) | null> {
+        const rewards = await this.model.aggregate(
+            [
+                {
+                    $match: { _id }
+                },
+                {
+                    $lookup:
+                    {
+                        from: 'User',
+                        localField: 'claimers.id',
+                        foreignField: '_id',
+                        as: 'claimersInfo'
+                    }
+                },
+                {
+                    $lookup:
+                    {
+                        from: 'User',
+                        localField: 'handed.id',
+                        foreignField: '_id',
+                        as: 'handedInfo'
+                    }
+                }
+            ]
+        ).exec()
+
+        if (!rewards) {
+            return null
+        }
+        return rewards.at(0)
+    }
+
     async getRewardsWithUsers(filter: any = {}): Promise<RewardWithUsers[]> {
         return await this.model.aggregate(
             [

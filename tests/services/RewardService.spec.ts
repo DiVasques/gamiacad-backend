@@ -1,6 +1,6 @@
 import { RewardService } from '@/services/RewardService'
 import { Reward } from '@/models/Reward'
-import { claimedRewardList, editReward, reward, rewardList, rewardListWithUsers } from '../mocks/Reward'
+import { claimedRewardList, editReward, reward, rewardList, rewardListWithUsers, rewardWithUsers } from '../mocks/Reward'
 import { user } from '../mocks/User'
 import AppError from '@/models/error/AppError'
 
@@ -15,6 +15,7 @@ describe('RewardService', () => {
             create: jest.fn(),
             update: jest.fn(),
             findById: jest.fn().mockResolvedValue(reward),
+            getRewardByIdWithUsers: jest.fn().mockResolvedValue(rewardWithUsers),
             getRewardsWithUsers: jest.fn().mockResolvedValue(rewardListWithUsers),
             findClaimedRewards: jest.fn().mockResolvedValue(claimedRewardList),
             deactivateReward: jest.fn().mockResolvedValue(1),
@@ -47,6 +48,39 @@ describe('RewardService', () => {
             // Assert
             expect(rewardRepositoryMock.getRewardsWithUsers).toHaveBeenCalledWith(filter)
             expect(result).toEqual(rewardListWithUsers)
+        })
+    })
+
+    describe('getReward', () => {
+        it('should throw an error if the reward is not found', async () => {
+            // Arrange
+            const id = '123'
+            rewardRepositoryMock.getRewardByIdWithUsers.mockResolvedValue(null)
+            let error
+
+            // Act
+            try {
+                await rewardService.getReward(id)
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).status).toBe(404)
+            expect(rewardRepositoryMock.getRewardByIdWithUsers).toHaveBeenCalledWith(id)
+        })
+
+        it('should return the reward if it exists', async () => {
+            // Arrange
+            const id = '123'
+
+            // Act
+            const result = await rewardService.getReward(id)
+
+            // Assert
+            expect(rewardRepositoryMock.getRewardByIdWithUsers).toHaveBeenCalledWith(id)
+            expect(result).toEqual(rewardWithUsers)
         })
     })
 

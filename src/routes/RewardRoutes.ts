@@ -35,6 +35,12 @@ routes.get('/', Auth.authorizeAdminOnly, celebrate({
 routes.get('/claimed', Auth.authorizeAdminOnly,
     makeExpressCallback(RewardController.getClaimedRewards))
 
+routes.get('/:id', Auth.authorizeAdminOnly, celebrate({
+    [Segments.PARAMS]: {
+        id: StandardOptionsJoi.string().uuid().required()
+    }
+}), makeExpressCallback(RewardController.getReward))
+
 routes.post('/', Auth.authorizeAdminOnly, celebrate({
     [Segments.BODY]: addRewardSchema
 }), makeExpressCallback(RewardController.addReward))
@@ -46,19 +52,6 @@ routes.patch('/:id', Auth.authorizeAdminOnly, celebrate({
     [Segments.BODY]: editRewardSchema
 }), makeExpressCallback(RewardController.editReward))
 
-routes.delete('/:id', Auth.authorizeAdminOnly, celebrate({
-    [Segments.PARAMS]: {
-        id: StandardOptionsJoi.string().uuid().required()
-    }
-}), makeExpressCallback(RewardController.deactivateReward))
-
-routes.put('/:id/:userId', Auth.authorizeUser, celebrate({
-    [Segments.PARAMS]: {
-        id: StandardOptionsJoi.string().uuid().required(),
-        userId: StandardOptionsJoi.string().uuid().required()
-    }
-}), makeExpressCallback(RewardController.claimReward))
-
 routes.patch('/:id/:userId', Auth.authorizeAdminOnly, celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required(),
@@ -66,11 +59,24 @@ routes.patch('/:id/:userId', Auth.authorizeAdminOnly, celebrate({
     }
 }), makeExpressCallback(RewardController.handReward))
 
+routes.delete('/:id', Auth.authorizeAdminOnly, celebrate({
+    [Segments.PARAMS]: {
+        id: StandardOptionsJoi.string().uuid().required()
+    }
+}), makeExpressCallback(RewardController.deactivateReward))
+
 routes.delete('/:id/:userId', Auth.authorizeUser, celebrate({
     [Segments.PARAMS]: {
         id: StandardOptionsJoi.string().uuid().required(),
         userId: StandardOptionsJoi.string().uuid().required()
     }
 }), makeExpressCallback(RewardController.cancelClaim))
+
+routes.put('/:id/:userId', Auth.authorizeUser, celebrate({
+    [Segments.PARAMS]: {
+        id: StandardOptionsJoi.string().uuid().required(),
+        userId: StandardOptionsJoi.string().uuid().required()
+    }
+}), makeExpressCallback(RewardController.claimReward))
 
 export default routes

@@ -12,15 +12,16 @@ export interface IRewardRepository {
     update(_id: string, data: Partial<Reward>, options?: object): Promise<void>
     findOneAndUpdate: (filter: Partial<Reward>, item: Partial<Reward>) => Promise<(Reward) | null>
 
+    getRewardByIdWithUsers: (id: string) => Promise<(RewardWithUsers) | null>
     getRewardsWithUsers: (filter: Partial<Reward>) => Promise<RewardWithUsers[]>
-    findClaimedRewards: () => Promise<ClaimedReward[]>
-
+    
     claimReward: (_id: string, userId: string, createdBy: string) => Promise<number>
     rollbackClaim: (_id: string, userId: string) => Promise<number>
     handReward: (_id: string, userId: string, createdBy: string) => Promise<number>
     deactivateReward: (_id: string) => Promise<number>
-
+    
     findUserAvailableRewards: (userId: string) => Promise<UserReward[]>
     findUserClaimedRewards: (userId: string) => Promise<UserReward[]>
     findUserHandedRewards: (userId: string) => Promise<UserReward[]>
+    findClaimedRewards: () => Promise<ClaimedReward[]>
 }

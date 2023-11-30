@@ -4,6 +4,12 @@ import HttpResponse from '@/ports/http/HttpResponse'
 import { Container } from 'typedi'
 
 export class RewardController {
+    static async getReward(request: HttpRequest): Promise<HttpResponse> {
+        const rewardService = Container.get(RewardService)
+        const reward = await rewardService.getReward(request.params.id)
+        return new HttpResponse(200, reward)
+    }
+
     static async getRewards(request: HttpRequest): Promise<HttpResponse> {
         const rewardService = Container.get(RewardService)
         const rewards = await rewardService.getRewards(request.query)
