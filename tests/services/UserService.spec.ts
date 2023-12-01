@@ -103,6 +103,7 @@ describe('UserService', () => {
             const result = await userService.getUserMissions(id)
 
             // Assert
+            expect(userRepositoryMock.findById).toHaveBeenCalledWith(id)
             expect(missionRepositoryMock.findUserActiveMissions).toHaveBeenCalledWith(id)
             expect(missionRepositoryMock.findUserParticipatingMissions).toHaveBeenCalledWith(id)
             expect(missionRepositoryMock.findUserCompletedMissions).toHaveBeenCalledWith(id)
@@ -111,6 +112,28 @@ describe('UserService', () => {
                 participating: [userMission, { ...userMission, name: 'Foo', _id: '12345' }],
                 completed: [{ ...userMission, name: 'Bar', _id: '12346' }]
             })
+        })
+
+        it('should throw 404 when user is not found', async () => {
+            // Arrange
+            const id = '412312312'
+            userRepositoryMock.findById.mockResolvedValueOnce(null)
+            let error
+
+            // Act
+            try {
+                await userService.getUserMissions(id)
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).message).toBe(ExceptionStatus.notFound)
+            expect(userRepositoryMock.findById).toHaveBeenCalledWith(id)
+            expect(missionRepositoryMock.findUserActiveMissions).not.toBeCalled()
+            expect(missionRepositoryMock.findUserParticipatingMissions).not.toBeCalled()
+            expect(missionRepositoryMock.findUserCompletedMissions).not.toBeCalled()
         })
     })
 
@@ -131,14 +154,38 @@ describe('UserService', () => {
             const result = await userService.getUserRewards(id)
 
             // Assert
+            expect(userRepositoryMock.findById).toHaveBeenCalledWith(id)
             expect(rewardRepositoryMock.findUserAvailableRewards).toHaveBeenCalledWith(id)
             expect(rewardRepositoryMock.findUserClaimedRewards).toHaveBeenCalledWith(id)
             expect(rewardRepositoryMock.findUserHandedRewards).toHaveBeenCalledWith(id)
             expect(result).toEqual({
+                balance: user.balance,
                 available: [userReward],
                 claimed: [{ ...userReward, name: 'Foo', _id: '12345' }, { ...userReward, name: 'Beer', _id: '1234551451' }],
                 received: [{ ...userReward, name: 'Bar', _id: '12346', count: 3 }]
             })
+        })
+
+        it('should throw 404 when user is not found', async () => {
+            // Arrange
+            const id = '412312312'
+            userRepositoryMock.findById.mockResolvedValueOnce(null)
+            let error
+
+            // Act
+            try {
+                await userService.getUserRewards(id)
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).message).toBe(ExceptionStatus.notFound)
+            expect(userRepositoryMock.findById).toHaveBeenCalledWith(id)
+            expect(rewardRepositoryMock.findUserAvailableRewards).not.toBeCalled()
+            expect(rewardRepositoryMock.findUserClaimedRewards).not.toBeCalled()
+            expect(rewardRepositoryMock.findUserHandedRewards).not.toBeCalled()
         })
     })
 
@@ -164,7 +211,28 @@ describe('UserService', () => {
             await userService.deleteUser(id)
 
             // Assert
+            expect(userRepositoryMock.findById).toHaveBeenCalledWith(id)
             expect(userRepositoryMock.delete).toHaveBeenCalledWith(id)
+        })
+
+        it('should throw 404 when user is not found', async () => {
+            // Arrange
+            const id = '412312312'
+            userRepositoryMock.findById.mockResolvedValueOnce(null)
+            let error
+
+            // Act
+            try {
+                await userService.deleteUser(id)
+            } catch (e) {
+                error = e
+            }
+
+            // Assert
+            expect(error).toBeInstanceOf(AppError)
+            expect((error as AppError).message).toBe(ExceptionStatus.notFound)
+            expect(userRepositoryMock.findById).toHaveBeenCalledWith(id)
+            expect(userRepositoryMock.delete).not.toBeCalled()
         })
     })
 })

@@ -1,4 +1,4 @@
-import { UserMission } from '@/ports/user/UserMission';
+import { UserMission } from '@/models/UserMission'
 
 export interface UserMissionsResult {
     active: UserMission[],
