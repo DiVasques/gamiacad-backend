@@ -36,10 +36,18 @@ export class UserService {
     }
 
     async deleteUser(id: string) {
+        const user = await this.userRepository.findById(id)
+        if (!user) {
+            throw new AppError(ExceptionStatus.notFound, 404)
+        }
         await this.userRepository.delete(id)
     }
 
     async getUserMissions(id: string): Promise<UserMissionsResult> {
+        const user = await this.userRepository.findById(id)
+        if (!user) {
+            throw new AppError(ExceptionStatus.notFound, 404)
+        }
         const [activeMissions, participatingMissions, completedMissions] = await Promise.all(
             [
                 this.missionRepository.findUserActiveMissions(id),
@@ -55,6 +63,10 @@ export class UserService {
     }
 
     async getUserRewards(id: string): Promise<UserRewardsResult> {
+        const user = await this.userRepository.findById(id)
+        if (!user) {
+            throw new AppError(ExceptionStatus.notFound, 404)
+        }
         const [availableRewards, claimedRewards, receivedRewards] = await Promise.all(
             [
                 this.rewardRepository.findUserAvailableRewards(id),
@@ -63,6 +75,7 @@ export class UserService {
             ]
         )
         return {
+            balance: user.balance,
             available: availableRewards,
             claimed: claimedRewards,
             received: receivedRewards
