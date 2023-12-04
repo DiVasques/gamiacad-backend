@@ -23,7 +23,7 @@ app.use(cors())
 
 
 app.use(Auth.validateClient)
-app.get('/', (_, res) => {
+app.get('/api', (_, res) => {
   res.send('GamiAcad API is up and running');
 });
 app.use('/api', logger, authRoutes)
