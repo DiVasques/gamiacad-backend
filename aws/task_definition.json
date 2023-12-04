@@ -4,9 +4,9 @@
         {
             "name": "gamiacad-api",
             "image": "",
-            "cpu": 2048,
-            "memory": 7168,
-            "memoryReservation": 6144,
+            "cpu": 1024,
+            "memory": 786,
+            "memoryReservation": 786,
             "portMappings": [
                 {
                     "name": "gamiacad-api-80-tcp",
