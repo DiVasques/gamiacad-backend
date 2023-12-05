@@ -8,8 +8,8 @@ import { Auth } from '@/middlewares/Auth'
 
 const routes = Router()
 
-const MISSION_NAME_REGEX = /^[ a-z\dA-ZàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ`'-]+$/
-const DESCRIPTION_REGEX = /^[\w\s,.]+$/
+const MISSION_NAME_REGEX = /^[ \p{L}\p{N}`'-]+$/u
+const DESCRIPTION_REGEX = /^[\p{L}\p{N}\s.,?!$-]+$/u
 
 const getMissionsSchema = StandardOptionsJoi.object().keys({
     name: StandardOptionsJoi.string().regex(MISSION_NAME_REGEX),
