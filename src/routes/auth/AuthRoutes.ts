@@ -8,7 +8,7 @@ import { AuthController } from '@/controller/auth/AuthController'
 const routes = Router()
 
 const REGISTRATION_REGEX = /^\d{11}$/
-const PASSWORD_REGEX = /^(?=.*\d)(?=.*[A-Z])(?=.*\W).{12,}$/
+const PASSWORD_REGEX = /^(?=.*\d)(?=.*[A-Za-z])(?=.*\W).{12,}$/
 
 const userAuthSchema = StandardOptionsJoi.object().keys({
     registration: StandardOptionsJoi.string().regex(REGISTRATION_REGEX).required(),
