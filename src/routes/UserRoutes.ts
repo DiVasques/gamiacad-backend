@@ -8,7 +8,7 @@ import { Auth } from '@/middlewares/Auth'
 
 const routes = Router()
 
-const USER_NAME_REGEX = /^[ a-zA-ZàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ'`-]+$/
+const USER_NAME_REGEX = /^[ \p{L}\p{N}`'-]+$/u
 const USER_REGISTRATION_REGEX = /^\d{11}$/
 
 const getUsersSchema = StandardOptionsJoi.object().keys({
